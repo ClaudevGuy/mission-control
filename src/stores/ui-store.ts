@@ -2,10 +2,12 @@ import { create } from "zustand";
 
 interface UIState {
   sidebarCollapsed: boolean;
+  mobileSidebarOpen: boolean;
   commandPaletteOpen: boolean;
   shortcutsOpen: boolean;
   gKeyActive: boolean;
   toggleSidebar: () => void;
+  setMobileSidebarOpen: (open: boolean) => void;
   toggleCommandPalette: () => void;
   toggleShortcuts: () => void;
   setCommandPaletteOpen: (open: boolean) => void;
@@ -15,10 +17,12 @@ interface UIState {
 
 export const useUIStore = create<UIState>((set) => ({
   sidebarCollapsed: false,
+  mobileSidebarOpen: false,
   commandPaletteOpen: false,
   shortcutsOpen: false,
   gKeyActive: false,
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+  setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
   toggleCommandPalette: () =>
     set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
   toggleShortcuts: () => set((s) => ({ shortcutsOpen: !s.shortcutsOpen })),
