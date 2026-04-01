@@ -108,7 +108,7 @@ function GettingStarted() {
       </p>
       <div className="space-y-3">
         <Step n={1} title="Create your first project">
-          Click the project name at the top of the left sidebar. A dropdown opens — choose <strong className="text-foreground">Add project</strong>. Give it a name (e.g. "My App") and press <em>Create Project</em>. The dashboard clears to a clean slate for that project.
+          Click the project name at the top of the left sidebar. A dropdown opens — choose <strong className="text-foreground">Add project</strong>. Give it a name (e.g. &ldquo;My App&rdquo;) and press <em>Create Project</em>. The dashboard clears to a clean slate for that project.
         </Step>
         <Step n={2} title="Connect your database">
           Go to <strong className="text-foreground">Settings → General</strong> and add your project name and logo. Then head to <strong className="text-foreground">Settings → Integrations</strong> and connect GitHub, Slack, or PagerDuty so alerts flow to the right channels.
@@ -117,7 +117,7 @@ function GettingStarted() {
           Click <strong className="text-foreground">Deploy Agent</strong> on the Overview page (or press <Kbd>g</Kbd><Kbd>a</Kbd> then use the builder). Fill in the agent name, model, and what it should do. Hit Deploy — it appears on the Overview grid within seconds.
         </Step>
         <Step n={4} title="Set a budget alert">
-          Go to <strong className="text-foreground">Costs & Billing</strong> and set a daily budget. When spend crosses the threshold you'll get notified via whichever channels are enabled in <strong className="text-foreground">Settings → Notifications</strong>.
+          Go to <strong className="text-foreground">Costs &amp; Billing</strong> and set a daily budget. When spend crosses the threshold you&apos;ll get notified via whichever channels are enabled in <strong className="text-foreground">Settings → Notifications</strong>.
         </Step>
         <Step n={5} title="Invite your team">
           Go to <strong className="text-foreground">Team</strong> and invite members by email. Assign roles (Viewer, Member, Admin, Owner) to control who can deploy agents or kill them in an emergency.
@@ -174,9 +174,9 @@ function AIAgentsSection() {
         <p className="text-xs font-semibold text-foreground uppercase tracking-wider">How to create an agent</p>
         <Step n={1} title="Click Deploy Agent">From the Overview quick actions or navigate to AI Agents and click the + button in the top right.</Step>
         <Step n={2} title="Choose a model">Select from Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro, or any other configured provider. Cheaper models like Claude Haiku are good for high-volume, simple tasks.</Step>
-        <Step n={3} title="Write the system prompt">Describe what the agent should do. Be specific: "Review every new pull request for security vulnerabilities and post a comment with findings."</Step>
+        <Step n={3} title="Write the system prompt">Describe what the agent should do. Be specific: &ldquo;Review every new pull request for security vulnerabilities and post a comment with findings.&rdquo;</Step>
         <Step n={4} title="Set triggers and schedule">Agents can run on a schedule (cron), on webhook events (GitHub PR opened), or manually on demand.</Step>
-        <Step n={5} title="Set a cost cap">Optional but recommended. Set a per-run token limit or daily spend cap so a runaway agent can't drain your budget.</Step>
+        <Step n={5} title="Set a cost cap">Optional but recommended. Set a per-run token limit or daily spend cap so a runaway agent can&apos;t drain your budget.</Step>
       </div>
       <Callout icon={Lightbulb} color="#F59E0B" title="Run Eval">
         Before running an agent in production, use <strong className="text-foreground">Run Eval</strong> (Overview quick actions) to test it against a sample input and see the output, token count, and cost before it matters.
@@ -189,7 +189,7 @@ function WorkflowsSection() {
   return (
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground leading-relaxed">
-        Workflows chain multiple agents together into a pipeline. The output of one agent feeds as input to the next — enabling complex automations like "analyse PR → write tests → run tests → comment results".
+        Workflows chain multiple agents together into a pipeline. The output of one agent feeds as input to the next — enabling complex automations like &ldquo;analyse PR → write tests → run tests → comment results&rdquo;.
       </p>
       <div className="space-y-3">
         <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Workflow anatomy</p>
@@ -206,7 +206,7 @@ function WorkflowsSection() {
           <p><span className="text-[#00D4FF]">Step 1</span> — SecurityScanner: analyse diff for vulnerabilities</p>
           <p className="pl-4 text-muted-foreground/50">↓ output: {"{"} issues: [...] {"}"}</p>
           <p><span className="text-[#00D4FF]">Step 2</span> — TestWriter: write tests for changed functions</p>
-          <p className="pl-4 text-muted-foreground/50">↓ output: {"{"} tests: "..." {"}"}</p>
+          <p className="pl-4 text-muted-foreground/50">↓ output: {"{"} tests: &quot;...&quot; {"}"}</p>
           <p><span className="text-[#00D4FF]">Step 3</span> — PRCommenter: post summary as PR comment</p>
         </div>
       </div>
@@ -224,7 +224,7 @@ function DeploymentsSection() {
         The Deployments section tracks every release across all environments — production, staging, and preview. It shows who deployed what, from which branch, and the live status.
       </p>
       <div className="space-y-2">
-        <p className="text-xs font-semibold text-foreground uppercase tracking-wider">What's tracked</p>
+        <p className="text-xs font-semibold text-foreground uppercase tracking-wider">What&apos;s tracked</p>
         <div className="rounded-xl border border-border bg-card/50 divide-y divide-border/50">
           <FeatureRow icon={Rocket} label="Deployment history" desc="Every deploy with author, commit SHA, branch, target environment, and duration. Click any row for the full build log." />
           <FeatureRow icon={Activity} label="Environment health" desc="Live status of Production, Staging, and Preview environments: healthy, degraded, or down — updated in real time." />
@@ -299,7 +299,7 @@ function LogsSection() {
         </div>
       </div>
       <Callout icon={Info} color="#60A5FA" title="Debugging tip">
-        When an agent errors, jump straight to Logs and filter by that agent's name. The full exception trace and the input that caused it will be there.
+        When an agent errors, jump straight to Logs and filter by that agent&apos;s name. The full exception trace and the input that caused it will be there.
       </Callout>
     </div>
   );
@@ -321,7 +321,7 @@ function TeamSection() {
         </div>
       </div>
       <Callout icon={Lightbulb} color="#F59E0B" title="Inviting members">
-        Enter the person's email and select their role. They'll receive an email invite. If <strong className="text-foreground">ALLOW_REGISTRATION</strong> is disabled in your env, invites are the only way to access the system.
+        Enter the person&apos;s email and select their role. They&apos;ll receive an email invite. If <strong className="text-foreground">ALLOW_REGISTRATION</strong> is disabled in your env, invites are the only way to access the system.
       </Callout>
     </div>
   );
@@ -350,7 +350,7 @@ function IncidentsSection() {
         </div>
       </div>
       <Callout icon={Info} color="#60A5FA" title="Red badge in sidebar">
-        The number on the Incidents nav item shows open + investigating incidents. It turns red when any P1 is open — you can't miss it.
+        The number on the Incidents nav item shows open + investigating incidents. It turns red when any P1 is open — you can&apos;t miss it.
       </Callout>
     </div>
   );
@@ -395,14 +395,14 @@ function ProjectsSection() {
           Click <strong className="text-foreground">Add project</strong> at the bottom of the panel. Enter a name and optional description. The dashboard immediately clears to a clean, empty state for the new project.
         </Step>
         <Step n={3} title="Switch between projects">
-          Click any project name in the dropdown. All dashboard data instantly switches to that project's context — agents, costs, incidents, everything.
+          Click any project name in the dropdown. All dashboard data instantly switches to that project&apos;s context — agents, costs, incidents, everything.
         </Step>
         <Step n={4} title="Customise the project">
           Head to <strong className="text-foreground">Settings → General</strong> to add a logo URL and description for the active project. These are saved per-project and appear in the switcher dropdown.
         </Step>
       </div>
       <Callout icon={Info} color="#60A5FA" title="Where projects are stored">
-        Projects are saved to your browser's localStorage, so they persist across page refreshes. In a full deployment, projects are stored in the database and tied to your user account — accessible from any device.
+        Projects are saved to your browser&apos;s localStorage, so they persist across page refreshes. In a full deployment, projects are stored in the database and tied to your user account — accessible from any device.
       </Callout>
     </div>
   );
@@ -445,7 +445,7 @@ function ShortcutsSection() {
         ))}
       </div>
       <Callout icon={Lightbulb} color="#F59E0B" title="g + key navigation">
-        The <Kbd>g</Kbd> key is a leader key. Press and hold, then press the second key within 800ms. When you press <Kbd>g</Kbd> you'll see shortcut hints appear next to each nav item.
+        The <Kbd>g</Kbd> key is a leader key. Press and hold, then press the second key within 800ms. When you press <Kbd>g</Kbd> you&apos;ll see shortcut hints appear next to each nav item.
       </Callout>
     </div>
   );

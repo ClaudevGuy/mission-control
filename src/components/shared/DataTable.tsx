@@ -117,6 +117,7 @@ export function DataTable<T extends Record<string, any>>({
 
   return (
     <div>
+      <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
@@ -204,6 +205,7 @@ export function DataTable<T extends Record<string, any>>({
           )}
         </TableBody>
       </Table>
+      </div>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-2 pt-4">

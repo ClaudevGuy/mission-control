@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, ChevronRight, Search, User, Sun, Moon } from "lucide-react";
+import { Bell, ChevronRight, Search, User, Sun, Moon, Menu } from "lucide-react";
 import { useUIStore } from "@/stores/ui-store";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -31,26 +31,39 @@ function useBreadcrumbs() {
 export function Topbar() {
   const breadcrumbs = useBreadcrumbs();
   const router = useRouter();
-  const { toggleCommandPalette } = useUIStore();
+  const { toggleCommandPalette, setMobileSidebarOpen } = useUIStore();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b px-6 backdrop-blur-xl transition-colors duration-200" style={{ background: "var(--topbar-bg)", borderColor: "var(--border-subtle)" }}>
+    <header
+      className="sticky top-0 z-40 flex h-14 items-center gap-2 border-b px-3 md:px-6 backdrop-blur-xl transition-colors duration-200"
+      style={{ background: "var(--topbar-bg)", borderColor: "var(--border-subtle)" }}
+    >
+      {/* Mobile: hamburger */}
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className="md:hidden text-muted-foreground hover:text-foreground shrink-0"
+        onClick={() => setMobileSidebarOpen(true)}
+      >
+        <Menu className="size-5" />
+      </Button>
+
       {/* Left: Breadcrumbs */}
-      <nav className="flex items-center gap-1 text-sm">
+      <nav className="flex items-center gap-1 text-sm min-w-0 flex-1 md:flex-none">
         {breadcrumbs.map((crumb, i) => (
-          <span key={crumb.href} className="flex items-center gap-1">
+          <span key={crumb.href} className="flex items-center gap-1 min-w-0">
             {i > 0 && (
-              <ChevronRight className="size-3 text-muted-foreground/30" />
+              <ChevronRight className="hidden sm:block size-3 text-muted-foreground/30 shrink-0" />
             )}
             <span
               className={cn(
-                "font-medium",
+                "font-medium truncate",
                 crumb.isLast
                   ? "text-foreground"
-                  : "text-muted-foreground"
+                  : "text-muted-foreground hidden sm:block"
               )}
             >
               {crumb.label}
@@ -59,8 +72,8 @@ export function Topbar() {
         ))}
       </nav>
 
-      {/* Center: Search */}
-      <div className="mx-auto">
+      {/* Center: Search — desktop only */}
+      <div className="mx-auto hidden md:block">
         <button
           onClick={toggleCommandPalette}
           className="flex h-8 w-64 items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 text-sm text-muted-foreground/50 transition-colors hover:border-border hover:text-muted-foreground"
@@ -74,7 +87,17 @@ export function Topbar() {
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 md:gap-2 ml-auto">
+        {/* Mobile: search icon */}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="md:hidden text-muted-foreground hover:text-foreground"
+          onClick={toggleCommandPalette}
+        >
+          <Search className="size-4" />
+        </Button>
+
         {/* Theme Toggle */}
         <Button
           variant="ghost"

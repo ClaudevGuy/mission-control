@@ -22,29 +22,25 @@ function useNavBadges() {
   return { "/incidents": openIncidents };
 }
 
-export function Sidebar() {
+interface SidebarContentProps {
+  collapsed?: boolean;
+}
+
+export function SidebarContent({ collapsed = false }: SidebarContentProps) {
   const pathname = usePathname();
-  const collapsed = useUIStore((s) => s.sidebarCollapsed);
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
   const gKeyActive = useUIStore((s) => s.gKeyActive);
   const badges = useNavBadges();
 
   return (
-    <aside
-      className={cn(
-        "relative flex h-screen flex-col overflow-hidden select-none shrink-0",
-        "transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
-        collapsed ? "w-[60px]" : "w-[220px]"
-      )}
-      style={{ background: "var(--sidebar-bg)" }}
-    >
+    <>
       {/* Right border */}
       <div className="absolute right-0 top-0 bottom-0 w-px bg-border/50 z-20" />
 
       {/* Top ambient glow */}
       <div className="pointer-events-none absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-[#00D4FF]/[0.04] to-transparent z-0" />
 
-      {/* ── Logo (static brand) ─────────────────────────────────── */}
+      {/* ── Logo ─────────────────────────────────── */}
       <div
         className={cn(
           "relative z-20 flex h-[54px] shrink-0 items-center border-b border-border/40",
@@ -70,16 +66,11 @@ export function Sidebar() {
         )}
       </div>
 
-      {/* ── Navigation ────────────────────────────────────────────── */}
+      {/* ── Navigation ────────────────────────────── */}
       <nav className="relative z-20 flex-1 overflow-y-auto overflow-x-hidden px-2 py-3 space-y-0.5">
-
-        {/* Project switcher — first nav item */}
         <ProjectSwitcher collapsed={collapsed} />
-
-        {/* Divider below project switcher */}
         <div className={cn("my-2 h-px bg-border/25", collapsed ? "mx-1" : "mx-0.5")} />
 
-        {/* Nav groups */}
         {NAV_GROUPS.map((group, gi) => (
           <div key={gi}>
             <div className="space-y-[2px]">
@@ -107,7 +98,6 @@ export function Sidebar() {
                         : "text-muted-foreground/70 hover:text-foreground/90 font-normal"
                     )}
                   >
-                    {/* Active background */}
                     {isActive && (
                       <div
                         className={cn(
@@ -118,24 +108,15 @@ export function Sidebar() {
                         )}
                       />
                     )}
-
-                    {/* Hover background */}
                     {!isActive && (
                       <div className="absolute inset-0 rounded-lg bg-transparent group-hover:bg-white/[0.035] transition-colors duration-100" />
                     )}
-
-                    {/* Active left indicator */}
                     {isActive && !collapsed && (
                       <div
                         className="absolute left-0 top-[5px] bottom-[5px] w-[2px] rounded-r-full bg-[#00D4FF]"
-                        style={{
-                          boxShadow:
-                            "0 0 8px rgba(0,212,255,0.7), 0 0 2px rgba(0,212,255,1)",
-                        }}
+                        style={{ boxShadow: "0 0 8px rgba(0,212,255,0.7), 0 0 2px rgba(0,212,255,1)" }}
                       />
                     )}
-
-                    {/* Icon */}
                     <div className="relative z-10 shrink-0">
                       <Icon
                         className={cn(
@@ -153,15 +134,11 @@ export function Sidebar() {
                         </span>
                       )}
                     </div>
-
-                    {/* Label */}
                     {!collapsed && (
                       <span className="relative z-10 flex-1 truncate leading-none">
                         {item.label}
                       </span>
                     )}
-
-                    {/* g-key shortcut hint */}
                     {!collapsed && gKeyActive && item.shortcut && (
                       <span
                         className={cn(
@@ -178,8 +155,6 @@ export function Sidebar() {
                 );
               })}
             </div>
-
-            {/* Divider between groups */}
             {gi < NAV_GROUPS.length - 1 && (
               <div className={cn("my-2.5 h-px bg-border/25", collapsed ? "mx-1" : "mx-0.5")} />
             )}
@@ -187,7 +162,7 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* ── Bottom ────────────────────────────────────────────────── */}
+      {/* ── Bottom collapse button (desktop only) ── */}
       <div className="relative z-20 shrink-0 border-t border-border/40 px-2 py-2.5">
         <button
           onClick={toggleSidebar}
@@ -208,6 +183,23 @@ export function Sidebar() {
           {!collapsed && <span>Collapse</span>}
         </button>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  const collapsed = useUIStore((s) => s.sidebarCollapsed);
+
+  return (
+    <aside
+      className={cn(
+        "relative hidden md:flex h-screen flex-col overflow-hidden select-none shrink-0",
+        "transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
+        collapsed ? "w-[60px]" : "w-[220px]"
+      )}
+      style={{ background: "var(--sidebar-bg)" }}
+    >
+      <SidebarContent collapsed={collapsed} />
     </aside>
   );
 }

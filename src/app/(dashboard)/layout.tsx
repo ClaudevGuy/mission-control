@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileSidebar } from "@/components/layout/MobileSidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { KeyboardShortcuts } from "@/components/layout/KeyboardShortcuts";
@@ -103,12 +104,13 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-background transition-colors duration-200">
       <Sidebar />
+      <MobileSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
         <main className="relative flex-1 overflow-y-auto">
           {/* Ambient background */}
           <div className="pointer-events-none absolute inset-0 bg-ambient" />
-          <div className="relative z-10 p-6">{children}</div>
+          <div className="relative z-10 p-4 md:p-6">{children}</div>
         </main>
       </div>
       <CommandPalette />
