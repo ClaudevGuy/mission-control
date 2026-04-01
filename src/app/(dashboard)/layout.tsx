@@ -105,8 +105,8 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
         <main className="relative flex-1 overflow-y-auto">
-          {/* Grid overlay background */}
-          <div className="pointer-events-none absolute inset-0 dot-grid" />
+          {/* Ambient background */}
+          <div className="pointer-events-none absolute inset-0 bg-ambient" />
           <div className="relative z-10 p-6">{children}</div>
         </main>
       </div>
