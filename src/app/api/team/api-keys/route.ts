@@ -9,6 +9,7 @@ import {
   parsePagination,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
 import { z } from "zod";
 import crypto from "crypto";
 
@@ -75,6 +76,15 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       scopes: body.scopes,
       createdById: user.id,
     },
+  });
+
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "api_key.create",
+    target: body.name,
+    details: `Created API key "${body.name}" with scopes: ${body.scopes.join(", ") || "all"}`,
   });
 
   // Return plaintext key only once

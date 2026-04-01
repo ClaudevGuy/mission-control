@@ -10,6 +10,8 @@ import {
   ApiError,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
+import { deliverWebhook } from "@/lib/webhooks";
 import { z } from "zod";
 
 const updateDeploymentSchema = z.object({
@@ -41,7 +43,7 @@ export const GET = withErrorHandler(
 
 export const PATCH = withErrorHandler(
   async (request: NextRequest, context?: { params: Record<string, string> }) => {
-    await requireRole("developer");
+    const user = await requireRole("developer");
     const projectId = await getProjectId();
     const id = context?.params?.id;
 
@@ -62,6 +64,24 @@ export const PATCH = withErrorHandler(
         ...(body.duration !== undefined && { duration: body.duration }),
       },
     });
+
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "deployment.update",
+      target: `${existing.service} ${existing.version}`,
+      details: `Updated deployment ${existing.service} v${existing.version}${body.status ? ` status to ${body.status}` : ""}`,
+    });
+
+    // Fire webhook if deployment completed
+    if (body.status === "SUCCESS" || body.status === "FAILED") {
+      deliverWebhook({
+        projectId,
+        event: "deployment.completed",
+        payload: deployment,
+      }).catch(() => {});
+    }
 
     return apiResponse(deployment);
   }

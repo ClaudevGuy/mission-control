@@ -8,12 +8,13 @@ import {
   apiError,
   ApiError,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
 
 // ── DELETE /api/team/api-keys/[id] ──
 
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context?: { params: Record<string, string> }) => {
-    await requireRole("admin");
+    const user = await requireRole("admin");
     const projectId = await getProjectId();
     const id = context?.params?.id;
 
@@ -28,6 +29,15 @@ export const DELETE = withErrorHandler(
     await prisma.apiKey.update({
       where: { id },
       data: { status: "revoked", revokedAt: new Date() },
+    });
+
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "api_key.revoke",
+      target: existing.name,
+      details: `Revoked API key "${existing.name}" (${existing.prefix}...)`,
     });
 
     return apiResponse({ success: true, id });

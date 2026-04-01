@@ -9,6 +9,7 @@ import {
   ApiError,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
 import { z } from "zod";
 
 const updateFeatureFlagSchema = z.object({
@@ -21,7 +22,7 @@ const updateFeatureFlagSchema = z.object({
 
 export const PATCH = withErrorHandler(
   async (request: NextRequest, context?: { params: Record<string, string> }) => {
-    await requireRole("developer");
+    const user = await requireRole("developer");
     const projectId = await getProjectId();
     const id = context?.params?.id;
 
@@ -42,6 +43,15 @@ export const PATCH = withErrorHandler(
         ...(body.description !== undefined && { description: body.description }),
         ...(body.environments !== undefined && { environments: body.environments }),
       },
+    });
+
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "feature_flag.toggle",
+      target: flag.name,
+      details: `Updated feature flag "${flag.name}"`,
     });
 
     return apiResponse(flag);

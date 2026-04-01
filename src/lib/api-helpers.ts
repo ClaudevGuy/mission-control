@@ -1,9 +1,10 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { prisma } from "@/lib/prisma";
+import { authenticateApiKey } from "@/lib/api-key-auth";
 import { ZodSchema, ZodError } from "zod";
+import { headers } from "next/headers";
 
 // ── Types ──
 
@@ -21,12 +22,43 @@ export async function getSession() {
   return getServerSession(authOptions);
 }
 
-export async function requireAuth() {
+export async function requireAuth(): Promise<SessionUser> {
+  // First try session-based auth
   const session = await getSession();
-  if (!session?.user) {
-    throw new ApiError("Unauthorized", 401);
+  if (session?.user) {
+    return session.user as SessionUser;
   }
-  return session.user as SessionUser;
+
+  // Fall back to API key auth
+  const headersList = await headers();
+  const authHeader = headersList.get("authorization");
+  if (authHeader?.startsWith("Bearer mc_")) {
+    const fakeRequest = { headers: { get: (name: string) => name === "authorization" ? authHeader : null } } as unknown as NextRequest;
+    const apiKeyAuth = await authenticateApiKey(fakeRequest);
+    if (apiKeyAuth) {
+      // Look up user details for the API key owner
+      const user = await prisma.user.findUnique({
+        where: { id: apiKeyAuth.userId },
+        include: {
+          projectMembers: {
+            where: { projectId: apiKeyAuth.projectId },
+            take: 1,
+          },
+        },
+      });
+      if (user) {
+        return {
+          id: user.id,
+          email: user.email || "",
+          name: user.name || "",
+          role: user.projectMembers[0]?.role?.toLowerCase() || "viewer",
+          activeProjectId: apiKeyAuth.projectId,
+        };
+      }
+    }
+  }
+
+  throw new ApiError("Unauthorized", 401);
 }
 
 export async function requireRole(minimumRole: "viewer" | "developer" | "agent_manager" | "admin") {

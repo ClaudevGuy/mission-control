@@ -9,6 +9,7 @@ import {
   ApiError,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
 import { z } from "zod";
 
 const updateSettingsSchema = z.object({
@@ -46,7 +47,7 @@ export const GET = withErrorHandler(async (_request: NextRequest) => {
 // ── PATCH /api/settings ──
 
 export const PATCH = withErrorHandler(async (request: NextRequest) => {
-  await requireRole("admin");
+  const user = await requireRole("admin");
   const projectId = await getProjectId();
   const body = await validateBody(request, updateSettingsSchema);
 
@@ -59,6 +60,16 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(body.settings !== undefined && { settings: body.settings as any }),
     },
+  });
+
+  const changedFields = Object.keys(body).filter((k) => body[k as keyof typeof body] !== undefined);
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "settings.update",
+    target: project.name,
+    details: `Updated project settings: ${changedFields.join(", ")}`,
   });
 
   return apiResponse(project);

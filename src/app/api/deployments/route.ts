@@ -9,6 +9,8 @@ import {
   parsePagination,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
+import { deliverWebhook } from "@/lib/webhooks";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -62,7 +64,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 // ── POST /api/deployments ──
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireRole("developer");
+  const user = await requireRole("developer");
   const projectId = await getProjectId();
   const body = await validateBody(request, createDeploymentSchema);
 
@@ -81,6 +83,22 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       environment: body.environment as never,
     },
   });
+
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "deployment.create",
+    target: `${body.service} ${body.version}`,
+    details: `Created deployment for ${body.service} v${body.version} (${body.environment})`,
+  });
+
+  // Fire webhook for deployment created
+  deliverWebhook({
+    projectId,
+    event: "deployment.created",
+    payload: deployment,
+  }).catch(() => {});
 
   return apiResponse(deployment, 201);
 });

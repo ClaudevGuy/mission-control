@@ -10,6 +10,8 @@ import {
   ApiError,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
+import { deliverWebhook } from "@/lib/webhooks";
 import { z } from "zod";
 
 const updateIncidentSchema = z.object({
@@ -47,7 +49,7 @@ export const GET = withErrorHandler(
 
 export const PATCH = withErrorHandler(
   async (request: NextRequest, context?: { params: Record<string, string> }) => {
-    await requireRole("developer");
+    const user = await requireRole("developer");
     const projectId = await getProjectId();
     const id = context?.params?.id;
 
@@ -74,6 +76,24 @@ export const PATCH = withErrorHandler(
         assignee: { select: { id: true, name: true, email: true } },
       },
     });
+
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "incident.update",
+      target: incident.title || existing.title,
+      details: `Updated incident "${existing.title}"${body.status ? ` status to ${body.status}` : ""}`,
+    });
+
+    // Fire webhook if incident resolved
+    if (body.status === "RESOLVED") {
+      deliverWebhook({
+        projectId,
+        event: "incident.resolved",
+        payload: incident,
+      }).catch(() => {});
+    }
 
     return apiResponse(incident);
   }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useLogsStore } from "@/stores/logs-store";
+import { useLogStream } from "@/lib/hooks/use-log-stream";
 import {
   PageHeader,
   LiveIndicator,
@@ -42,6 +43,19 @@ export default function LogsPage() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchLogs(); }, []);
+
+  // Live log stream via SSE
+  const { entries: streamEntries } = useLogStream(isLive);
+
+  // Merge streamed entries into the store
+  useEffect(() => {
+    if (streamEntries.length > 0) {
+      const store = useLogsStore.getState();
+      for (const entry of streamEntries) {
+        store.addLog(entry);
+      }
+    }
+  }, [streamEntries]);
 
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
   const [expandedError, setExpandedError] = useState<string | null>(null);

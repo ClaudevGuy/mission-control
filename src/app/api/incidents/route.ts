@@ -9,6 +9,8 @@ import {
   parsePagination,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
+import { deliverWebhook } from "@/lib/webhooks";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
@@ -58,7 +60,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 // ── POST /api/incidents ──
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireRole("developer");
+  const user = await requireRole("developer");
   const projectId = await getProjectId();
   const body = await validateBody(request, createIncidentSchema);
 
@@ -76,6 +78,22 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       assignee: { select: { id: true, name: true, email: true } },
     },
   });
+
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "incident.create",
+    target: incident.title,
+    details: `Created ${body.severity} incident: "${incident.title}"`,
+  });
+
+  // Fire webhook for incident created
+  deliverWebhook({
+    projectId,
+    event: "incident.created",
+    payload: incident,
+  }).catch(() => {});
 
   return apiResponse(incident, 201);
 });

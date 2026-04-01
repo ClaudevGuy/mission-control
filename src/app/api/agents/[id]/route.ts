@@ -11,6 +11,7 @@ import {
   validateBody,
 } from "@/lib/api-helpers";
 import { updateAgentSchema } from "@/lib/validations/agents";
+import { logAuditEvent } from "@/lib/audit";
 
 // ── GET /api/agents/[id] ──
 
@@ -47,7 +48,7 @@ export const GET = withErrorHandler(
 
 export const PATCH = withErrorHandler(
   async (request: NextRequest, context?: { params: Record<string, string> }) => {
-    await requireRole("developer");
+    const user = await requireRole("developer");
     const projectId = await getProjectId();
     const id = context?.params?.id;
 
@@ -84,6 +85,15 @@ export const PATCH = withErrorHandler(
       },
     });
 
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "agent.update",
+      target: agent.name,
+      details: `Updated agent "${agent.name}"`,
+    });
+
     return apiResponse(agent);
   }
 );
@@ -92,7 +102,7 @@ export const PATCH = withErrorHandler(
 
 export const DELETE = withErrorHandler(
   async (request: NextRequest, context?: { params: Record<string, string> }) => {
-    await requireRole("admin");
+    const user = await requireRole("admin");
     const projectId = await getProjectId();
     const id = context?.params?.id;
 
@@ -111,6 +121,15 @@ export const DELETE = withErrorHandler(
 
     // Hard delete (cascades to tools, runs, evals via schema)
     await prisma.agent.delete({ where: { id } });
+
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "agent.delete",
+      target: existing.name,
+      details: `Deleted agent "${existing.name}"`,
+    });
 
     return apiResponse({ success: true, id });
   }

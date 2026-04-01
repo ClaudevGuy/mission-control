@@ -12,6 +12,7 @@ import {
   validateBody,
 } from "@/lib/api-helpers";
 import { createRunSchema } from "@/lib/validations/agents";
+import { deliverWebhook } from "@/lib/webhooks";
 
 // ── GET /api/agents/[id]/runs ──
 
@@ -96,6 +97,13 @@ export const POST = withErrorHandler(
         output: "Run initiated. Awaiting execution...",
       },
     });
+
+    // Fire webhook for agent run (future: fire on completion, not creation)
+    deliverWebhook({
+      projectId,
+      event: "agent.run.completed",
+      payload: { agentId, run },
+    }).catch(() => {});
 
     return apiResponse(run, 201);
   }

@@ -8,6 +8,7 @@ import {
   apiError,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -21,7 +22,7 @@ const inviteSchema = z.object({
 // ── POST /api/team/invite ──
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
-  await requireRole("admin");
+  const user = await requireRole("admin");
   const projectId = await getProjectId();
   const body = await validateBody(request, inviteSchema);
 
@@ -46,6 +47,15 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       include: { user: { select: { id: true, name: true, email: true } } },
     });
 
+    await logAuditEvent({
+      projectId,
+      userId: user.id,
+      userName: user.name,
+      action: "team.invite",
+      target: body.email,
+      details: `Invited existing user ${body.email} with role ${body.role}`,
+    });
+
     return apiResponse(member, 201);
   }
 
@@ -53,7 +63,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
   const tempPassword = crypto.randomBytes(16).toString("hex");
   const passwordHash = await bcrypt.hash(tempPassword, 12);
 
-  const user = await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       email: body.email,
       name: body.name,
@@ -65,5 +75,14 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     select: { id: true, name: true, email: true },
   });
 
-  return apiResponse({ user, tempPassword }, 201);
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "team.invite",
+    target: body.email,
+    details: `Invited new user ${body.name} (${body.email}) with role ${body.role}`,
+  });
+
+  return apiResponse({ user: newUser, tempPassword }, 201);
 });

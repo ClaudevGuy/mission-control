@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useIntegrationsStore } from "@/stores/integrations-store";
 import { PageHeader, GlassPanel } from "@/components/shared";
 import { Switch } from "@/components/ui/switch";
+import { ConnectModal } from "@/components/integrations/ConnectModal";
 import {
   Search, GitBranch, MessageSquare, Cloud, Cpu, Brain, BarChart3, AlertTriangle as SentryIcon,
   CreditCard, Webhook, Plus, Bug, Boxes, Zap,
@@ -60,10 +61,14 @@ function formatTimeShort(ts: string) {
 export default function IntegrationsPage() {
   const { integrations, webhooks, fetch: fetchIntegrations } = useIntegrationsStore();
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("All");
+
+  // Connect modal state
+  const [connectModalOpen, setConnectModalOpen] = useState(false);
+  const [connectTarget, setConnectTarget] = useState<{ name: string; icon: string } | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchIntegrations(); }, []);
-  const [filter, setFilter] = useState("All");
 
   // Add PostHog as error state
   const allIntegrations: (Integration & { effectiveStatus?: IntStatus })[] = [
@@ -82,6 +87,24 @@ export default function IntegrationsPage() {
     if (filter !== "All") return CATEGORY_MAP[i.category] === filter;
     return true;
   });
+
+  const handleConnect = (name: string, icon: string) => {
+    setConnectTarget({ name, icon });
+    setConnectModalOpen(true);
+  };
+
+  const handleDisconnect = async (integ: Integration) => {
+    try {
+      const res = await fetch(`/api/integrations/${integ.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to disconnect");
+      toast.success(`${integ.name} disconnected`);
+      fetchIntegrations();
+    } catch {
+      toast.error(`Failed to disconnect ${integ.name}`);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -185,17 +208,26 @@ export default function IntegrationsPage() {
               {/* Bottom */}
               <div className="flex justify-end mt-1">
                 {isConnected && (
-                  <button className="text-[10px] text-muted-foreground hover:text-red-400 transition-colors" onClick={() => toast.success(`${integ.name} disconnected`)}>
+                  <button
+                    className="text-[10px] text-muted-foreground hover:text-red-400 transition-colors"
+                    onClick={() => handleDisconnect(integ)}
+                  >
                     Disconnect
                   </button>
                 )}
                 {integ.status === "disconnected" && (
-                  <button className="text-[10px] font-medium text-primary-foreground bg-[#00D4FF] rounded px-3 py-1 hover:bg-[#00D4FF]/80 transition-colors" onClick={() => toast.success(`${integ.name} connected`)}>
+                  <button
+                    className="text-[10px] font-medium text-primary-foreground bg-[#00D4FF] rounded px-3 py-1 hover:bg-[#00D4FF]/80 transition-colors"
+                    onClick={() => handleConnect(integ.name, integ.icon)}
+                  >
                     Connect
                   </button>
                 )}
                 {isError && (
-                  <button className="text-[10px] font-medium text-amber-400 bg-amber-400/10 rounded px-3 py-1 hover:bg-amber-400/20 transition-colors" onClick={() => toast.success(`${integ.name} reconnecting...`)}>
+                  <button
+                    className="text-[10px] font-medium text-amber-400 bg-amber-400/10 rounded px-3 py-1 hover:bg-amber-400/20 transition-colors"
+                    onClick={() => handleConnect(integ.name, integ.icon)}
+                  >
                     Reconnect
                   </button>
                 )}
@@ -267,6 +299,20 @@ export default function IntegrationsPage() {
           </table>
         </GlassPanel>
       </div>
+
+      {/* Connect Modal */}
+      {connectTarget && (
+        <ConnectModal
+          integrationName={connectTarget.name}
+          integrationIcon={connectTarget.icon}
+          isOpen={connectModalOpen}
+          onClose={() => {
+            setConnectModalOpen(false);
+            setConnectTarget(null);
+          }}
+          onConnected={() => fetchIntegrations()}
+        />
+      )}
     </div>
   );
 }

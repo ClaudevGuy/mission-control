@@ -10,6 +10,7 @@ import {
   parsePagination,
   validateBody,
 } from "@/lib/api-helpers";
+import { logAuditEvent } from "@/lib/audit";
 import { z } from "zod";
 
 const updateMemberRoleSchema = z.object({
@@ -58,7 +59,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 // ── PATCH /api/team/members ──
 
 export const PATCH = withErrorHandler(async (request: NextRequest) => {
-  await requireRole("admin");
+  const user = await requireRole("admin");
   const projectId = await getProjectId();
   const body = await validateBody(request, updateMemberRoleSchema);
 
@@ -78,6 +79,15 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
         select: { id: true, name: true, email: true, image: true },
       },
     },
+  });
+
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "team.update_role",
+    target: member.user?.email || body.userId,
+    details: `Changed role for ${member.user?.name || body.userId} to ${body.role}`,
   });
 
   return apiResponse(member);

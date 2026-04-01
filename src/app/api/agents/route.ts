@@ -10,6 +10,7 @@ import {
   validateBody,
 } from "@/lib/api-helpers";
 import { createAgentSchema } from "@/lib/validations/agents";
+import { logAuditEvent } from "@/lib/audit";
 import { Prisma } from "@prisma/client";
 
 // ── GET /api/agents ──
@@ -98,6 +99,15 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
     include: {
       tools: true,
     },
+  });
+
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "agent.create",
+    target: agent.name,
+    details: `Created agent "${agent.name}" (model: ${body.model})`,
   });
 
   return apiResponse(agent, 201);
