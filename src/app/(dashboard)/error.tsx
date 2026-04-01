@@ -25,7 +25,7 @@ export default function DashboardError({
       <div className="max-w-sm">
         <h2 className="text-lg font-semibold text-foreground">Page crashed</h2>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          {error.message || "An unexpected error occurred on this page."}
+          An unexpected error occurred on this page.
         </p>
         {error.digest && (
           <p className="mt-2 font-mono text-xs text-muted-foreground/50">
