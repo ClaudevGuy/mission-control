@@ -6,10 +6,10 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Download, Trash2, Pause, RotateCcw, ShieldX, CreditCard } from "lucide-react";
+import { Download, Trash2, Pause, RotateCcw, ShieldX, CreditCard, Puzzle } from "lucide-react";
 import { useSettingsStore } from "@/stores/settings-store";
 
-const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Billing", "Danger Zone"];
+const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Billing", "Integrations", "Danger Zone"];
 
 const NOTIF_EVENTS = [
   { name: "P1 Incident", app: true, email: true, slack: true },
@@ -259,6 +259,75 @@ export default function SettingsPage() {
                   <button className="ml-auto text-xs text-foreground bg-muted/50 rounded-lg px-3 py-1.5 hover:bg-muted" onClick={() => toast.success("Payment method update initiated")}>Update Card</button>
                 </div>
               </GlassPanel>
+            </div>
+          )}
+
+          {/* ─── INTEGRATIONS ─── */}
+          {section === "Integrations" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-base font-semibold text-foreground">Integrations</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Connect external services to enhance your project&apos;s capabilities.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  {
+                    name: "GitHub",
+                    desc: "Sync repositories, pull requests, and CI status",
+                    connected: true,
+                  },
+                  {
+                    name: "Slack",
+                    desc: "Send incident alerts and agent notifications",
+                    connected: true,
+                  },
+                  {
+                    name: "PagerDuty",
+                    desc: "On-call escalation and incident management",
+                    connected: false,
+                  },
+                  {
+                    name: "Linear",
+                    desc: "Auto-create issues from agent findings",
+                    connected: false,
+                  },
+                  {
+                    name: "Datadog",
+                    desc: "Forward metrics, traces, and logs",
+                    connected: false,
+                  },
+                ].map((integration) => (
+                  <div
+                    key={integration.name}
+                    className="flex items-center justify-between rounded-lg border border-border bg-card/50 px-4 py-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="size-8 rounded-md bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                        {integration.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{integration.name}</p>
+                        <p className="text-xs text-muted-foreground">{integration.desc}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-xs font-medium ${
+                          integration.connected ? "text-green-400" : "text-muted-foreground"
+                        }`}
+                      >
+                        {integration.connected ? "Connected" : "Not connected"}
+                      </span>
+                      <button className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
+                        {integration.connected ? "Configure" : "Connect"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
