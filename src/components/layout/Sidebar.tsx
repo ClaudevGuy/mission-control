@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronsLeft, Zap } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 import { NAV_ITEMS } from "@/lib/constants";
 import { useUIStore } from "@/stores/ui-store";
 import { useIncidentsStore } from "@/stores/incidents-store";
-import { useSettingsStore } from "@/stores/settings-store";
+import { ProjectSwitcher } from "./ProjectSwitcher";
 import { cn } from "@/lib/utils";
 
 // Split nav into logical groups: Core ops | Observability | Admin
@@ -28,8 +28,6 @@ export function Sidebar() {
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
   const gKeyActive = useUIStore((s) => s.gKeyActive);
   const badges = useNavBadges();
-  const projectName = useSettingsStore((s) => s.projectName);
-  const projectLogo = useSettingsStore((s) => s.projectLogo);
 
   return (
     <aside
@@ -47,42 +45,8 @@ export function Sidebar() {
       <div className="pointer-events-none absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-[#00D4FF]/[0.04] to-transparent z-0" />
 
       {/* ── Logo / Brand ─────────────────────────────────────────── */}
-      <div
-        className={cn(
-          "relative z-20 flex h-[58px] shrink-0 items-center border-b border-border/40",
-          collapsed ? "justify-center" : "gap-2.5 px-4"
-        )}
-      >
-        {/* Logo icon */}
-        <div className="relative flex size-[30px] shrink-0 items-center justify-center">
-          {projectLogo ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={projectLogo}
-              alt="Logo"
-              className="size-[30px] rounded-lg object-cover"
-            />
-          ) : (
-            <>
-              <div className="absolute inset-0 rounded-lg bg-[#00D4FF]/[0.12] border border-[#00D4FF]/20" />
-              <Zap
-                className="relative z-10 size-[14px] text-[#00D4FF]"
-                strokeWidth={2.5}
-                fill="rgba(0,212,255,0.2)"
-              />
-              <div
-                className="absolute inset-0 rounded-lg pointer-events-none"
-                style={{ boxShadow: "0 0 14px rgba(0,212,255,0.18)" }}
-              />
-            </>
-          )}
-        </div>
-
-        {!collapsed && (
-          <span className="font-heading text-[13px] font-bold uppercase tracking-[0.13em] text-foreground/90 whitespace-nowrap truncate leading-none">
-            {projectName || "Mission Control"}
-          </span>
-        )}
+      <div className="relative z-20">
+        <ProjectSwitcher collapsed={collapsed} />
       </div>
 
       {/* ── Navigation ────────────────────────────────────────────── */}
