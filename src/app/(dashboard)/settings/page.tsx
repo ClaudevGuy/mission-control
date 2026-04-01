@@ -55,6 +55,8 @@ export default function SettingsPage() {
   const projectDescription = useSettingsStore((s) => s.projectDescription);
   const storeSetProjectName = useSettingsStore((s) => s.setProjectName);
   const storeSetProjectDescription = useSettingsStore((s) => s.setProjectDescription);
+  const projectLogo = useSettingsStore((s) => s.projectLogo);
+  const storeSetProjectLogo = useSettingsStore((s) => s.setProjectLogo);
   const fetchSettings = useSettingsStore((s) => s.fetch);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,6 +97,27 @@ export default function SettingsPage() {
               <div className="space-y-4 max-w-lg">
                 <div><label className="text-xs text-muted-foreground block mb-1">Project Name</label><input value={projectName} onChange={(e) => storeSetProjectName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-[#00D4FF]/50" /></div>
                 <div><label className="text-xs text-muted-foreground block mb-1">Description</label><textarea value={projectDescription} onChange={(e) => storeSetProjectDescription(e.target.value)} rows={3} className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground outline-none resize-none focus:border-[#00D4FF]/50" /></div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Logo URL</label>
+                  <div className="flex items-center gap-3">
+                    {/* Preview */}
+                    <div className="relative shrink-0 size-9 rounded-lg border border-border bg-muted/30 overflow-hidden flex items-center justify-center">
+                      {projectLogo ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={projectLogo} alt="Logo preview" className="size-full object-cover" />
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground/40 font-mono">URL</span>
+                      )}
+                    </div>
+                    <input
+                      value={projectLogo}
+                      onChange={(e) => storeSetProjectLogo(e.target.value)}
+                      placeholder="https://example.com/logo.png"
+                      className="h-9 flex-1 rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-[#00D4FF]/50 placeholder:text-muted-foreground/30"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-muted-foreground/50">Appears in the sidebar. Use a square image for best results.</p>
+                </div>
                 <div><label className="text-xs text-muted-foreground block mb-1">Timezone</label>
                   <select className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none"><option>America/Los_Angeles (PST)</option><option>America/New_York (EST)</option><option>Europe/London (GMT)</option><option>UTC</option></select>
                 </div>
