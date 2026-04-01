@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTeamStore } from "@/stores/team-store";
-import { PageHeader, GlassPanel, StatusBadge, SparklineChart, ConfirmDialog } from "@/components/shared";
+import { PageHeader, GlassPanel, ConfirmDialog } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { UserPlus, ShieldCheck, ShieldX, Check, X, Copy, Key } from "lucide-react";
 import { toast } from "sonner";
@@ -39,11 +39,6 @@ const ACTION_COLORS: Record<string, string> = {
   delete: "#EF4444", revoke: "#EF4444", pause: "#F59E0B",
   resolve: "#39FF14",
 };
-
-const PENDING_INVITES = [
-  { email: "invite@startup.com", role: "developer" as TeamRole, sent: "2 days ago" },
-  { email: "dev@agency.com", role: "viewer" as TeamRole, sent: "5 days ago" },
-];
 
 const SCOPE_COLORS: Record<string, string> = {
   read: "#39FF14", write: "#00D4FF", admin: "#EF4444", agents: "#A855F7", deploy: "#F59E0B",
@@ -93,7 +88,7 @@ export default function TeamPage() {
       {tab === "members" && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">{members.length} members · 2 pending invites</span>
+            <span className="text-sm text-muted-foreground">{members.length} member{members.length !== 1 ? "s" : ""}</span>
             <Button size="default" onClick={() => toast.success("Invite sent")}>
               <UserPlus className="size-4 mr-2" /> Invite Member
             </Button>
@@ -103,29 +98,29 @@ export default function TeamPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  {["Member", "Role", "Activity (7d)", "2FA", "Agents", ""].map((h) => (
+                  {["Member", "Role", "2FA", "Agents", ""].map((h) => (
                     <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {members.map((m) => {
-                  const color = AVATAR_COLORS[m.name] || "#888";
+                  const name = m.name || m.email || "Unknown";
+                  const color = AVATAR_COLORS[name] || "#888";
                   const roleStyle = ROLE_STYLES[m.role];
-                  const isOnline = new Date().getTime() - new Date(m.lastActive).getTime() < 3600000;
-                  const loginSpark = Array.from({ length: 7 }, () => Math.round(Math.random() * 8 + 2));
+                  const isOnline = m.lastActive ? new Date().getTime() - new Date(m.lastActive).getTime() < 3600000 : false;
                   return (
                     <tr key={m.id} className="group border-b border-border/50 hover:bg-muted/30 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="relative shrink-0">
                             <div className="size-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: `${color}30`, color }}>
-                              {m.name.split(" ").map((n) => n[0]).join("")}
+                              {name.split(" ").map((n: string) => n[0]).join("")}
                             </div>
                             <span className={cn("absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-card", isOnline ? "bg-[#39FF14]" : "bg-[#555]")} />
                           </div>
                           <div>
-                            <p className="font-medium text-foreground">{m.name}</p>
+                            <p className="font-medium text-foreground">{name}</p>
                             <p className="text-[11px] text-muted-foreground">{m.email}</p>
                           </div>
                         </div>
@@ -134,9 +129,6 @@ export default function TeamPage() {
                         <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-medium" style={{ background: roleStyle.bg, border: `1px solid ${roleStyle.border}`, color: roleStyle.text }}>
                           {m.role.replace("_", " ")}
                         </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <SparklineChart data={loginSpark} color={color} width={56} height={18} />
                       </td>
                       <td className="px-4 py-3">
                         {m.twoFAEnabled ? (
@@ -155,7 +147,7 @@ export default function TeamPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button className="text-[10px] text-muted-foreground hover:text-[#00D4FF]" onClick={() => toast.success("Role editor opened")}>Edit Role</button>
-                          <button className="text-[10px] text-muted-foreground hover:text-red-400" onClick={() => setRemoveTarget(m.name)}>Remove</button>
+                          <button className="text-[10px] text-muted-foreground hover:text-red-400" onClick={() => setRemoveTarget(name)}>Remove</button>
                         </div>
                       </td>
                     </tr>
@@ -165,25 +157,6 @@ export default function TeamPage() {
             </table>
           </GlassPanel>
 
-          {/* Pending Invites */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pending Invites (2)</h3>
-            <GlassPanel padding="none">
-              {PENDING_INVITES.map((inv) => (
-                <div key={inv.email} className="flex items-center gap-4 px-4 py-3 border-b border-border/50 last:border-0">
-                  <div className="size-8 rounded-full bg-muted/40 flex items-center justify-center text-muted-foreground text-xs">?</div>
-                  <div className="flex-1">
-                    <p className="text-sm text-foreground/60 italic">{inv.email}</p>
-                    <p className="text-[10px] text-muted-foreground">Sent {inv.sent}</p>
-                  </div>
-                  <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium" style={{ background: ROLE_STYLES[inv.role].bg, border: `1px solid ${ROLE_STYLES[inv.role].border}`, color: ROLE_STYLES[inv.role].text }}>{inv.role}</span>
-                  <StatusBadge status="paused" size="sm" />
-                  <button className="text-[10px] text-[#00D4FF] hover:underline" onClick={() => toast.success("Invite resent")}>Resend</button>
-                  <button className="text-[10px] text-red-400 hover:underline" onClick={() => toast.success("Invite revoked")}>Revoke</button>
-                </div>
-              ))}
-            </GlassPanel>
-          </div>
         </div>
       )}
 
