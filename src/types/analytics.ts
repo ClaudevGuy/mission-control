@@ -1,12 +1,45 @@
-import type { TimeSeriesPoint } from "./common";
+export interface AnalyticsOverview {
+  dau: number;
+  wau: number;
+  mau: number;
+  avgSession: number;
+  bounceRate: number;
+  pagesPerSession: number;
+}
+
+export interface RetentionCohort {
+  cohortWeek: string;
+  weekIndex: number;
+  retentionRate: number;
+}
+
+export interface GeoEntry {
+  country: string;
+  users: number;
+}
+
+export interface FeatureUsageEntry {
+  feature: string;
+  usage: number;
+  trend: number;
+}
+
+export interface FunnelStep {
+  stage: string;
+  count: number;
+}
+
+export interface GrowthEntry {
+  metric: string;
+  current: number;
+  previous: number;
+}
 
 export interface AnalyticsData {
-  dau: TimeSeriesPoint[];
-  wau: TimeSeriesPoint[];
-  mau: TimeSeriesPoint[];
-  retention: number[][];
-  geoData: { country: string; users: number }[];
-  featureUsage: { feature: string; usage: number; trend: number }[];
-  conversionFunnel: { stage: string; count: number }[];
-  growthMetrics: { metric: string; current: number; previous: number; data: TimeSeriesPoint[] }[];
+  overview: AnalyticsOverview;
+  retention: RetentionCohort[];
+  geo: GeoEntry[];
+  features: FeatureUsageEntry[];
+  funnel: FunnelStep[];
+  growth: GrowthEntry[];
 }

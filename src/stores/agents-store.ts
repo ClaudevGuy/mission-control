@@ -1,39 +1,66 @@
 import { create } from "zustand";
 import type { Agent, AgentRun } from "@/types/agents";
 import type { AgentStatus, ModelProvider } from "@/types/common";
-import { seedAgents } from "@/data/agents";
-import { jitter } from "@/data/generators";
 
 interface AgentsStore {
   agents: Agent[];
+  isLoading: boolean;
+  error: string | null;
   searchQuery: string;
   statusFilter: AgentStatus | "all";
   modelFilter: ModelProvider | "all";
+  fetch: () => Promise<void>;
   setSearchQuery: (query: string) => void;
   setStatusFilter: (status: AgentStatus | "all") => void;
   setModelFilter: (model: ModelProvider | "all") => void;
   updateAgentStatus: (id: string, status: AgentStatus) => void;
   addRun: (agentId: string, run: AgentRun) => void;
   getFilteredAgents: () => Agent[];
-  simulateTick: () => void;
 }
 
 export const useAgentsStore = create<AgentsStore>((set, get) => ({
-  agents: seedAgents,
+  agents: [],
+  isLoading: false,
+  error: null,
   searchQuery: "",
   statusFilter: "all",
   modelFilter: "all",
+
+  fetch: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await fetch("/api/agents");
+      if (!res.ok) throw new Error("Failed to fetch agents");
+      const { data } = await res.json();
+      set({ agents: data, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
+  },
 
   setSearchQuery: (query) => set({ searchQuery: query }),
   setStatusFilter: (status) => set({ statusFilter: status }),
   setModelFilter: (model) => set({ modelFilter: model }),
 
-  updateAgentStatus: (id, status) =>
+  updateAgentStatus: async (id, status) => {
+    // Optimistic update
     set((state) => ({
       agents: state.agents.map((a) =>
         a.id === id ? { ...a, status } : a
       ),
-    })),
+    }));
+    try {
+      const res = await fetch(`/api/agents/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error("Failed to update agent status");
+    } catch {
+      // Revert on failure by refetching
+      get().fetch();
+    }
+  },
 
   addRun: (agentId, run) =>
     set((state) => ({
@@ -58,16 +85,4 @@ export const useAgentsStore = create<AgentsStore>((set, get) => ({
       return true;
     });
   },
-
-  simulateTick: () =>
-    set((state) => ({
-      agents: state.agents.map((a) => ({
-        ...a,
-        tokenUsage: Math.round(jitter(a.tokenUsage, 0.1)),
-        avgLatency: Math.round(jitter(a.avgLatency, 2)),
-        contextWindowUsage: Math.min(100, Math.max(0, Math.round(jitter(a.contextWindowUsage, 1)))),
-        healthScore: Math.min(100, Math.max(0, Math.round(jitter(a.healthScore, 0.5)))),
-        errorRate: Math.max(0, parseFloat(jitter(a.errorRate, 3).toFixed(1))),
-      })),
-    })),
 }));

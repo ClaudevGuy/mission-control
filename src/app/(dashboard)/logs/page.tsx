@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLogsStore } from "@/stores/logs-store";
 import {
   PageHeader,
@@ -37,7 +37,11 @@ export default function LogsPage() {
     getFilteredLogs, errorGroups, llmCalls, traceSpans,
     levelFilter, serviceFilter, searchQuery, isLive,
     setLevelFilter, setServiceFilter, setSearchQuery, setIsLive,
+    fetch: fetchLogs,
   } = useLogsStore();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchLogs(); }, []);
 
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
   const [expandedError, setExpandedError] = useState<string | null>(null);

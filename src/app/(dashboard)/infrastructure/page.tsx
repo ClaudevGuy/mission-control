@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useInfrastructureStore } from "@/stores/infrastructure-store";
-import { usePolling } from "@/lib/hooks/use-polling";
 import {
   PageHeader,
   LiveIndicator,
@@ -52,10 +51,10 @@ function getServiceStatus(svc: ServiceNode): "healthy" | "degraded" | "down" {
 const statusColors: Record<string, string> = { healthy: "#39FF14", degraded: "#F59E0B", down: "#EF4444" };
 
 export default function InfrastructurePage() {
-  const { resources, services, endpoints, queues, simulateTick } = useInfrastructureStore();
-  // removed hoveredSvc state — sparkline uses CSS-only opacity toggle
+  const { resources, services, endpoints, queues, fetch: fetchInfra } = useInfrastructureStore();
 
-  usePolling(simulateTick, 3000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchInfra(); }, []);
 
   const endpointColumns = [
     { key: "path", label: "Path", sortable: true, render: (r: Record<string, unknown>) => <span className="font-mono text-xs text-foreground">{r.path as string}</span> },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PageHeader, GlassPanel } from "@/components/shared";
 import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
@@ -55,6 +55,10 @@ export default function SettingsPage() {
   const projectDescription = useSettingsStore((s) => s.projectDescription);
   const storeSetProjectName = useSettingsStore((s) => s.setProjectName);
   const storeSetProjectDescription = useSettingsStore((s) => s.setProjectDescription);
+  const fetchSettings = useSettingsStore((s) => s.fetch);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchSettings(); }, []);
 
   return (
     <div className="space-y-6">

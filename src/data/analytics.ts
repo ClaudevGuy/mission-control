@@ -1,23 +1,23 @@
 import type { AnalyticsData } from "@/types/analytics";
-import { generateTimeSeries } from "./generators";
 
 export const seedAnalytics: AnalyticsData = {
-  dau: generateTimeSeries(30, 800, 1400, "up"),
-  wau: generateTimeSeries(30, 3200, 5800, "up"),
-  mau: generateTimeSeries(30, 12000, 18000, "up"),
+  overview: { dau: 1247, wau: 5400, mau: 16800, avgSession: 4.2, bounceRate: 32.1, pagesPerSession: 6.8 },
 
   retention: [
-    [100, 68, 52, 41, 35, 31, 28, 26],
-    [100, 71, 55, 44, 37, 33, 30, 0],
-    [100, 65, 50, 39, 34, 30, 0, 0],
-    [100, 72, 56, 45, 38, 0, 0, 0],
-    [100, 69, 53, 42, 0, 0, 0, 0],
-    [100, 74, 58, 0, 0, 0, 0, 0],
-    [100, 70, 0, 0, 0, 0, 0, 0],
-    [100, 0, 0, 0, 0, 0, 0, 0],
+    { cohortWeek: "2026-W09", weekIndex: 0, retentionRate: 100 },
+    { cohortWeek: "2026-W09", weekIndex: 1, retentionRate: 68 },
+    { cohortWeek: "2026-W09", weekIndex: 2, retentionRate: 52 },
+    { cohortWeek: "2026-W09", weekIndex: 3, retentionRate: 41 },
+    { cohortWeek: "2026-W10", weekIndex: 0, retentionRate: 100 },
+    { cohortWeek: "2026-W10", weekIndex: 1, retentionRate: 71 },
+    { cohortWeek: "2026-W10", weekIndex: 2, retentionRate: 55 },
+    { cohortWeek: "2026-W11", weekIndex: 0, retentionRate: 100 },
+    { cohortWeek: "2026-W11", weekIndex: 1, retentionRate: 65 },
+    { cohortWeek: "2026-W12", weekIndex: 0, retentionRate: 100 },
+    { cohortWeek: "2026-W12", weekIndex: 1, retentionRate: 72 },
   ],
 
-  geoData: [
+  geo: [
     { country: "United States", users: 8420 },
     { country: "United Kingdom", users: 2140 },
     { country: "Germany", users: 1580 },
@@ -30,7 +30,7 @@ export const seedAnalytics: AnalyticsData = {
     { country: "Netherlands", users: 340 },
   ],
 
-  featureUsage: [
+  features: [
     { feature: "Claim Search", usage: 89, trend: 4.2 },
     { feature: "Dashboard", usage: 84, trend: 12.1 },
     { feature: "Batch Processing", usage: 67, trend: 8.7 },
@@ -41,7 +41,7 @@ export const seedAnalytics: AnalyticsData = {
     { feature: "Team Management", usage: 18, trend: 0.4 },
   ],
 
-  conversionFunnel: [
+  funnel: [
     { stage: "Landing Page", count: 14200 },
     { stage: "Sign Up Started", count: 4890 },
     { stage: "Email Verified", count: 3720 },
@@ -49,10 +49,10 @@ export const seedAnalytics: AnalyticsData = {
     { stage: "Paying Customer", count: 1247 },
   ],
 
-  growthMetrics: [
-    { metric: "Revenue (MRR)", current: 48200, previous: 42800, data: generateTimeSeries(30, 40000, 50000, "up") },
-    { metric: "Active Users", current: 1247, previous: 1089, data: generateTimeSeries(30, 1000, 1300, "up") },
-    { metric: "Claims Processed", current: 19847, previous: 16230, data: generateTimeSeries(30, 500, 800, "up") },
-    { metric: "Agent Tasks/Day", current: 3420, previous: 2890, data: generateTimeSeries(30, 2500, 3500, "up") },
+  growth: [
+    { metric: "Revenue (MRR)", current: 48200, previous: 42800 },
+    { metric: "Active Users", current: 1247, previous: 1089 },
+    { metric: "Claims Processed", current: 19847, previous: 16230 },
+    { metric: "Agent Tasks/Day", current: 3420, previous: 2890 },
   ],
 };

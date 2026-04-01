@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useIntegrationsStore } from "@/stores/integrations-store";
 import { PageHeader, GlassPanel } from "@/components/shared";
 import { Switch } from "@/components/ui/switch";
@@ -58,8 +58,11 @@ function formatTimeShort(ts: string) {
 }
 
 export default function IntegrationsPage() {
-  const { integrations, webhooks } = useIntegrationsStore();
+  const { integrations, webhooks, fetch: fetchIntegrations } = useIntegrationsStore();
   const [search, setSearch] = useState("");
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchIntegrations(); }, []);
   const [filter, setFilter] = useState("All");
 
   // Add PostHog as error state

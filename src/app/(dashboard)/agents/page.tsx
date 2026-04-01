@@ -1,11 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, Plus, Eye } from "lucide-react";
 import { useAgentsStore } from "@/stores/agents-store";
-import { usePolling } from "@/lib/hooks/use-polling";
 import { formatRelativeTime, formatNumber, formatCurrency } from "@/lib/format";
 import {
   PageHeader,
@@ -134,10 +133,11 @@ export default function AgentsPage() {
     modelFilter,
     setModelFilter,
     getFilteredAgents,
-    simulateTick,
+    fetch: fetchAgents,
   } = useAgentsStore();
 
-  usePolling(simulateTick, 4000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchAgents(); }, []);
 
   const agents = getFilteredAgents();
 

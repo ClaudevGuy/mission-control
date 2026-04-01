@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTeamStore } from "@/stores/team-store";
 import { PageHeader, GlassPanel, StatusBadge, SparklineChart, ConfirmDialog } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -61,8 +61,11 @@ function formatTime(ts: string) {
 
 export default function TeamPage() {
   const [tab, setTab] = useState<"members" | "roles" | "audit" | "keys">("members");
-  const { members, auditLog, apiKeys } = useTeamStore();
+  const { members, auditLog, apiKeys, fetch: fetchTeam } = useTeamStore();
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchTeam(); }, []);
 
   const tabs = [
     { id: "members" as const, label: "Members" },

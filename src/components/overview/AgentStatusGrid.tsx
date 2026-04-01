@@ -4,15 +4,11 @@ import React from "react";
 import Link from "next/link";
 import { GlassPanel, StatusBadge } from "@/components/shared";
 import { useAgentsStore } from "@/stores/agents-store";
-import { usePolling } from "@/lib/hooks/use-polling";
 import { formatRelativeTime, formatTokens } from "@/lib/format";
 import { Progress } from "@/components/ui/progress";
 
 export function AgentStatusGrid() {
   const agents = useAgentsStore((s) => s.agents);
-  const simulateTick = useAgentsStore((s) => s.simulateTick);
-
-  usePolling(simulateTick, 4000);
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

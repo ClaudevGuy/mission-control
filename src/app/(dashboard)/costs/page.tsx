@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCostsStore } from "@/stores/costs-store";
 import {
   PageHeader,
@@ -63,7 +63,10 @@ export default function CostsPage() {
   const [tab, setTab] = useState<"overview" | "agents" | "budget" | "invoices">("overview");
   const [agentRange, setAgentRange] = useState<"7d" | "30d" | "90d">("30d");
   const [budgetAlert, setBudgetAlert] = useState(80);
-  const { agentCosts, budgets } = useCostsStore();
+  const { agentCosts, budgets, fetch: fetchCosts } = useCostsStore();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchCosts(); }, []);
 
   const thisMonth = 16481;
   const lastMonth = 15892;

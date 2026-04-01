@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { relativeTimestamp } from "@/data/generators";
 
 export interface Notification {
   id: string;
@@ -13,6 +12,9 @@ export interface Notification {
 
 interface NotificationsStore {
   notifications: Notification[];
+  isLoading: boolean;
+  error: string | null;
+  fetch: () => Promise<void>;
   addNotification: (notification: Omit<Notification, "id" | "timestamp" | "read">) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
@@ -20,19 +22,22 @@ interface NotificationsStore {
   getUnreadCount: () => number;
 }
 
-const initialNotifications: Notification[] = [
-  { id: "ntf_001", type: "error", title: "P1 Incident: API Gateway Outage", message: "API gateway health check failed. Error rate at 47%.", timestamp: relativeTimestamp(120), read: false, actionUrl: "/incidents" },
-  { id: "ntf_002", type: "success", title: "Deployment Complete", message: "api-gateway v2.14.2 deployed to production successfully.", timestamp: relativeTimestamp(45), read: false, actionUrl: "/deployments" },
-  { id: "ntf_003", type: "warning", title: "BugHunter Agent Error", message: "Context window exceeded. Agent needs attention.", timestamp: relativeTimestamp(45), read: false, actionUrl: "/agents" },
-  { id: "ntf_004", type: "info", title: "Deployment In Progress", message: "api-gateway v2.14.3 canary at 10% traffic.", timestamp: relativeTimestamp(8), read: false, actionUrl: "/deployments" },
-  { id: "ntf_005", type: "warning", title: "Budget Alert", message: "AI APIs spend at 81% of monthly budget ($2,847 / $3,500).", timestamp: relativeTimestamp(60), read: true, actionUrl: "/costs" },
-  { id: "ntf_006", type: "success", title: "Security Scan Clear", message: "SecurityScanner found no new vulnerabilities in latest scan.", timestamp: relativeTimestamp(16), read: true },
-  { id: "ntf_007", type: "info", title: "New Team Member", message: "Emily Rodriguez has been added as a viewer.", timestamp: relativeTimestamp(180), read: true, actionUrl: "/team" },
-  { id: "ntf_008", type: "warning", title: "Elevated Search Latency", message: "Search P95 latency at 890ms, exceeding 500ms threshold.", timestamp: relativeTimestamp(4320), read: true, actionUrl: "/incidents" },
-];
-
 export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
-  notifications: initialNotifications,
+  notifications: [],
+  isLoading: false,
+  error: null,
+
+  fetch: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await fetch("/api/notifications");
+      if (!res.ok) throw new Error("Failed to fetch notifications");
+      const { data } = await res.json();
+      set({ notifications: data, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
+  },
 
   addNotification: (notification) =>
     set((state) => ({
@@ -47,17 +52,37 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
       ],
     })),
 
-  markAsRead: (id) =>
+  markAsRead: async (id) => {
     set((state) => ({
       notifications: state.notifications.map((n) =>
         n.id === id ? { ...n, read: true } : n
       ),
-    })),
+    }));
+    try {
+      await fetch(`/api/notifications`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, read: true }),
+      });
+    } catch {
+      // silent fail — local state already updated
+    }
+  },
 
-  markAllAsRead: () =>
+  markAllAsRead: async () => {
     set((state) => ({
       notifications: state.notifications.map((n) => ({ ...n, read: true })),
-    })),
+    }));
+    try {
+      await fetch(`/api/notifications`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markAllRead: true }),
+      });
+    } catch {
+      // silent fail
+    }
+  },
 
   dismissNotification: (id) =>
     set((state) => ({

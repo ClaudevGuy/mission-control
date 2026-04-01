@@ -6,7 +6,6 @@ import { useAgentsStore } from "@/stores/agents-store";
 import { useDeploymentsStore } from "@/stores/deployments-store";
 import { useIncidentsStore } from "@/stores/incidents-store";
 import { usePolling } from "@/lib/hooks/use-polling";
-import { jitter } from "@/data/generators";
 import {
   Bot,
   Zap,
@@ -18,11 +17,15 @@ import {
   Activity,
 } from "lucide-react";
 
+function simpleJitter(value: number, pct: number) {
+  return value + (Math.random() - 0.5) * 2 * (value * pct / 100);
+}
+
 function makeSparkData(base: number, len = 12) {
   const data: number[] = [];
   let v = base;
   for (let i = 0; i < len; i++) {
-    v = jitter(v, 5);
+    v = simpleJitter(v, 5);
     data.push(Math.round(v));
   }
   return data;
@@ -58,21 +61,21 @@ export function LiveStatsRow() {
 
   const tick = useCallback(() => {
     setMockStats((prev) => ({
-      apiCalls: Math.round(jitter(prev.apiCalls, 2)),
-      tokenUsage: Math.round(jitter(prev.tokenUsage, 1)),
-      costToday: parseFloat(jitter(prev.costToday, 1.5).toFixed(2)),
-      activeUsers: Math.round(jitter(prev.activeUsers, 3)),
-      uptime: parseFloat(Math.min(100, jitter(prev.uptime, 0.01)).toFixed(2)),
+      apiCalls: Math.round(simpleJitter(prev.apiCalls, 2)),
+      tokenUsage: Math.round(simpleJitter(prev.tokenUsage, 1)),
+      costToday: parseFloat(simpleJitter(prev.costToday, 1.5).toFixed(2)),
+      activeUsers: Math.round(simpleJitter(prev.activeUsers, 3)),
+      uptime: parseFloat(Math.min(100, simpleJitter(prev.uptime, 0.01)).toFixed(2)),
     }));
     setSparklines((prev) => ({
       agents: [...prev.agents.slice(1), activeAgents],
-      api: [...prev.api.slice(1), Math.round(jitter(45200, 2))],
-      tokens: [...prev.tokens.slice(1), Math.round(jitter(2800000, 1))],
-      cost: [...prev.cost.slice(1), Math.round(jitter(127, 1.5))],
-      users: [...prev.users.slice(1), Math.round(jitter(342, 3))],
+      api: [...prev.api.slice(1), Math.round(simpleJitter(45200, 2))],
+      tokens: [...prev.tokens.slice(1), Math.round(simpleJitter(2800000, 1))],
+      cost: [...prev.cost.slice(1), Math.round(simpleJitter(127, 1.5))],
+      users: [...prev.users.slice(1), Math.round(simpleJitter(342, 3))],
       deploys: [...prev.deploys.slice(1), prodDeploys],
       incidents: [...prev.incidents.slice(1), openIncidents],
-      uptime: [...prev.uptime.slice(1), parseFloat(jitter(99.97, 0.01).toFixed(2))],
+      uptime: [...prev.uptime.slice(1), parseFloat(simpleJitter(99.97, 0.01).toFixed(2))],
     }));
   }, [activeAgents, prodDeploys, openIncidents]);
 

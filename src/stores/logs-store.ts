@@ -1,17 +1,19 @@
 import { create } from "zustand";
 import type { LogEntry, ErrorGroup, LLMCall, TraceSpan } from "@/types/logs";
 import type { LogLevel } from "@/types/common";
-import { seedLogs, seedErrorGroups, seedLLMCalls, seedTraceSpans } from "@/data/logs";
 
 interface LogsStore {
   logs: LogEntry[];
   errorGroups: ErrorGroup[];
   llmCalls: LLMCall[];
   traceSpans: TraceSpan[];
+  isLoading: boolean;
+  error: string | null;
   levelFilter: LogLevel | "all";
   serviceFilter: string;
   searchQuery: string;
   isLive: boolean;
+  fetch: () => Promise<void>;
   setLevelFilter: (level: LogLevel | "all") => void;
   setServiceFilter: (service: string) => void;
   setSearchQuery: (query: string) => void;
@@ -21,14 +23,47 @@ interface LogsStore {
 }
 
 export const useLogsStore = create<LogsStore>((set, get) => ({
-  logs: seedLogs,
-  errorGroups: seedErrorGroups,
-  llmCalls: seedLLMCalls,
-  traceSpans: seedTraceSpans,
+  logs: [],
+  errorGroups: [],
+  llmCalls: [],
+  traceSpans: [],
+  isLoading: false,
+  error: null,
   levelFilter: "all",
   serviceFilter: "",
   searchQuery: "",
   isLive: true,
+
+  fetch: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const [logsRes, errorsRes, llmRes, tracesRes] = await Promise.all([
+        fetch("/api/logs"),
+        fetch("/api/logs/errors"),
+        fetch("/api/logs/llm-calls"),
+        fetch("/api/logs/traces"),
+      ]);
+      if (!logsRes.ok) throw new Error("Failed to fetch logs");
+      if (!errorsRes.ok) throw new Error("Failed to fetch errors");
+      if (!llmRes.ok) throw new Error("Failed to fetch LLM calls");
+      if (!tracesRes.ok) throw new Error("Failed to fetch traces");
+      const [logsData, errorsData, llmData, tracesData] = await Promise.all([
+        logsRes.json(),
+        errorsRes.json(),
+        llmRes.json(),
+        tracesRes.json(),
+      ]);
+      set({
+        logs: logsData.data,
+        errorGroups: errorsData.data,
+        llmCalls: llmData.data,
+        traceSpans: tracesData.data,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
+  },
 
   setLevelFilter: (level) => set({ levelFilter: level }),
   setServiceFilter: (service) => set({ serviceFilter: service }),

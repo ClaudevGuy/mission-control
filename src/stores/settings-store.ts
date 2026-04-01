@@ -9,6 +9,10 @@ interface SettingsStore {
   compactMode: boolean;
   animationsEnabled: boolean;
   timezone: string;
+  isLoading: boolean;
+  error: string | null;
+  fetch: () => Promise<void>;
+  save: () => Promise<void>;
   setProjectName: (name: string) => void;
   setProjectDescription: (desc: string) => void;
   setTheme: (theme: "light" | "dark" | "system") => void;
@@ -19,7 +23,7 @@ interface SettingsStore {
   setTimezone: (tz: string) => void;
 }
 
-export const useSettingsStore = create<SettingsStore>((set) => ({
+export const useSettingsStore = create<SettingsStore>((set, get) => ({
   projectName: "Mission Control",
   projectDescription: "AI-powered project command center for monitoring agents, deployments, and infrastructure.",
   theme: "dark",
@@ -28,6 +32,40 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   compactMode: false,
   animationsEnabled: true,
   timezone: "America/New_York",
+  isLoading: false,
+  error: null,
+
+  fetch: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await fetch("/api/settings");
+      if (!res.ok) throw new Error("Failed to fetch settings");
+      const { data } = await res.json();
+      set({ ...data, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+    }
+  },
+
+  save: async () => {
+    const {
+      projectName, projectDescription, theme, pollingInterval,
+      pollingEnabled, compactMode, animationsEnabled, timezone,
+    } = get();
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectName, projectDescription, theme, pollingInterval,
+          pollingEnabled, compactMode, animationsEnabled, timezone,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to save settings");
+    } catch (error) {
+      set({ error: (error as Error).message });
+    }
+  },
 
   setProjectName: (name) => set({ projectName: name }),
   setProjectDescription: (desc) => set({ projectDescription: desc }),

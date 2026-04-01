@@ -853,42 +853,33 @@ async function main() {
   console.log("Seeding analytics...");
   const now = new Date();
 
-  // DAU/WAU/MAU snapshots
-  for (let i = 0; i < seedAnalytics.dau.length; i++) {
-    const date = new Date(seedAnalytics.dau[i].date);
-    await prisma.analyticsSnapshot.create({
+  // DAU/WAU/MAU snapshot (single overview record)
+  await prisma.analyticsSnapshot.create({
+    data: {
+      projectId: project.id,
+      date: now,
+      dau: seedAnalytics.overview.dau,
+      wau: seedAnalytics.overview.wau,
+      mau: seedAnalytics.overview.mau,
+    },
+  });
+  console.log("  1 analytics snapshot.");
+
+  // Retention cohorts
+  for (const cohort of seedAnalytics.retention) {
+    await prisma.retentionCohort.create({
       data: {
         projectId: project.id,
-        date,
-        dau: Math.round(seedAnalytics.dau[i].value),
-        wau: Math.round(seedAnalytics.wau[i].value),
-        mau: Math.round(seedAnalytics.mau[i].value),
+        cohortWeek: cohort.cohortWeek,
+        weekIndex: cohort.weekIndex,
+        retentionRate: cohort.retentionRate,
       },
     });
   }
-  console.log(`  ${seedAnalytics.dau.length} analytics snapshots.`);
-
-  // Retention cohorts
-  const cohortWeeks = ["W-8", "W-7", "W-6", "W-5", "W-4", "W-3", "W-2", "W-1"];
-  for (let cohortIdx = 0; cohortIdx < seedAnalytics.retention.length; cohortIdx++) {
-    const row = seedAnalytics.retention[cohortIdx];
-    for (let weekIdx = 0; weekIdx < row.length; weekIdx++) {
-      if (row[weekIdx] > 0) {
-        await prisma.retentionCohort.create({
-          data: {
-            projectId: project.id,
-            cohortWeek: cohortWeeks[cohortIdx],
-            weekIndex: weekIdx,
-            retentionRate: row[weekIdx],
-          },
-        });
-      }
-    }
-  }
-  console.log("  Retention cohorts.");
+  console.log(`  ${seedAnalytics.retention.length} retention cohorts.`);
 
   // Geo data
-  for (const g of seedAnalytics.geoData) {
+  for (const g of seedAnalytics.geo) {
     await prisma.geoData.create({
       data: {
         projectId: project.id,
@@ -898,10 +889,10 @@ async function main() {
       },
     });
   }
-  console.log(`  ${seedAnalytics.geoData.length} geo data entries.`);
+  console.log(`  ${seedAnalytics.geo.length} geo data entries.`);
 
   // Feature usage
-  for (const f of seedAnalytics.featureUsage) {
+  for (const f of seedAnalytics.features) {
     await prisma.featureUsage.create({
       data: {
         projectId: project.id,
@@ -912,10 +903,10 @@ async function main() {
       },
     });
   }
-  console.log(`  ${seedAnalytics.featureUsage.length} feature usage entries.`);
+  console.log(`  ${seedAnalytics.features.length} feature usage entries.`);
 
   // Conversion funnel
-  for (const step of seedAnalytics.conversionFunnel) {
+  for (const step of seedAnalytics.funnel) {
     await prisma.conversionStep.create({
       data: {
         projectId: project.id,
@@ -925,10 +916,10 @@ async function main() {
       },
     });
   }
-  console.log(`  ${seedAnalytics.conversionFunnel.length} conversion steps.`);
+  console.log(`  ${seedAnalytics.funnel.length} conversion steps.`);
 
   // Growth metrics
-  for (const gm of seedAnalytics.growthMetrics) {
+  for (const gm of seedAnalytics.growth) {
     await prisma.growthMetric.create({
       data: {
         projectId: project.id,
@@ -939,7 +930,7 @@ async function main() {
       },
     });
   }
-  console.log(`  ${seedAnalytics.growthMetrics.length} growth metrics.\n`);
+  console.log(`  ${seedAnalytics.growth.length} growth metrics.\n`);
 
   console.log("Seed complete!");
 }

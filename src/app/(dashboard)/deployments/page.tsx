@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useDeploymentsStore } from "@/stores/deployments-store";
-import { usePolling } from "@/lib/hooks/use-polling";
 import { PageHeader, GlassPanel, StatusBadge, SparklineChart, ConfirmDialog } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -27,10 +26,11 @@ function HealthDot({ status }: { status: HealthStatus }) {
 
 export default function DeploymentsPage() {
   const [tab, setTab] = useState<"pipeline" | "history" | "flags">("pipeline");
-  const { deployments, environments, featureFlags, toggleFeatureFlag, simulateTick } = useDeploymentsStore();
+  const { deployments, environments, featureFlags, toggleFeatureFlag, fetch: fetchDeployments } = useDeploymentsStore();
   const [rollbackTarget, setRollbackTarget] = useState<Deployment | null>(null);
 
-  usePolling(simulateTick, 5000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchDeployments(); }, []);
 
   const tabs = [
     { id: "pipeline" as const, label: "Pipeline" },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useCodebaseStore } from "@/stores/codebase-store";
 import {
   PageHeader,
@@ -135,7 +135,10 @@ const HEALTH_LABELS: Record<string, string> = {
 /* ── Page ── */
 export default function CodebasePage() {
   const [tab, setTab] = useState<"overview" | "commits" | "prs">("overview");
-  const { repositories, getFilteredCommits, getFilteredPRs, codeHealth } = useCodebaseStore();
+  const { repositories, getFilteredCommits, getFilteredPRs, codeHealth, fetch: fetchCodebase } = useCodebaseStore();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchCodebase(); }, []);
   const commits = getFilteredCommits();
   const pullRequests = getFilteredPRs();
 

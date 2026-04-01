@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Bot, Clock, Zap, Coins, CheckCircle } from "lucide-react";
 import { useAgentsStore } from "@/stores/agents-store";
-import { usePolling } from "@/lib/hooks/use-polling";
 import {
   formatRelativeTime,
   formatDate,
@@ -107,9 +106,10 @@ export default function AgentDetailPage({
 }) {
   const { id } = params;
   const [tab, setTab] = useState<string>("overview");
-  const { agents, simulateTick } = useAgentsStore();
+  const { agents, fetch: fetchAgents } = useAgentsStore();
 
-  usePolling(simulateTick, 4000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchAgents(); }, []);
 
   const agent = agents.find((a) => a.id === id);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useIncidentsStore } from "@/stores/incidents-store";
 import { PageHeader, GlassPanel, MetricCard } from "@/components/shared";
 import { Switch } from "@/components/ui/switch";
@@ -85,8 +85,11 @@ const HISTORY = [
 
 export default function IncidentsPage() {
   const [tab, setTab] = useState<"active" | "rules" | "oncall" | "history">("active");
-  const { incidents } = useIncidentsStore();
+  const { incidents, fetch: fetchIncidents } = useIncidentsStore();
   const [expandedInc, setExpandedInc] = useState<string | null>(null);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchIncidents(); }, []);
 
   const allIncidents = [...incidents, ...EXTRA_INCIDENTS];
   const columns = { open: "Open", investigating: "Investigating", resolved: "Resolved" } as const;
