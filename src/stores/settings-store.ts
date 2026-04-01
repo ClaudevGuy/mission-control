@@ -21,6 +21,8 @@ interface SettingsStore {
   setCompactMode: (compact: boolean) => void;
   setAnimationsEnabled: (enabled: boolean) => void;
   setTimezone: (tz: string) => void;
+  projectLogo: string;
+  setProjectLogo: (logo: string) => void;
 }
 
 export const useSettingsStore = create<SettingsStore>((set, get) => ({
@@ -32,6 +34,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   compactMode: false,
   animationsEnabled: true,
   timezone: "America/New_York",
+  projectLogo: "",
   isLoading: false,
   error: null,
 
@@ -50,7 +53,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   save: async () => {
     const {
       projectName, projectDescription, theme, pollingInterval,
-      pollingEnabled, compactMode, animationsEnabled, timezone,
+      pollingEnabled, compactMode, animationsEnabled, timezone, projectLogo,
     } = get();
     try {
       const res = await fetch("/api/settings", {
@@ -58,7 +61,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           projectName, projectDescription, theme, pollingInterval,
-          pollingEnabled, compactMode, animationsEnabled, timezone,
+          pollingEnabled, compactMode, animationsEnabled, timezone, projectLogo,
         }),
       });
       if (!res.ok) throw new Error("Failed to save settings");
@@ -75,4 +78,5 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   setCompactMode: (compact) => set({ compactMode: compact }),
   setAnimationsEnabled: (enabled) => set({ animationsEnabled: enabled }),
   setTimezone: (tz) => set({ timezone: tz }),
+  setProjectLogo: (logo) => set({ projectLogo: logo }),
 }));

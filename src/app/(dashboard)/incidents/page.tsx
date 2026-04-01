@@ -38,7 +38,7 @@ function timeAgo(ts: string) {
 const EXTRA_INCIDENTS = [
   {
     id: "inc_004", title: "Database Connection Pool Exhausted", description: "PostgreSQL connection pool reached max 100 connections. New requests are being rejected.", severity: "P1" as IncidentSeverity, status: "open" as const,
-    createdAt: new Date(Date.now() - 45 * 60000).toISOString(), updatedAt: new Date(Date.now() - 30 * 60000).toISOString(), assignee: "Sarah Chen",
+    createdAt: new Date(Date.now() - 45 * 60000).toISOString(), updatedAt: new Date(Date.now() - 30 * 60000).toISOString(), assignee: { id: "user-sarah", name: "Sarah Chen", email: null, image: null },
     affectedServices: ["api-gateway", "worker-service"], timeline: [
       { timestamp: new Date(Date.now() - 45 * 60000).toISOString(), actor: "InfraMonitor", action: "triggered", details: "Connection pool at 100/100" },
       { timestamp: new Date(Date.now() - 40 * 60000).toISOString(), actor: "PagerDuty", action: "notified", details: "Sarah Chen paged" },
@@ -46,7 +46,7 @@ const EXTRA_INCIDENTS = [
   },
   {
     id: "inc_005", title: "Worker Queue Backlog", description: "analytics-events queue depth at 8,940 items, processing rate insufficient to drain within SLA.", severity: "P2" as IncidentSeverity, status: "investigating" as const,
-    createdAt: new Date(Date.now() - 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 20 * 60000).toISOString(), assignee: "Marcus Johnson",
+    createdAt: new Date(Date.now() - 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 20 * 60000).toISOString(), assignee: { id: "user-marcus", name: "Marcus Johnson", email: null, image: null },
     affectedServices: ["worker-service", "analytics-service"], timeline: [
       { timestamp: new Date(Date.now() - 60 * 60000).toISOString(), actor: "AlertRule", action: "triggered", details: "Queue depth > 5000 for 5min" },
       { timestamp: new Date(Date.now() - 55 * 60000).toISOString(), actor: "Marcus Johnson", action: "acknowledged", details: "Investigating" },
@@ -141,7 +141,8 @@ export default function IncidentsPage() {
                       const sev = SEV_STYLES[inc.severity];
                       const sevBadge = SEV_BADGE[inc.severity];
                       const isExp = expandedInc === inc.id;
-                      const avatarColor = AVATAR_COLORS[inc.assignee] || "#888";
+                      const assigneeName = inc.assignee?.name ?? "Unassigned";
+                      const avatarColor = AVATAR_COLORS[assigneeName] || "#888";
 
                       return (
                         <div key={inc.id}>
@@ -161,9 +162,9 @@ export default function IncidentsPage() {
                               <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                                 <div className="flex items-center gap-1.5">
                                   <div className="size-4 rounded-full flex items-center justify-center text-[7px] font-bold" style={{ background: `${avatarColor}20`, color: avatarColor }}>
-                                    {inc.assignee.split(" ").map((n) => n[0]).join("")}
+                                    {assigneeName.split(" ").map((n) => n[0]).join("")}
                                   </div>
-                                  <span>{inc.assignee}</span>
+                                  <span>{assigneeName}</span>
                                 </div>
                                 <span className="font-mono" suppressHydrationWarning>{timeAgo(inc.createdAt)}</span>
                               </div>

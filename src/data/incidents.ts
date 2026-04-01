@@ -10,7 +10,7 @@ export const seedIncidents: Incident[] = [
     status: "open",
     createdAt: relativeTimestamp(120),
     updatedAt: relativeTimestamp(15),
-    assignee: "Sarah Chen",
+    assignee: { id: "user-sarah", name: "Sarah Chen", email: "sarah@example.com", image: null },
     affectedServices: ["api-gateway", "web-app", "worker-service"],
     timeline: [
       { timestamp: relativeTimestamp(120), actor: "InfraMonitor", action: "Incident created", details: "Automated detection: API gateway health check failed. Error rate spiked to 47%." },
@@ -31,7 +31,7 @@ export const seedIncidents: Incident[] = [
     status: "investigating",
     createdAt: relativeTimestamp(4320),
     updatedAt: relativeTimestamp(180),
-    assignee: "Marcus Johnson",
+    assignee: { id: "user-marcus", name: "Marcus Johnson", email: "marcus@example.com", image: null },
     affectedServices: ["search-service"],
     timeline: [
       { timestamp: relativeTimestamp(4320), actor: "InfraMonitor", action: "Incident created", details: "Search P95 latency exceeded 500ms threshold. Currently at 890ms." },
@@ -49,7 +49,7 @@ export const seedIncidents: Incident[] = [
     status: "resolved",
     createdAt: relativeTimestamp(10080),
     updatedAt: relativeTimestamp(2880),
-    assignee: "James Wilson",
+    assignee: { id: "user-james", name: "James Wilson", email: "james@example.com", image: null },
     affectedServices: ["worker-service"],
     timeline: [
       { timestamp: relativeTimestamp(10080), actor: "InfraMonitor", action: "Incident created", details: "Cost anomaly: AI API spend exceeded daily budget by 42%." },

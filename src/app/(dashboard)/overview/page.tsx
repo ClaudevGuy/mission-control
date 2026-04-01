@@ -9,7 +9,6 @@ import { AgentStatusGrid } from "@/components/overview/AgentStatusGrid";
 import { CostBurnChart } from "@/components/overview/CostBurnChart";
 import { TopIssues } from "@/components/overview/TopIssues";
 import { RecentDeploys } from "@/components/overview/RecentDeploys";
-import { ActivityFeedWidget } from "@/components/overview/ActivityFeedWidget";
 import { useAgentsStore } from "@/stores/agents-store";
 import { useDeploymentsStore } from "@/stores/deployments-store";
 import { useIncidentsStore } from "@/stores/incidents-store";
@@ -44,7 +43,6 @@ export default function OverviewPage() {
         <TopIssues />
         <RecentDeploys />
       </div>
-      <ActivityFeedWidget />
     </div>
   );
 }

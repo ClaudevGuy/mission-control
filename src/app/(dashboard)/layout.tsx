@@ -11,16 +11,15 @@ import { useUIStore } from "@/stores/ui-store";
 const GO_SHORTCUTS: Record<string, string> = {
   o: "/overview",
   a: "/agents",
-  c: "/codebase",
+  w: "/workflows",
   d: "/deployments",
-  i: "/infrastructure",
-  $: "/costs",
-  n: "/analytics",
   l: "/logs",
   t: "/team",
-  p: "/integrations",
-  "!": "/incidents",
   s: "/settings",
+  $: "/costs",
+  n: "/analytics",
+  "!": "/incidents",
+  h: "/tutorial",
 };
 
 export default function DashboardLayout({
@@ -107,8 +106,8 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
         <main className="relative flex-1 overflow-y-auto">
-          {/* Grid overlay background */}
-          <div className="pointer-events-none absolute inset-0 dot-grid" />
+          {/* Ambient background */}
+          <div className="pointer-events-none absolute inset-0 bg-ambient" />
           <div className="relative z-10 p-6">{children}</div>
         </main>
       </div>
