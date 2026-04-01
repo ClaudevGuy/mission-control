@@ -1,0 +1,973 @@
+// ============================================================================
+// Mission Control Dashboard - Prisma Schema
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum AgentStatus {
+  RUNNING
+  IDLE
+  PAUSED
+  ERROR
+  DEPLOYING
+}
+
+enum DeployStage {
+  DEV
+  STAGING
+  REVIEW
+  PRODUCTION
+}
+
+enum DeployStatus {
+  SUCCESS
+  FAILED
+  IN_PROGRESS
+  ROLLED_BACK
+  PENDING
+}
+
+enum IncidentSeverity {
+  P1
+  P2
+  P3
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+}
+
+enum HealthStatus {
+  HEALTHY
+  DEGRADED
+  DOWN
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+enum ModelProvider {
+  CLAUDE
+  GPT4
+  GEMINI
+  CUSTOM
+}
+
+enum Environment {
+  DEVELOPMENT
+  STAGING
+  PRODUCTION
+}
+
+enum IntegrationStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+enum TeamRole {
+  ADMIN
+  DEVELOPER
+  AGENT_MANAGER
+  VIEWER
+}
+
+enum AlertChannel {
+  SLACK
+  EMAIL
+  PAGERDUTY
+}
+
+enum IntegrationCategory {
+  SOURCE_CONTROL
+  COMMUNICATION
+  DEPLOYMENT
+  MONITORING
+  AI
+  DATABASE
+  PAYMENT
+  AUTOMATION
+}
+
+enum ServiceType {
+  API
+  WORKER
+  DATABASE_TYPE
+  CACHE
+  QUEUE
+  CDN
+}
+
+enum InvoiceStatus {
+  PAID
+  PENDING
+  OVERDUE
+}
+
+enum PRStatus {
+  OPEN
+  MERGED
+  CLOSED
+}
+
+enum CIStatus {
+  PASSING
+  FAILING
+  CI_PENDING
+}
+
+enum SpanStatus {
+  OK
+  SPAN_ERROR
+}
+
+enum WebhookStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RunStatus {
+  RUN_SUCCESS
+  RUN_FAILED
+  RUN_RUNNING
+}
+
+enum AlertCondition {
+  GT
+  LT
+  EQ
+}
+
+// ============================================================================
+// NEXTAUTH MODELS
+// ============================================================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  // Extended fields
+  role          TeamRole  @default(VIEWER)
+  avatar        String?
+  twoFAEnabled  Boolean   @default(false)
+  jobTitle      String?
+  displayName   String?
+  timezone      String?
+  preferences   Json?
+  passwordHash  String?
+
+  accounts       Account[]
+  sessions       Session[]
+  projectMembers ProjectMember[]
+  apiKeys        ApiKey[]        @relation("ApiKeyCreator")
+  incidents      Incident[]      @relation("IncidentAssignee")
+  onCallSchedule OnCallSchedule[]
+  notifications  Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================================================
+// MULTI-TENANT PROJECT
+// ============================================================================
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?  @db.Text
+  timezone    String   @default("UTC")
+  settings    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  members            ProjectMember[]
+  agents             Agent[]
+  deployments        Deployment[]
+  environmentConfigs EnvironmentConfig[]
+  featureFlags       FeatureFlag[]
+  resourceMetrics    ResourceMetric[]
+  serviceNodes       ServiceNode[]
+  apiEndpoints       ApiEndpoint[]
+  queueMetrics       QueueMetric[]
+  costBreakdowns     CostBreakdown[]
+  agentCosts         AgentCost[]
+  budgets            Budget[]
+  invoices           Invoice[]
+  dailyCosts         DailyCost[]
+  logEntries         LogEntry[]
+  errorGroups        ErrorGroup[]
+  llmCalls           LlmCall[]
+  traceSpans         TraceSpan[]
+  auditLogEntries    AuditLogEntry[]
+  apiKeys            ApiKey[]
+  integrations       Integration[]
+  webhooks           Webhook[]
+  incidents          Incident[]
+  alertRules         AlertRule[]
+  onCallSchedules    OnCallSchedule[]
+  repositories       Repository[]
+  codeHealthScore    CodeHealthScore?
+  analyticsSnapshots AnalyticsSnapshot[]
+  retentionCohorts   RetentionCohort[]
+  geoData            GeoData[]
+  featureUsages      FeatureUsage[]
+  conversionSteps    ConversionStep[]
+  growthMetrics      GrowthMetric[]
+  notifications      Notification[]
+}
+
+model ProjectMember {
+  userId    String
+  projectId String
+  role      TeamRole @default(VIEWER)
+  joinedAt  DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@id([userId, projectId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+// ============================================================================
+// AGENTS DOMAIN
+// ============================================================================
+
+model Agent {
+  id                 String        @id @default(cuid())
+  projectId          String
+  name               String
+  description        String        @db.Text
+  model              ModelProvider
+  status             AgentStatus   @default(IDLE)
+  systemPrompt       String        @db.Text
+  temperature        Float         @default(0.7)
+  maxTokens          Int           @default(4096)
+  tags               String[]
+  healthScore        Float         @default(100)
+  contextWindowUsage Float         @default(0)
+  tokenUsage         Int           @default(0)
+  avgLatency         Float         @default(0)
+  costPerHour        Float         @default(0)
+  totalCost          Float         @default(0)
+  errorRate          Float         @default(0)
+  tasksCompleted     Int           @default(0)
+  lastRun            DateTime?
+  createdAt          DateTime      @default(now())
+  createdBy          String
+
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tools       AgentTool[]
+  runs        AgentRun[]
+  evalResults EvalResult[]
+
+  @@index([projectId])
+  @@index([projectId, status])
+  @@index([projectId, createdAt])
+}
+
+model AgentTool {
+  id         String  @id @default(cuid())
+  agentId    String
+  name       String
+  enabled    Boolean @default(true)
+  usageCount Int     @default(0)
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+}
+
+model AgentRun {
+  id         String    @id @default(cuid())
+  agentId    String
+  startedAt  DateTime  @default(now())
+  duration   Int
+  status     RunStatus
+  tokensUsed Int
+  cost       Float
+  output     String    @db.Text
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([agentId, startedAt])
+}
+
+model EvalResult {
+  id      String  @id @default(cuid())
+  agentId String
+  name    String
+  passed  Boolean
+  score   Float
+  details String  @db.Text
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+}
+
+// ============================================================================
+// DEPLOYMENTS DOMAIN
+// ============================================================================
+
+model Deployment {
+  id           String       @id @default(cuid())
+  projectId    String
+  service      String
+  version      String
+  stage        DeployStage
+  status       DeployStatus
+  timestamp    DateTime     @default(now())
+  duration     Int
+  triggeredBy  String
+  isAgent      Boolean      @default(false)
+  commitHash   String
+  changelog    String       @db.Text
+  environment  Environment
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, timestamp])
+  @@index([projectId, status])
+  @@index([projectId, environment])
+}
+
+model EnvironmentConfig {
+  id             String       @id @default(cuid())
+  projectId      String
+  name           Environment
+  status         HealthStatus
+  lastDeploy     DateTime
+  currentVersion String
+  uptime         Float
+  activeUsers    Int          @default(0)
+  healthChecks   Json
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, name])
+  @@index([projectId])
+}
+
+model FeatureFlag {
+  id           String  @id @default(cuid())
+  projectId    String
+  name         String
+  description  String  @db.Text
+  environments Json
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, name])
+  @@index([projectId])
+}
+
+// ============================================================================
+// INFRASTRUCTURE DOMAIN
+// ============================================================================
+
+model ResourceMetric {
+  id        String @id @default(cuid())
+  projectId String
+  label     String
+  value     Float
+  max       Float
+  unit      String
+  trend     Float  @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ServiceNode {
+  id          String       @id @default(cuid())
+  projectId   String
+  name        String
+  status      HealthStatus
+  type        ServiceType
+  connections String[]
+  latency     Float
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, status])
+}
+
+model ApiEndpoint {
+  id        String       @id @default(cuid())
+  projectId String
+  path      String
+  method    String
+  p50       Float
+  p95       Float
+  p99       Float
+  errorRate Float
+  rps       Float
+  status    HealthStatus
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, status])
+}
+
+model QueueMetric {
+  id             String @id @default(cuid())
+  projectId      String
+  name           String
+  depth          Int
+  processingRate Float
+  dlqCount       Int    @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// ============================================================================
+// COSTS DOMAIN
+// ============================================================================
+
+model CostBreakdown {
+  id              String            @id @default(cuid())
+  projectId       String
+  category        String
+  total           Float
+  subcategories   CostSubcategory[]
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model CostSubcategory {
+  id          String @id @default(cuid())
+  breakdownId String
+  name        String
+  amount      Float
+  trend       Float  @default(0)
+
+  breakdown CostBreakdown @relation(fields: [breakdownId], references: [id], onDelete: Cascade)
+
+  @@index([breakdownId])
+}
+
+model AgentCost {
+  id         String  @id @default(cuid())
+  projectId  String
+  agentId    String?
+  agentName  String
+  costPerRun Float
+  totalRuns  Int
+  totalCost  Float
+  trend      Float   @default(0)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, agentId])
+}
+
+model Budget {
+  id             String @id @default(cuid())
+  projectId      String
+  category       String
+  budgetLimit    Float
+  spent          Float  @default(0)
+  alertThreshold Float  @default(0.8)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Invoice {
+  id        String        @id @default(cuid())
+  projectId String
+  date      DateTime
+  amount    Float
+  status    InvoiceStatus
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, status])
+}
+
+model DailyCost {
+  id        String   @id @default(cuid())
+  projectId String
+  date      DateTime
+  value     Float
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, date])
+}
+
+// ============================================================================
+// LOGS DOMAIN
+// ============================================================================
+
+model LogEntry {
+  id        String   @id @default(cuid())
+  projectId String
+  timestamp DateTime @default(now())
+  level     LogLevel
+  service   String
+  message   String   @db.Text
+  agentId   String?
+  userId    String?
+  traceId   String?
+  metadata  Json?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, timestamp])
+  @@index([projectId, level])
+  @@index([projectId, service])
+  @@index([projectId, traceId])
+  @@index([projectId, agentId])
+}
+
+model ErrorGroup {
+  id            String   @id @default(cuid())
+  projectId     String
+  message       String   @db.Text
+  count         Int      @default(1)
+  firstSeen     DateTime @default(now())
+  lastSeen      DateTime @default(now())
+  affectedUsers Int      @default(0)
+  stackTrace    String   @db.Text
+  service       String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, lastSeen])
+  @@index([projectId, service])
+}
+
+model LlmCall {
+  id        String   @id @default(cuid())
+  projectId String
+  timestamp DateTime @default(now())
+  model     String
+  prompt    String   @db.Text
+  response  String   @db.Text
+  tokensIn  Int
+  tokensOut Int
+  latency   Float
+  cost      Float
+  agentId   String
+  agentName String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, timestamp])
+  @@index([projectId, agentId])
+}
+
+model TraceSpan {
+  id        String     @id @default(cuid())
+  projectId String
+  traceId   String
+  name      String
+  service   String
+  start     Float
+  duration  Float
+  status    SpanStatus
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, traceId])
+}
+
+// ============================================================================
+// TEAM DOMAIN
+// ============================================================================
+
+model AuditLogEntry {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  userName  String
+  action    String
+  target    String
+  timestamp DateTime @default(now())
+  details   String   @db.Text
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, timestamp])
+  @@index([projectId, userId])
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  projectId   String
+  name        String
+  prefix      String
+  hashedKey   String    @unique
+  scopes      String[]
+  createdAt   DateTime  @default(now())
+  lastUsed    DateTime?
+  createdById String
+  status      String    @default("active")
+  revokedAt   DateTime?
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("ApiKeyCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([prefix])
+  @@index([createdById])
+}
+
+// ============================================================================
+// INTEGRATIONS DOMAIN
+// ============================================================================
+
+model Integration {
+  id          String              @id @default(cuid())
+  projectId   String
+  name        String
+  description String              @db.Text
+  icon        String
+  status      IntegrationStatus
+  category    IntegrationCategory
+  connectedAt DateTime?
+  lastSync    DateTime?
+  config      Json?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, status])
+  @@index([projectId, category])
+}
+
+model Webhook {
+  id           String        @id @default(cuid())
+  projectId    String
+  url          String
+  events       String[]
+  status       WebhookStatus @default(ACTIVE)
+  lastDelivery DateTime?
+  successRate  Float         @default(100)
+  secret       String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+// ============================================================================
+// INCIDENTS DOMAIN
+// ============================================================================
+
+model Incident {
+  id               String           @id @default(cuid())
+  projectId        String
+  title            String
+  description      String           @db.Text
+  severity         IncidentSeverity
+  status           IncidentStatus   @default(OPEN)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  assigneeId       String?
+  affectedServices String[]
+  timeline         Json
+
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee User?   @relation("IncidentAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([projectId, status])
+  @@index([projectId, severity])
+  @@index([assigneeId])
+}
+
+model AlertRule {
+  id            String         @id @default(cuid())
+  projectId     String
+  name          String
+  metric        String
+  condition     AlertCondition
+  threshold     Float
+  duration      String
+  channels      AlertChannel[]
+  enabled       Boolean        @default(true)
+  lastTriggered DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model OnCallSchedule {
+  id        String   @id @default(cuid())
+  projectId String
+  memberId  String
+  startDate DateTime
+  endDate   DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  member  User    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([memberId])
+  @@index([projectId, startDate, endDate])
+}
+
+// ============================================================================
+// CODEBASE DOMAIN
+// ============================================================================
+
+model Repository {
+  id         String   @id @default(cuid())
+  projectId  String
+  name       String
+  url        String
+  lastCommit String
+  branch     String
+  ciStatus   CIStatus
+  language   String
+
+  project      Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  commits      Commit[]
+  pullRequests PullRequest[]
+
+  @@index([projectId])
+}
+
+model Commit {
+  id           String   @id @default(cuid())
+  repositoryId String
+  hash         String
+  message      String   @db.Text
+  author       String
+  isAgent      Boolean  @default(false)
+  timestamp    DateTime @default(now())
+  filesChanged Int
+  additions    Int
+  deletions    Int
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@index([repositoryId])
+  @@index([repositoryId, timestamp])
+}
+
+model PullRequest {
+  id           String   @id @default(cuid())
+  repositoryId String
+  title        String
+  author       String
+  status       PRStatus
+  createdAt    DateTime @default(now())
+  labels       String[]
+  reviewers    String[]
+  additions    Int
+  deletions    Int
+
+  repository Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@index([repositoryId])
+  @@index([repositoryId, status])
+}
+
+model CodeHealthScore {
+  id                  String   @id @default(cuid())
+  projectId           String   @unique
+  overall             Float
+  testCoverage        Float
+  technicalDebt       Float
+  securityIssues      Int
+  dependencyFreshness Float
+  aiCodeRatio         Float
+  updatedAt           DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================================
+// ANALYTICS DOMAIN
+// ============================================================================
+
+model AnalyticsSnapshot {
+  id        String   @id @default(cuid())
+  projectId String
+  date      DateTime
+  dau       Int
+  wau       Int
+  mau       Int
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, date])
+  @@index([projectId])
+  @@index([projectId, date])
+}
+
+model RetentionCohort {
+  id            String @id @default(cuid())
+  projectId     String
+  cohortWeek    String
+  weekIndex     Int
+  retentionRate Float
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, cohortWeek])
+}
+
+model GeoData {
+  id           String   @id @default(cuid())
+  projectId    String
+  country      String
+  users        Int
+  snapshotDate DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, snapshotDate])
+}
+
+model FeatureUsage {
+  id           String   @id @default(cuid())
+  projectId    String
+  feature      String
+  usage        Float
+  trend        Float
+  snapshotDate DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, snapshotDate])
+}
+
+model ConversionStep {
+  id           String   @id @default(cuid())
+  projectId    String
+  stage        String
+  count        Int
+  snapshotDate DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, snapshotDate])
+}
+
+model GrowthMetric {
+  id           String   @id @default(cuid())
+  projectId    String
+  metric       String
+  current      Float
+  previous     Float
+  snapshotDate DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, snapshotDate])
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String?
+  type      String
+  title     String
+  message   String   @db.Text
+  timestamp DateTime @default(now())
+  read      Boolean  @default(false)
+  actionUrl String?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([projectId, userId, read])
+  @@index([projectId, timestamp])
+}
