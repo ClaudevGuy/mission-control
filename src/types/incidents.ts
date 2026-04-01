@@ -15,7 +15,7 @@ export interface Incident {
   status: IncidentStatus;
   createdAt: string;
   updatedAt: string;
-  assignee: string;
+  assignee: { id: string; name: string | null; email: string | null; image: string | null } | null;
   affectedServices: string[];
   timeline: IncidentEvent[];
 }

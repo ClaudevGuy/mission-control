@@ -727,7 +727,7 @@ async function main() {
   console.log("Seeding incidents...");
   for (const inc of seedIncidents) {
     // Find assignee userId
-    const assigneeUser = userDefs.find((u) => u.name === inc.assignee);
+    const assigneeUser = userDefs.find((u) => u.name === inc.assignee?.name);
     await prisma.incident.create({
       data: {
         id: inc.id,
