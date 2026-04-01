@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/app/api/auth/[...nextauth]/auth-options";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { prisma } from "@/lib/prisma";
 import { ZodSchema, ZodError } from "zod";
 
@@ -91,7 +92,7 @@ export async function validateBody<T>(request: NextRequest, schema: ZodSchema<T>
     return schema.parse(body);
   } catch (error) {
     if (error instanceof ZodError) {
-      throw new ApiError(`Validation error: ${error.errors.map((e) => e.message).join(", ")}`, 422);
+      throw new ApiError(`Validation error: ${error.issues.map((e) => e.message).join(", ")}`, 422);
     }
     throw new ApiError("Invalid request body", 400);
   }
