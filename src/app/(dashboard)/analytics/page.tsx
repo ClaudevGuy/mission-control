@@ -1,327 +1,281 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
+import { PageHeader } from "@/components/shared";
+import { useCostsStore } from "@/stores/costs-store";
 import {
-  PageHeader,
-  GlassPanel,
-  MetricCard,
-  AreaChartWidget,
-  BarChartWidget,
-  HeatmapGrid,
-} from "@/components/shared";
-import { Users, Clock, MousePointer, ArrowDownUp, Bot, CheckCircle2, Brain, UserCheck } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { formatNumber, formatCurrency } from "@/lib/format";
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-/* ═══ DATA ═══ */
+// ── Stat card ────────────────────────────────────────────────────────────────
+function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-5">
+      <p className="text-xs text-muted-foreground uppercase tracking-wider">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-foreground">{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
 
-const generateDAU = (days: number) => {
-  const data: { name: string; value: number }[] = [];
-  const now = new Date();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const dow = d.getDay();
-    const isWeekend = dow === 0 || dow === 6;
-    let base = isWeekend ? 1100 : 1400;
-    if (i >= 17 && i <= 21) base += 400;
-    base += Math.round((Math.sin(i * 2.7) * 40) + (Math.cos(i * 1.3) * 30));
-    data.push({
-      name: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      value: Math.max(800, base),
-    });
-  }
-  return data;
+// ── Tooltip style ─────────────────────────────────────────────────────────────
+const tooltipStyle = {
+  contentStyle: {
+    background: "hsl(var(--card))",
+    border: "1px solid hsl(var(--border))",
+    borderRadius: 8,
+    fontSize: 12,
+  },
+  labelStyle: { color: "hsl(var(--muted-foreground))" },
 };
 
-const DAU_DATA = generateDAU(30);
+// ── Mock data helpers ─────────────────────────────────────────────────────────
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-const GEO_DATA = [
-  { country: "United States", flag: "\u{1F1FA}\u{1F1F8}", users: 8420 },
-  { country: "United Kingdom", flag: "\u{1F1EC}\u{1F1E7}", users: 2140 },
-  { country: "Germany", flag: "\u{1F1E9}\u{1F1EA}", users: 1680 },
-  { country: "Canada", flag: "\u{1F1E8}\u{1F1E6}", users: 1240 },
-  { country: "France", flag: "\u{1F1EB}\u{1F1F7}", users: 890 },
-  { country: "Australia", flag: "\u{1F1E6}\u{1F1FA}", users: 720 },
-  { country: "India", flag: "\u{1F1EE}\u{1F1F3}", users: 580 },
-  { country: "Netherlands", flag: "\u{1F1F3}\u{1F1F1}", users: 340 },
-  { country: "Japan", flag: "\u{1F1EF}\u{1F1F5}", users: 290 },
-  { country: "Brazil", flag: "\u{1F1E7}\u{1F1F7}", users: 210 },
+function makeRunsData() {
+  return DAYS.map((day) => ({
+    day,
+    successful: Math.floor(Math.random() * 80 + 40),
+    failed: Math.floor(Math.random() * 12 + 2),
+  }));
+}
+
+function makeTokenData() {
+  return DAYS.map((day) => ({
+    day,
+    input: Math.floor(Math.random() * 200000 + 100000),
+    output: Math.floor(Math.random() * 80000 + 20000),
+  }));
+}
+
+const AGENT_NAMES = ["BugHunter", "CodeReview", "Deployer", "Monitor", "Tester"];
+
+function makeAgentRunCounts() {
+  return AGENT_NAMES.map((name) => ({ name, runs: Math.floor(Math.random() * 120 + 20) }));
+}
+
+function makeAgentCosts() {
+  return AGENT_NAMES.map((name) => ({
+    name,
+    cost: parseFloat((Math.random() * 18 + 2).toFixed(2)),
+  }));
+}
+
+const MODEL_BREAKDOWN = [
+  { model: "claude-3-5-sonnet", calls: 312 },
+  { model: "claude-3-5-haiku",  calls: 189 },
+  { model: "gpt-4o",           calls: 74  },
+  { model: "gemini-1.5-pro",   calls: 28  },
 ];
-const GEO_TOTAL = GEO_DATA.reduce((s, g) => s + g.users, 0);
-const GEO_MAX = GEO_DATA[0].users;
+const MODEL_TOTAL = MODEL_BREAKDOWN.reduce((s, m) => s + m.calls, 0);
 
-const RETENTION = [
-  [100, 72, 58, 49, 42, 38, 35],
-  [100, 68, 54, 45, 39, 35, 0],
-  [100, 74, 61, 52, 44, 0, 0],
-  [100, 70, 56, 47, 0, 0, 0],
-  [100, 76, 63, 0, 0, 0, 0],
-  [100, 71, 0, 0, 0, 0, 0],
-];
+// ── Tab type ──────────────────────────────────────────────────────────────────
+type Tab = "performance" | "costs" | "usage";
 
-const FEATURES = [
-  { name: "AI Agents", usage: 78 },
-  { name: "Logs & Observability", usage: 61 },
-  { name: "Deployments", usage: 54 },
-  { name: "Analytics", usage: 41 },
-  { name: "Codebase", usage: 38 },
-  { name: "Costs & Billing", usage: 29 },
-];
-
-const SESSION_DIST = [
-  { name: "0-2m", value: 340 },
-  { name: "2-5m", value: 890 },
-  { name: "5-15m", value: 1420 },
-  { name: "15-30m", value: 780 },
-  { name: "30m+", value: 320 },
-];
-
-const ACTIONS_PER_DAY = Array.from({ length: 14 }, (_, i) => {
-  const d = new Date();
-  d.setDate(d.getDate() - (13 - i));
-  return { name: d.toLocaleDateString("en-US", { weekday: "short" }), value: Math.round(3 + Math.sin(i) * 2 + 2) };
-});
-
-const FUNNEL = [
-  { stage: "Visitors", count: 48200, pct: 100 },
-  { stage: "Signups", count: 8420, pct: 17.5 },
-  { stage: "Activated", count: 5640, pct: 67.0 },
-  { stage: "Retained", count: 3210, pct: 56.9 },
-  { stage: "Paid", count: 890, pct: 27.7 },
-];
-
-const CHANNELS = [
-  { channel: "Organic Search", users: 4820, conversion: 18.2, ltv: 340 },
-  { channel: "Direct", users: 3140, conversion: 24.1, ltv: 420 },
-  { channel: "Referral", users: 2340, conversion: 31.4, ltv: 510 },
-  { channel: "Twitter/X", users: 1890, conversion: 12.8, ltv: 280 },
-  { channel: "Product Hunt", users: 1240, conversion: 22.6, ltv: 390 },
-];
-
-/* ═══ PAGE ═══ */
 export default function AnalyticsPage() {
-  const [tab, setTab] = useState<"users" | "engagement" | "growth">("users");
-  const [dauRange, setDauRange] = useState<"7D" | "30D" | "90D" | "1Y">("30D");
+  const [tab, setTab] = useState<Tab>("performance");
+  const fetchCosts = useCostsStore((s) => s.fetch);
+  const dailyCosts = useCostsStore((s) => s.dailyCosts);
 
-  const tabs = [
-    { id: "users" as const, label: "Users" },
-    { id: "engagement" as const, label: "Engagement" },
-    { id: "growth" as const, label: "Growth" },
+  useEffect(() => {
+    fetchCosts();
+  }, [fetchCosts]);
+
+  // Stable mock data (computed once, not inside render)
+  const [runsData]    = useState(makeRunsData);
+  const [tokenData]   = useState(makeTokenData);
+  const [agentRuns]   = useState(makeAgentRunCounts);
+  const [agentCosts]  = useState(makeAgentCosts);
+
+  const burnData = dailyCosts.slice(-7).map((d) => ({
+    day: d.date ? d.date.slice(5) : "",
+    cost: d.value ?? 0,
+  }));
+
+  const tabs: { id: Tab; label: string }[] = [
+    { id: "performance", label: "Performance" },
+    { id: "costs",       label: "Costs"       },
+    { id: "usage",       label: "Usage"       },
   ];
-
-  const dauSliced = useMemo(() => {
-    const days = dauRange === "7D" ? 7 : dauRange === "30D" ? 30 : dauRange === "90D" ? 90 : 365;
-    return DAU_DATA.slice(-Math.min(days, DAU_DATA.length));
-  }, [dauRange]);
-
-  const cohortXLabels = ["W0", "W1", "W2", "W3", "W4", "W5", "W6"];
-  const cohortYLabels = Array.from({ length: 6 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (i + 1) * 7);
-    return `${d.getMonth() + 1}/${d.getDate()}`;
-  });
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Analytics" description="User metrics, engagement patterns, and growth intelligence" />
+      <PageHeader
+        title="Agent Analytics"
+        description="Performance, cost, and usage metrics across all agents"
+      />
 
-      <div className="border-b border-border">
-        <div className="flex gap-6">
-          {tabs.map((t) => (
-            <button key={t.id} onClick={() => setTab(t.id)} className={cn("pb-2.5 text-sm font-medium transition-colors relative", tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}>
-              {t.label}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00D4FF]" />}
-            </button>
-          ))}
-        </div>
+      {/* Tab bar */}
+      <div className="flex gap-1 rounded-lg border border-border bg-muted/30 p-1 w-fit">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+              tab === t.id
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {/* ═══ USERS ═══ */}
-      {tab === "users" && (
+      {/* ── Performance ───────────────────────────────────────────────────── */}
+      {tab === "performance" && (
         <div className="space-y-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            <MetricCard label="DAU" value={1400} format="number" trend={8.2} icon={Users} color="#00D4FF" />
-            <MetricCard label="WAU" value={5800} format="number" trend={4.1} icon={Users} color="#A855F7" />
-            <MetricCard label="MAU" value={18000} format="number" trend={12.3} icon={Users} color="#39FF14" />
-            <MetricCard label="Avg Session" value={14.5} format="number" icon={Clock} color="#F59E0B" />
-            <MetricCard label="Pages/Session" value={4.7} format="number" icon={MousePointer} color="#EC4899" />
-            <MetricCard label="Bounce Rate" value={23.4} format="percent" trend={-2.1} icon={ArrowDownUp} color="#00D4FF" />
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard label="Total Runs (7d)"  value="847"   sub="+12% vs last week" />
+            <StatCard label="Success Rate"     value="94.2%" sub="↑ 1.3pp" />
+            <StatCard label="Avg Run Duration" value="1m 23s" sub="↓ 8s vs last week" />
+            <StatCard label="Agents Active"    value="5"     sub="of 8 deployed" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            <GlassPanel padding="lg" className="lg:col-span-3">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-heading text-sm font-semibold text-foreground">Daily Active Users</h3>
-                <div className="flex items-center gap-0.5 rounded-lg bg-muted/50 p-0.5">
-                  {(["7D", "30D", "90D", "1Y"] as const).map((r) => (
-                    <button key={r} onClick={() => setDauRange(r)} className={cn("rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors", dauRange === r ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground")}>
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <AreaChartWidget data={dauSliced} color="#00D4FF" height={220} formatValue={formatNumber} />
-            </GlassPanel>
-
-            <GlassPanel padding="lg" className="lg:col-span-2">
-              <h3 className="font-heading text-sm font-semibold text-foreground mb-4">Users by Country</h3>
-              <div className="space-y-2.5">
-                {GEO_DATA.map((g, i) => {
-                  const barWidth = (g.users / GEO_MAX) * 100;
-                  const opacity = 1 - (i * 0.08);
-                  return (
-                    <div key={g.country}>
-                      <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-muted-foreground"><span className="mr-1.5">{g.flag}</span>{g.country}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-foreground">{g.users.toLocaleString()}</span>
-                          <span className="font-mono text-[10px] text-muted-foreground w-10 text-right">{((g.users / GEO_TOTAL) * 100).toFixed(1)}%</span>
-                        </div>
-                      </div>
-                      <div className="w-full h-1.5 rounded-full bg-muted/40">
-                        <div className="h-1.5 rounded-full transition-all" style={{ width: `${barWidth}%`, background: `rgba(0,212,255,${opacity})` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </GlassPanel>
+          <div className="rounded-xl border border-border bg-card p-5">
+            <p className="mb-4 text-sm font-medium text-foreground">Agent Runs — Last 7 Days</p>
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={runsData}>
+                <defs>
+                  <linearGradient id="gradSuccess" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#00D4FF" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#00D4FF" stopOpacity={0}   />
+                  </linearGradient>
+                  <linearGradient id="gradFailed" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#EF4444" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#EF4444" stopOpacity={0}   />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <YAxis                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <Tooltip {...tooltipStyle} />
+                <Area type="monotone" dataKey="successful" stroke="#00D4FF" strokeWidth={2} fill="url(#gradSuccess)" name="Successful" />
+                <Area type="monotone" dataKey="failed"     stroke="#EF4444" strokeWidth={2} fill="url(#gradFailed)"  name="Failed"     />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
 
-          <GlassPanel padding="lg">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-heading text-sm font-semibold text-foreground">Retention Cohorts</h3>
-              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                <span className="flex items-center gap-1"><span className="size-2.5 rounded-sm" style={{ background: "rgba(0,212,255,0.1)" }} /> 0%</span>
-                <span className="flex items-center gap-1"><span className="size-2.5 rounded-sm" style={{ background: "rgba(0,212,255,0.5)" }} /> 50%</span>
-                <span className="flex items-center gap-1"><span className="size-2.5 rounded-sm" style={{ background: "rgba(0,212,255,1)" }} /> 100%</span>
-              </div>
-            </div>
-            <HeatmapGrid data={RETENTION} xLabels={cohortXLabels} yLabels={cohortYLabels} colorScale="cyan" />
-          </GlassPanel>
+          <div className="rounded-xl border border-border bg-card p-5">
+            <p className="mb-4 text-sm font-medium text-foreground">Runs by Agent</p>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={agentRuns} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                <XAxis type="number"   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={80} />
+                <Tooltip {...tooltipStyle} />
+                <Bar dataKey="runs" fill="#00D4FF" radius={[0, 4, 4, 0]} name="Runs" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
 
-      {/* ═══ ENGAGEMENT ═══ */}
-      {tab === "engagement" && (
+      {/* ── Costs ─────────────────────────────────────────────────────────── */}
+      {tab === "costs" && (
         <div className="space-y-6">
-          <GlassPanel padding="lg">
-            <h3 className="font-heading text-sm font-semibold text-foreground mb-4">Feature Usage</h3>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard label="Total Spend (7d)"     value="$284.50"   sub="budget: $500"       />
+            <StatCard label="Cost per Run"         value="$0.34"     sub="↑ $0.02"             />
+            <StatCard label="Most Expensive Agent" value="BugHunter" sub="$98.20 this week"    />
+            <StatCard label="Cost Efficiency"      value="2.8x"      sub="successful runs per $1" />
+          </div>
+
+          {burnData.length > 0 && (
+            <div className="rounded-xl border border-border bg-card p-5">
+              <p className="mb-4 text-sm font-medium text-foreground">Daily Cost Burn</p>
+              <ResponsiveContainer width="100%" height={240}>
+                <AreaChart data={burnData}>
+                  <defs>
+                    <linearGradient id="gradCost" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%"  stopColor="#00D4FF" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#00D4FF" stopOpacity={0}   />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                  <YAxis                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `$${v}`} />
+                  <Tooltip {...tooltipStyle} formatter={(v: unknown) => [`$${(v as number).toFixed(2)}`, "Cost"]} />
+                  <Area type="monotone" dataKey="cost" stroke="#00D4FF" strokeWidth={2} fill="url(#gradCost)" name="Cost" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+
+          <div className="rounded-xl border border-border bg-card p-5">
+            <p className="mb-4 text-sm font-medium text-foreground">Cost by Agent (7d)</p>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={agentCosts} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                <XAxis type="number"   tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `$${v}`} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={80} />
+                <Tooltip {...tooltipStyle} formatter={(v: unknown) => [`$${(v as number).toFixed(2)}`, "Cost"]} />
+                <Bar dataKey="cost" fill="#00D4FF" radius={[0, 4, 4, 0]} name="Cost ($)" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* ── Usage ─────────────────────────────────────────────────────────── */}
+      {tab === "usage" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard label="Total Tokens (7d)"  value="4.2M"  sub="input + output"      />
+            <StatCard label="Avg Tokens / Run"   value="4,960" sub="↓ 3% vs last week"   />
+            <StatCard label="Context Hits Limit" value="12"    sub="runs truncated"       />
+            <StatCard label="Model Calls"        value="603"   sub="across 4 models"      />
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-5">
+            <p className="mb-4 text-sm font-medium text-foreground">Token Usage — Last 7 Days</p>
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={tokenData}>
+                <defs>
+                  <linearGradient id="gradInput" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#00D4FF" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#00D4FF" stopOpacity={0}   />
+                  </linearGradient>
+                  <linearGradient id="gradOutput" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#A855F7" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#A855F7" stopOpacity={0}    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="day" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <YAxis                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`} />
+                <Tooltip {...tooltipStyle} formatter={(v: unknown) => [`${((v as number) / 1000).toFixed(1)}k tokens`, ""]} />
+                <Area type="monotone" dataKey="input"  stroke="#00D4FF" strokeWidth={2} fill="url(#gradInput)"  name="Input tokens"  />
+                <Area type="monotone" dataKey="output" stroke="#A855F7" strokeWidth={2} fill="url(#gradOutput)" name="Output tokens" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-5">
+            <p className="mb-4 text-sm font-medium text-foreground">Model Breakdown</p>
             <div className="space-y-3">
-              {FEATURES.map((f) => (
-                <div key={f.name}>
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <span className="text-foreground font-medium">{f.name}</span>
-                    <span className="font-mono text-[#00D4FF]">{f.usage}%</span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-muted/50">
-                    <div className="h-2 rounded-full bg-[#00D4FF] transition-all" style={{ width: `${f.usage}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </GlassPanel>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <GlassPanel padding="lg">
-              <h3 className="font-heading text-sm font-semibold text-foreground mb-4">Session Duration</h3>
-              <BarChartWidget data={SESSION_DIST} color="#A855F7" height={200} formatValue={(v) => `${v}`} />
-            </GlassPanel>
-            <GlassPanel padding="lg">
-              <h3 className="font-heading text-sm font-semibold text-foreground mb-4">Actions per Session (14d)</h3>
-              <BarChartWidget data={ACTIONS_PER_DAY} color="#00D4FF" height={200} formatValue={(v) => `${v}`} />
-            </GlassPanel>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricCard label="Avg Tasks/Session" value={3.2} format="number" icon={Bot} color="#00D4FF" />
-            <MetricCard label="Agent Success Rate" value={94.7} format="percent" icon={CheckCircle2} color="#39FF14" />
-            <MetricCard label="Avg Context Used" value={67} format="percent" icon={Brain} color="#A855F7" />
-            <MetricCard label="Human-in-Loop" value={12} format="percent" trend={-3.2} icon={UserCheck} color="#F59E0B" />
-          </div>
-        </div>
-      )}
-
-      {/* ═══ GROWTH ═══ */}
-      {tab === "growth" && (
-        <div className="space-y-6">
-          <GlassPanel padding="lg">
-            <h3 className="font-heading text-sm font-semibold text-foreground mb-4">Conversion Funnel</h3>
-            <div className="space-y-2">
-              {FUNNEL.map((step, i) => {
-                const widthPct = (step.count / FUNNEL[0].count) * 100;
-                const convLabel = i === 0 ? "" : `${step.pct}%`;
+              {MODEL_BREAKDOWN.map((m) => {
+                const pct = Math.round((m.calls / MODEL_TOTAL) * 100);
                 return (
-                  <div key={step.stage} className="flex items-center gap-4">
-                    <span className="text-xs text-muted-foreground w-20 shrink-0 text-right">{step.stage}</span>
-                    <div className="flex-1">
-                      <div
-                        className="h-8 rounded-md flex items-center px-3"
-                        style={{
-                          width: `${Math.max(widthPct, 8)}%`,
-                          background: `rgba(0,212,255,${0.08 + (1 - i / FUNNEL.length) * 0.15})`,
-                          borderLeft: "3px solid rgba(0,212,255,0.5)",
-                        }}
-                      >
-                        <span className="font-mono text-xs text-foreground">{step.count.toLocaleString()}</span>
-                      </div>
+                  <div key={m.model} className="flex items-center gap-3">
+                    <span className="w-44 text-xs text-muted-foreground font-mono truncate">{m.model}</span>
+                    <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                      <div className="h-full rounded-full bg-cyan" style={{ width: `${pct}%` }} />
                     </div>
-                    <span className="font-mono text-xs text-muted-foreground w-12 shrink-0 text-right">{convLabel}</span>
+                    <span className="w-10 text-right text-xs text-muted-foreground">{m.calls}</span>
                   </div>
                 );
               })}
             </div>
-          </GlassPanel>
-
-          <GlassPanel padding="lg">
-            <h3 className="font-heading text-sm font-semibold text-foreground mb-4">Growth (6 months)</h3>
-            <AreaChartWidget
-              data={[
-                { name: "Oct", value: 8200 },
-                { name: "Nov", value: 9400 },
-                { name: "Dec", value: 11200 },
-                { name: "Jan", value: 13800 },
-                { name: "Feb", value: 15900 },
-                { name: "Mar", value: 18000 },
-              ]}
-              color="#00D4FF"
-              height={220}
-              formatValue={formatNumber}
-            />
-          </GlassPanel>
-
-          <GlassPanel padding="none">
-            <div className="px-4 py-3 border-b border-border">
-              <h3 className="font-heading text-sm font-semibold text-foreground">Top Acquisition Channels</h3>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  {["Channel", "Users", "Conversion %", "Avg LTV"].map((h) => (
-                    <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {CHANNELS.map((ch) => (
-                  <tr key={ch.channel} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-2.5 font-medium text-foreground">{ch.channel}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs">{ch.users.toLocaleString()}</td>
-                    <td className="px-4 py-2.5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 h-1.5 rounded-full bg-muted/50">
-                          <div className="h-1.5 rounded-full bg-[#00D4FF]" style={{ width: `${ch.conversion}%` }} />
-                        </div>
-                        <span className="font-mono text-xs text-muted-foreground">{ch.conversion}%</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-2.5 font-mono text-xs">{formatCurrency(ch.ltv)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </GlassPanel>
+          </div>
         </div>
       )}
     </div>
