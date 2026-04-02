@@ -347,6 +347,8 @@ export default function WorkflowBuilderPage() {
           className="flex-1"
           ref={reactFlowWrapper}
           style={{
+            width: "100%",
+            height: "100%",
             backgroundColor: isDark ? "#0A0A0F" : "#F5F5F8",
             backgroundImage: `radial-gradient(circle, ${isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.07)"} 1px, transparent 1px)`,
             backgroundSize: "24px 24px",
@@ -365,7 +367,7 @@ export default function WorkflowBuilderPage() {
             defaultEdgeOptions={{ type: "animated" }}
             fitView
             proOptions={{ hideAttribution: true }}
-            className="workflow-canvas"
+            style={{ background: "transparent" }}
           >
             <Controls
               showInteractive={false}

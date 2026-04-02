@@ -401,27 +401,12 @@
 }
 
 /* ═══ React Flow Canvas — Workflow Builder ═══ */
-.workflow-canvas {
-  background-color: var(--reactflow-bg) !important;
-  background-image: radial-gradient(
-    circle,
-    var(--reactflow-dot) 1px,
-    transparent 1px
-  ) !important;
-  background-size: 24px 24px !important;
-}
-
-.workflow-canvas .react-flow__node {
+.react-flow__node {
   cursor: grab;
 }
 
-.workflow-canvas .react-flow__node:active {
+.react-flow__node:active {
   cursor: grabbing;
-}
-
-/* Hide the default React Flow background since we use CSS */
-.workflow-canvas .react-flow__background {
-  display: none !important;
 }
 
 .react-flow__controls {
@@ -466,19 +451,9 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
 }
 
-/* Force React Flow canvas to respect dark theme */
-:root .react-flow,
-:root .react-flow__renderer,
-:root .react-flow__pane,
-:root .react-flow__background,
-:root [class*="react-flow"] {
-  background-color: #0A0A0F !important;
-}
-
-.light .react-flow,
-.light .react-flow__renderer,
-.light .react-flow__pane,
-.light .react-flow__background,
-.light [class*="react-flow"] {
-  background-color: #F5F5F8 !important;
+/* React Flow transparent — background controlled by parent wrapper inline styles */
+.react-flow,
+.react-flow__renderer,
+.react-flow__pane {
+  background: transparent !important;
 }
