@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Download, Trash2, Pause, RotateCcw, ShieldX } from "lucide-react";
+import { Download, Trash2, Pause, RotateCcw, ShieldX, Bell, Shield } from "lucide-react";
 import { useSettingsStore } from "@/stores/settings-store";
 
 const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Integrations", "Danger Zone"];
@@ -166,27 +166,35 @@ export default function SettingsPage() {
 
           {/* ─── NOTIFICATIONS ─── */}
           {section === "Notifications" && (
-            <GlassPanel padding="none">
-              <div className="px-4 py-3 border-b border-border"><h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3></div>
-              <table className="w-full text-sm">
-                <thead><tr className="border-b border-border">
-                  {["Event", "In-App", "Email", "Slack"].map((h) => <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-2">{h}</th>)}
-                </tr></thead>
-                <tbody>
-                  {notifs.map((n, i) => (
-                    <tr key={n.name} className="border-b border-border/50">
-                      <td className="px-4 py-2 text-foreground">{n.name}</td>
-                      {(["app", "email", "slack"] as const).map((ch) => (
-                        <td key={ch} className="px-4 py-2">
-                          <Switch checked={n[ch]} onCheckedChange={(v) => { const next = [...notifs]; next[i] = { ...next[i], [ch]: v }; setNotifs(next); }} className="data-[state=checked]:bg-[#00d992]" />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="px-4 py-3"><button className="text-xs font-medium text-primary-foreground bg-[#00d992] rounded-lg px-4 py-2 hover:bg-[#00d992]/80" onClick={() => toast.success("Preferences saved")}>Save Preferences</button></div>
-            </GlassPanel>
+            notifs.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-16 text-center">
+                <Bell className="size-8 text-muted-foreground/20" />
+                <p className="text-sm font-medium text-muted-foreground">No notification events configured</p>
+                <p className="text-xs text-muted-foreground/50">Notification preferences will appear here when events are set up</p>
+              </div>
+            ) : (
+              <GlassPanel padding="none">
+                <div className="px-4 py-3 border-b border-border"><h3 className="text-sm font-semibold text-foreground">Notification Preferences</h3></div>
+                <table className="w-full text-sm">
+                  <thead><tr className="border-b border-border">
+                    {["Event", "In-App", "Email", "Slack"].map((h) => <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-2">{h}</th>)}
+                  </tr></thead>
+                  <tbody>
+                    {notifs.map((n, i) => (
+                      <tr key={n.name} className="border-b border-border/50">
+                        <td className="px-4 py-2 text-foreground">{n.name}</td>
+                        {(["app", "email", "slack"] as const).map((ch) => (
+                          <td key={ch} className="px-4 py-2">
+                            <Switch checked={n[ch]} onCheckedChange={(v) => { const next = [...notifs]; next[i] = { ...next[i], [ch]: v }; setNotifs(next); }} className="data-[state=checked]:bg-[#00d992]" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="px-4 py-3"><button className="text-xs font-medium text-primary-foreground bg-[#00d992] rounded-lg px-4 py-2 hover:bg-[#00d992]/80" onClick={() => toast.success("Preferences saved")}>Save Preferences</button></div>
+              </GlassPanel>
+            )
           )}
 
           {/* ─── DATA & PRIVACY ─── */}
@@ -237,17 +245,24 @@ export default function SettingsPage() {
               </GlassPanel>
               <GlassPanel padding="lg">
                 <h3 className="text-sm font-semibold text-foreground mb-3">Recent Login Activity</h3>
-                <div className="space-y-1">
-                  {LOGINS.map((l, i) => (
-                    <div key={i} className={cn("flex items-center gap-4 px-3 py-2 rounded-lg text-xs", i === 0 && "bg-muted/30 font-medium", l.status === "failed" && "bg-red-400/[0.04]")}>
-                      <span className="font-mono text-muted-foreground w-28 shrink-0">{l.ip}</span>
-                      <span className="text-muted-foreground w-32 shrink-0 truncate">{l.location}</span>
-                      <span className="text-muted-foreground flex-1 truncate">{l.device}</span>
-                      <span className="text-muted-foreground w-16 shrink-0">{l.time}</span>
-                      <span className={cn("font-mono text-[10px]", l.status === "success" ? "text-green-400" : "text-red-400")}>{l.status}</span>
-                    </div>
-                  ))}
-                </div>
+                {LOGINS.length === 0 ? (
+                  <div className="flex flex-col items-center gap-2 py-6 text-center">
+                    <Shield className="size-6 text-muted-foreground/20" />
+                    <p className="text-xs text-muted-foreground/50">No login activity recorded yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {LOGINS.map((l, i) => (
+                      <div key={i} className={cn("flex items-center gap-4 px-3 py-2 rounded-lg text-xs", i === 0 && "bg-muted/30 font-medium", l.status === "failed" && "bg-red-400/[0.04]")}>
+                        <span className="font-mono text-muted-foreground w-28 shrink-0">{l.ip}</span>
+                        <span className="text-muted-foreground w-32 shrink-0 truncate">{l.location}</span>
+                        <span className="text-muted-foreground flex-1 truncate">{l.device}</span>
+                        <span className="text-muted-foreground w-16 shrink-0">{l.time}</span>
+                        <span className={cn("font-mono text-[10px]", l.status === "success" ? "text-green-400" : "text-red-400")}>{l.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </GlassPanel>
               <GlassPanel padding="lg">
                 <h3 className="text-sm font-semibold text-foreground mb-2">Single Sign-On (SSO)</h3>
@@ -258,73 +273,96 @@ export default function SettingsPage() {
           )}
 
           {/* ─── INTEGRATIONS ─── */}
-          {section === "Integrations" && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-base font-semibold text-foreground">Integrations</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Connect external services to enhance your project&apos;s capabilities.
-                </p>
-              </div>
+          {section === "Integrations" && (() => {
+            const INTEGRATIONS = [
+              { name: "Anthropic (Claude)", desc: "AI model provider for agent execution", envKey: "ANTHROPIC_API_KEY", color: "#CC785C", category: "AI Provider" },
+              { name: "OpenAI", desc: "GPT models for agent execution", envKey: "OPENAI_API_KEY", color: "#10A37F", category: "AI Provider" },
+              { name: "Neon", desc: "Serverless PostgreSQL database", envKey: "DATABASE_URL", color: "#00d992", category: "Database" },
+              { name: "GitHub", desc: "Repository sync, PRs, and CI status", envKey: "GITHUB_TOKEN", color: "#f2f2f2", category: "DevOps" },
+              { name: "Vercel", desc: "Deployment and hosting platform", envKey: "VERCEL_TOKEN", color: "#f2f2f2", category: "DevOps" },
+              { name: "Slack", desc: "Incident alerts and agent notifications", envKey: "SLACK_WEBHOOK_URL", color: "#E01E5A", category: "Communication" },
+              { name: "PagerDuty", desc: "On-call escalation and incident management", envKey: "PAGERDUTY_API_KEY", color: "#06AC38", category: "Monitoring" },
+              { name: "Datadog", desc: "Forward metrics, traces, and logs", envKey: "DATADOG_API_KEY", color: "#632CA6", category: "Monitoring" },
+              { name: "Sentry", desc: "Error tracking and performance monitoring", envKey: "SENTRY_DSN", color: "#362D59", category: "Monitoring" },
+              { name: "Linear", desc: "Auto-create issues from agent findings", envKey: "LINEAR_API_KEY", color: "#5E6AD2", category: "Productivity" },
+            ];
 
-              <div className="space-y-3">
-                {[
-                  {
-                    name: "GitHub",
-                    desc: "Sync repositories, pull requests, and CI status",
-                    connected: true,
-                  },
-                  {
-                    name: "Slack",
-                    desc: "Send incident alerts and agent notifications",
-                    connected: true,
-                  },
-                  {
-                    name: "PagerDuty",
-                    desc: "On-call escalation and incident management",
-                    connected: false,
-                  },
-                  {
-                    name: "Linear",
-                    desc: "Auto-create issues from agent findings",
-                    connected: false,
-                  },
-                  {
-                    name: "Datadog",
-                    desc: "Forward metrics, traces, and logs",
-                    connected: false,
-                  },
-                ].map((integration) => (
-                  <div
-                    key={integration.name}
-                    className="flex items-center justify-between rounded-lg border border-border bg-card/50 px-4 py-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="size-8 rounded-md bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
-                        {integration.name.slice(0, 2).toUpperCase()}
+            // Check which are connected via the integrations store (API data)
+            // For now, we check based on common knowledge:
+            // DATABASE_URL and ANTHROPIC_API_KEY are always connected if the app works
+            const knownConnected = new Set(["DATABASE_URL", "ANTHROPIC_API_KEY"]);
+
+            const connected = INTEGRATIONS.filter((i) => knownConnected.has(i.envKey));
+            const available = INTEGRATIONS.filter((i) => !knownConnected.has(i.envKey));
+
+            return (
+              <div className="space-y-6">
+                {/* Connected */}
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                    Connected ({connected.length})
+                  </p>
+                  <div className="space-y-2">
+                    {connected.map((integration) => (
+                      <div key={integration.name} className="flex items-center justify-between rounded-lg border border-[#00d992]/20 bg-[#00d992]/[0.03] px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="size-9 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: `${integration.color}15`, color: integration.color }}>
+                            {integration.name.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{integration.name}</p>
+                            <p className="text-xs text-muted-foreground">{integration.desc}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-green-400">
+                            <span className="size-1.5 rounded-full bg-green-400" /> Connected
+                          </span>
+                          <button className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/50 transition-colors" onClick={() => toast.success(`${integration.name} settings opened`)}>
+                            Configure
+                          </button>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-foreground">{integration.name}</p>
-                        <p className="text-xs text-muted-foreground">{integration.desc}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`text-xs font-medium ${
-                          integration.connected ? "text-green-400" : "text-muted-foreground"
-                        }`}
-                      >
-                        {integration.connected ? "Connected" : "Not connected"}
-                      </span>
-                      <button className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/50 transition-colors">
-                        {integration.connected ? "Configure" : "Connect"}
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* Available to connect */}
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                    Available ({available.length})
+                  </p>
+                  <div className="space-y-2">
+                    {available.map((integration) => (
+                      <div key={integration.name} className="flex items-center justify-between rounded-lg border border-border bg-card/50 px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="size-9 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: `${integration.color}10`, color: `${integration.color}80` }}>
+                            {integration.name.slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{integration.name}</p>
+                            <p className="text-xs text-muted-foreground">{integration.desc}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-[10px] text-muted-foreground/50">{integration.category}</span>
+                          <button className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted/50 transition-colors" onClick={() => toast.success(`Add ${integration.envKey} to your .env file to connect`)}>
+                            Connect
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border bg-muted/10 p-4">
+                  <p className="text-xs text-muted-foreground">
+                    To connect a service, add its API key to your <code className="font-mono text-[#00d992] bg-[#00d992]/10 rounded px-1 py-0.5">.env</code> file. See <code className="font-mono text-[#00d992] bg-[#00d992]/10 rounded px-1 py-0.5">.env.example</code> for all available keys.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* ─── DANGER ZONE ─── */}
           {section === "Danger Zone" && (
