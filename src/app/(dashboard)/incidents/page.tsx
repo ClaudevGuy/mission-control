@@ -31,27 +31,19 @@ function timeAgo(ts: string) {
   return `${Math.floor(diff / 86400000)}d ago`;
 }
 
-// Extra incidents removed — data now comes from the store
-const EXTRA_INCIDENTS: never[] = [];
-
-const ALERT_RULES: { id: string; name: string; metric: string; condition: string; threshold: string; duration: string; channels: string[]; enabled: boolean; lastTriggered: string }[] = [];
-
-const ONCALL: { day: string; person: string }[] = [];
-
-const HISTORY: { title: string; severity: IncidentSeverity; duration: string; resolvedBy: string; mttr: string; date: string }[] = [];
+// All data comes from the incidents store (fetched from API)
 
 export default function IncidentsPage() {
   const [tab, setTab] = useState<"active" | "rules" | "oncall" | "history">("active");
-  const { incidents, fetch: fetchIncidents } = useIncidentsStore();
+  const { incidents, alertRules, onCallSchedule, fetch: fetchIncidents } = useIncidentsStore();
   const [expandedInc, setExpandedInc] = useState<string | null>(null);
   const [alertRuleOpen, setAlertRuleOpen] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchIncidents(); }, []);
 
-  const allIncidents = [...incidents, ...EXTRA_INCIDENTS];
+  const allIncidents = [...incidents];
   const columns = { open: "Open", investigating: "Investigating", resolved: "Resolved" } as const;
-  const today = new Date().getDay(); // 0=Sun
 
   const tabs = [
     { id: "active" as const, label: "Active" },
@@ -85,6 +77,13 @@ export default function IncidentsPage() {
             <MetricCard label="This Month" value={allIncidents.length} format="number" icon={TrendingDown} color="#39FF14" />
           </div>
 
+          {allIncidents.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center">
+              <Shield className="size-10 text-green-400/20" />
+              <p className="text-base font-semibold text-foreground">All clear</p>
+              <p className="text-sm text-muted-foreground">No incidents reported. All systems operational.</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-3 gap-4">
             {(Object.entries(columns) as [string, string][]).map(([status, label]) => {
               const cards = allIncidents.filter((i) => i.status === status);
@@ -165,6 +164,7 @@ export default function IncidentsPage() {
               );
             })}
           </div>
+          )}
         </div>
       )}
 
@@ -176,7 +176,7 @@ export default function IncidentsPage() {
               <Plus className="size-3" /> Create Alert Rule
             </button>
           </div>
-          {ALERT_RULES.length === 0 ? (
+          {alertRules.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-16 text-center rounded-xl border border-border bg-card/50">
               <AlertTriangle className="size-8 text-muted-foreground/20" />
               <p className="text-sm font-medium text-muted-foreground">No alert rules yet</p>
@@ -193,10 +193,10 @@ export default function IncidentsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {ALERT_RULES.map((rule) => (
+                  {alertRules.map((rule) => (
                     <tr key={rule.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                       <td className="px-4 py-2.5 font-medium text-foreground">{rule.name}</td>
-                      <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{rule.metric} {rule.condition} {rule.threshold} for {rule.duration}</td>
+                      <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{rule.metric} {rule.condition === "gt" ? ">" : rule.condition === "lt" ? "<" : "="} {rule.threshold}</td>
                       <td className="px-4 py-2.5">
                         <div className="flex gap-1">
                           {rule.channels.map((c) => (
@@ -226,25 +226,34 @@ export default function IncidentsPage() {
       {/* ═══ ON-CALL ═══ */}
       {tab === "oncall" && (
         <div className="space-y-6">
-          <GlassPanel padding="lg">
-            <h3 className="text-sm font-semibold text-foreground mb-4">This Week&apos;s Schedule</h3>
-            <div className="grid grid-cols-7 gap-2">
-              {ONCALL.map((slot, i) => {
-                const isToday = (i + 1) % 7 === today;
-                const color = AVATAR_COLORS[slot.person] || "#888";
-                return (
-                  <div key={slot.day} className={cn("rounded-lg p-3 text-center", isToday ? "bg-[#00d992]/[0.06] border border-[#00d992]/30" : "bg-muted/30")}>
-                    <p className="text-[10px] font-semibold uppercase text-muted-foreground mb-2">{slot.day}</p>
-                    <div className="size-8 rounded-full mx-auto flex items-center justify-center text-[10px] font-bold mb-1" style={{ background: `${color}20`, color }}>
-                      {slot.person.split(" ").map((n) => n[0]).join("")}
-                    </div>
-                    <p className="text-[11px] text-foreground truncate">{slot.person.split(" ")[0]}</p>
-                    {isToday && <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[8px] font-bold mt-1 bg-[#00d992]/20 text-[#00d992]">ON-CALL</span>}
-                  </div>
-                );
-              })}
+          {onCallSchedule.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center">
+              <Clock className="size-8 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-muted-foreground">No on-call schedule configured</p>
+              <p className="text-xs text-muted-foreground/50">Set up an on-call rotation to get alerts routed to the right person</p>
             </div>
-          </GlassPanel>
+          ) : (
+            <GlassPanel padding="lg">
+              <h3 className="text-sm font-semibold text-foreground mb-4">On-Call Schedule</h3>
+              <div className="space-y-2">
+                {onCallSchedule.map((slot) => {
+                  const now = new Date();
+                  const start = new Date(slot.startDate);
+                  const end = new Date(slot.endDate);
+                  const isCurrent = now >= start && now <= end;
+                  return (
+                    <div key={slot.id} className={cn("flex items-center gap-3 rounded-lg px-4 py-3", isCurrent ? "bg-[#00d992]/[0.06] border border-[#00d992]/30" : "bg-muted/30")}>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground">{slot.member}</p>
+                        <p className="text-[10px] text-muted-foreground font-mono">{start.toLocaleDateString()} — {end.toLocaleDateString()}</p>
+                      </div>
+                      {isCurrent && <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold bg-[#00d992]/20 text-[#00d992]">ON-CALL NOW</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </GlassPanel>
+          )}
 
           <GlassPanel padding="lg">
             <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2"><Shield className="size-4 text-[#00d992]" /> Escalation Policy</h3>
@@ -266,36 +275,44 @@ export default function IncidentsPage() {
       )}
 
       {/* ═══ HISTORY ═══ */}
-      {tab === "history" && (
-        <GlassPanel padding="none">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                {["Title", "Severity", "Duration", "Resolved By", "MTTR", "Date"].map((h) => (
-                  <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {HISTORY.map((h, i) => {
-                const sevBadge = SEV_BADGE[h.severity];
-                return (
-                  <tr key={i} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-2.5 font-medium text-foreground">{h.title}</td>
-                    <td className="px-4 py-2.5">
-                      <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold" style={{ background: sevBadge.bg, color: sevBadge.text }}>{h.severity}</span>
-                    </td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{h.duration}</td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground">{h.resolvedBy}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{h.mttr}</td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground">{h.date}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </GlassPanel>
-      )}
+      {tab === "history" && (() => {
+        const resolved = allIncidents.filter((i) => i.status === "resolved");
+        return resolved.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 py-16 text-center">
+            <Activity className="size-8 text-muted-foreground/20" />
+            <p className="text-sm font-medium text-muted-foreground">No incident history</p>
+            <p className="text-xs text-muted-foreground/50">Resolved incidents will appear here</p>
+          </div>
+        ) : (
+          <GlassPanel padding="none">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  {["Title", "Severity", "Assignee", "Services", "Resolved"].map((h) => (
+                    <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {resolved.map((inc) => {
+                  const sevBadge = SEV_BADGE[inc.severity];
+                  return (
+                    <tr key={inc.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                      <td className="px-4 py-2.5 font-medium text-foreground">{inc.title}</td>
+                      <td className="px-4 py-2.5">
+                        <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold" style={{ background: sevBadge.bg, color: sevBadge.text }}>{inc.severity}</span>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground">{inc.assignee?.name ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground">{inc.affectedServices.join(", ") || "—"}</td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground font-mono" suppressHydrationWarning>{timeAgo(inc.updatedAt)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </GlassPanel>
+        );
+      })()}
 
       {/* ═══ CREATE ALERT RULE MODAL ═══ */}
       {alertRuleOpen && (
