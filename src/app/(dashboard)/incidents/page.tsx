@@ -44,6 +44,7 @@ export default function IncidentsPage() {
   const [tab, setTab] = useState<"active" | "rules" | "oncall" | "history">("active");
   const { incidents, fetch: fetchIncidents } = useIncidentsStore();
   const [expandedInc, setExpandedInc] = useState<string | null>(null);
+  const [alertRuleOpen, setAlertRuleOpen] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchIncidents(); }, []);
@@ -171,46 +172,54 @@ export default function IncidentsPage() {
       {tab === "rules" && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="flex items-center gap-1.5 text-xs font-medium text-[#00D4FF] bg-[#00D4FF]/10 rounded-lg px-3 py-1.5 hover:bg-[#00D4FF]/20" onClick={() => toast.success("Alert rule created")}>
+            <button className="flex items-center gap-1.5 text-xs font-medium text-[#00D4FF] bg-[#00D4FF]/10 rounded-lg px-3 py-1.5 hover:bg-[#00D4FF]/20" onClick={() => setAlertRuleOpen(true)}>
               <Plus className="size-3" /> Create Alert Rule
             </button>
           </div>
-          <GlassPanel padding="none">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  {["Name", "Condition", "Notify Via", "Last Triggered", "Status", ""].map((h) => (
-                    <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {ALERT_RULES.map((rule) => (
-                  <tr key={rule.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-2.5 font-medium text-foreground">{rule.name}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{rule.metric} {rule.condition} {rule.threshold} for {rule.duration}</td>
-                    <td className="px-4 py-2.5">
-                      <div className="flex gap-1">
-                        {rule.channels.map((c) => (
-                          <span key={c} className="inline-flex items-center rounded px-1.5 py-0.5 text-[9px] font-mono bg-muted/40 text-muted-foreground border border-border">{c}</span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground font-mono">{rule.lastTriggered}</td>
-                    <td className="px-4 py-2.5">
-                      <Switch checked={rule.enabled} className="data-[state=checked]:bg-[#00D4FF]" onCheckedChange={() => toast.success(`Rule ${rule.enabled ? "paused" : "enabled"}`)} />
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <div className="flex items-center gap-2">
-                        <button className="text-muted-foreground hover:text-[#00D4FF]"><Pencil className="size-3" /></button>
-                        <button className="text-muted-foreground hover:text-red-400"><Trash2 className="size-3" /></button>
-                      </div>
-                    </td>
+          {ALERT_RULES.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center rounded-xl border border-border bg-card/50">
+              <AlertTriangle className="size-8 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-muted-foreground">No alert rules yet</p>
+              <p className="text-xs text-muted-foreground/50">Create rules to get notified about issues</p>
+            </div>
+          ) : (
+            <GlassPanel padding="none">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    {["Name", "Condition", "Notify Via", "Last Triggered", "Status", ""].map((h) => (
+                      <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </GlassPanel>
+                </thead>
+                <tbody>
+                  {ALERT_RULES.map((rule) => (
+                    <tr key={rule.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                      <td className="px-4 py-2.5 font-medium text-foreground">{rule.name}</td>
+                      <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{rule.metric} {rule.condition} {rule.threshold} for {rule.duration}</td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex gap-1">
+                          {rule.channels.map((c) => (
+                            <span key={c} className="inline-flex items-center rounded px-1.5 py-0.5 text-[9px] font-mono bg-muted/40 text-muted-foreground border border-border">{c}</span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2.5 text-xs text-muted-foreground font-mono">{rule.lastTriggered}</td>
+                      <td className="px-4 py-2.5">
+                        <Switch checked={rule.enabled} className="data-[state=checked]:bg-[#00D4FF]" onCheckedChange={() => toast.success(`Rule ${rule.enabled ? "paused" : "enabled"}`)} />
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <div className="flex items-center gap-2">
+                          <button className="text-muted-foreground hover:text-[#00D4FF]"><Pencil className="size-3" /></button>
+                          <button className="text-muted-foreground hover:text-red-400"><Trash2 className="size-3" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </GlassPanel>
+          )}
         </div>
       )}
 
@@ -286,6 +295,71 @@ export default function IncidentsPage() {
             </tbody>
           </table>
         </GlassPanel>
+      )}
+
+      {/* ═══ CREATE ALERT RULE MODAL ═══ */}
+      {alertRuleOpen && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={() => setAlertRuleOpen(false)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="w-full max-w-md rounded-xl border border-border bg-card shadow-2xl">
+              <div className="flex items-center justify-between border-b border-border px-5 py-4">
+                <h2 className="text-sm font-semibold text-foreground">Create Alert Rule</h2>
+                <button onClick={() => setAlertRuleOpen(false)} className="text-muted-foreground hover:text-foreground">×</button>
+              </div>
+              <div className="px-5 py-5 space-y-4">
+                <div>
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Name</label>
+                  <input className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground" placeholder="High Error Rate" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Metric</label>
+                    <select className="w-full rounded-md border border-border bg-background px-2 py-2 text-xs text-foreground">
+                      <option value="error_rate">Error Rate (%)</option>
+                      <option value="latency_p95">Latency P95 (ms)</option>
+                      <option value="daily_cost">Daily Cost ($)</option>
+                      <option value="agent_errors">Agent Errors (%)</option>
+                      <option value="queue_depth">Queue Depth</option>
+                      <option value="context_window">Context Window (%)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Condition</label>
+                    <select className="w-full rounded-md border border-border bg-background px-2 py-2 text-xs text-foreground">
+                      <option value=">">&gt;</option>
+                      <option value="<">&lt;</option>
+                      <option value="=">=</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Threshold</label>
+                    <input type="number" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground font-mono" placeholder="5" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Duration (minutes)</label>
+                  <input type="number" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground font-mono" placeholder="5" defaultValue={5} />
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Notify Via</label>
+                  <div className="flex items-center gap-4">
+                    {["Slack", "Email", "PagerDuty"].map((ch) => (
+                      <label key={ch} className="flex items-center gap-1.5 text-xs text-foreground">
+                        <input type="checkbox" className="rounded border-border" defaultChecked={ch === "Slack"} />
+                        {ch}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 border-t border-border px-5 py-3">
+                <button className="px-3 py-1.5 text-xs rounded-lg border border-border text-muted-foreground hover:text-foreground" onClick={() => setAlertRuleOpen(false)}>Cancel</button>
+                <button className="px-4 py-1.5 text-xs rounded-lg bg-[#00D4FF] text-black font-medium hover:bg-[#00D4FF]/90" onClick={() => { setAlertRuleOpen(false); toast.success("Alert rule created"); }}>Create Rule</button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

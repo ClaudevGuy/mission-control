@@ -13,7 +13,7 @@ import {
   SparklineChart,
   ModelBadge,
 } from "@/components/shared";
-import { Search, Pause, Play, Trash2, Download, Copy, Zap, DollarSign, Clock, AlertTriangle } from "lucide-react";
+import { Search, Pause, Play, Trash2, Download, Copy, Zap, DollarSign, Clock, AlertTriangle, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
@@ -318,10 +318,18 @@ export default function LogsPage() {
       {/* ═══ TRACES ═══ */}
       {tab === "traces" && (
         <div className="space-y-3">
-          {Array.from(new Set(traceSpans.map((s) => s.traceId))).map((traceId) => {
+          {traceSpans.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center rounded-xl border border-border bg-card/50">
+              <Activity className="size-8 text-muted-foreground/20" />
+              <p className="text-sm font-medium text-muted-foreground">No traces yet</p>
+              <p className="text-xs text-muted-foreground/50">Trace data will appear as agents process requests</p>
+            </div>
+          ) : (
+          Array.from(new Set(traceSpans.map((s) => s.traceId))).map((traceId) => {
             const spans = traceSpans.filter((s) => s.traceId === traceId);
             const root = spans[0];
-            const totalDuration = Math.max(...spans.map((s) => s.start + s.duration));
+            if (!root) return null;
+            const totalDuration = spans.length > 0 ? Math.max(...spans.map((s) => s.start + s.duration)) : 0;
             const isExp = expandedTrace === traceId;
             const hasError = spans.some((s) => s.status === "error");
 
@@ -394,7 +402,8 @@ export default function LogsPage() {
                 )}
               </GlassPanel>
             );
-          })}
+          })
+          )}
         </div>
       )}
     </div>
