@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Rocket, Check, Sparkles, Hand, DollarSign, Shield } from "lucide-react";
+import { ArrowLeft, ArrowRight, Rocket, Check, Sparkles, Hand, DollarSign, Shield, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { GlassPanel, PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -41,8 +42,17 @@ const AVAILABLE_TOOLS = [
 const CONTEXT_SIZES = ["4K", "8K", "16K", "32K", "64K", "128K"];
 const MEMORY_MODES = ["none", "session", "persistent"];
 
+const MODEL_MAP: Record<string, string> = {
+  Claude: "CLAUDE",
+  "GPT-4": "GPT4",
+  Gemini: "GEMINI",
+  Custom: "CUSTOM",
+};
+
 export default function AgentBuilderPage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
+  const [deploying, setDeploying] = useState(false);
 
   // Step 1 - Identity
   const [name, setName] = useState("");
@@ -82,10 +92,46 @@ export default function AgentBuilderPage() {
     return true;
   };
 
-  const handleDeploy = () => {
-    toast.success(`Agent "${name}" deployed successfully!`, {
-      description: `Model: ${model} | Strategy: ${modelStrategy} | Tools: ${Object.values(enabledTools).filter(Boolean).length} enabled`,
-    });
+  const handleDeploy = async () => {
+    if (deploying) return;
+    setDeploying(true);
+
+    const tools = Object.entries(enabledTools)
+      .filter(([, enabled]) => enabled)
+      .map(([toolName]) => ({ name: toolName, enabled: true }));
+
+    const payload = {
+      name: name.trim(),
+      description: description.trim() || `${name} agent`,
+      model: MODEL_MAP[model] || "CLAUDE",
+      modelStrategy,
+      systemPrompt: systemPrompt.trim() || "You are a helpful AI assistant.",
+      temperature: 0.7,
+      maxTokens: parseInt(contextSize.replace("K", "")) * 1024 || 4096,
+      tags: [],
+      tools,
+    };
+
+    try {
+      const res = await fetch("/api/agents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || `Failed to create agent (${res.status})`);
+      }
+
+      toast.success(`Agent "${name}" created successfully`);
+      router.push("/agents");
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setDeploying(false);
+    }
   };
 
   const tokenEstimate = Math.round(systemPrompt.split(/\s+/).filter(Boolean).length * 1.3);
@@ -465,9 +511,12 @@ export default function AgentBuilderPage() {
             </div>
 
             <div className="pt-4 border-t border-border">
-              <Button onClick={handleDeploy} size="lg">
-                <Rocket className="size-4 mr-1.5" />
-                Deploy Agent
+              <Button onClick={handleDeploy} size="lg" disabled={deploying}>
+                {deploying ? (
+                  <><Loader2 className="size-4 mr-1.5 animate-spin" /> Deploying...</>
+                ) : (
+                  <><Rocket className="size-4 mr-1.5" /> Deploy Agent</>
+                )}
               </Button>
             </div>
           </div>
