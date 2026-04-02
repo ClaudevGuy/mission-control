@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, ChevronRight, Search, User, Sun, Moon, Menu, CheckCheck, X } from "lucide-react";
 import { useUIStore } from "@/stores/ui-store";
+import { useAgentsStore } from "@/stores/agents-store";
 import { useNotificationsStore } from "@/stores/notifications-store";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -26,13 +27,26 @@ import { formatRelativeTime } from "@/lib/format";
 function useBreadcrumbs() {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-  return segments.map((seg, i) => ({
-    label: seg
+  const agents = useAgentsStore((s) => s.agents);
+
+  return segments.map((seg, i) => {
+    let label = seg
       .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase()),
-    href: "/" + segments.slice(0, i + 1).join("/"),
-    isLast: i === segments.length - 1,
-  }));
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    // Resolve entity IDs to names
+    const prevSeg = i > 0 ? segments[i - 1] : null;
+    if (prevSeg === "agents" && seg.length > 10) {
+      const agent = agents.find((a) => a.id === seg);
+      if (agent) label = agent.name;
+    }
+
+    return {
+      label,
+      href: "/" + segments.slice(0, i + 1).join("/"),
+      isLast: i === segments.length - 1,
+    };
+  });
 }
 
 const TYPE_COLORS: Record<string, string> = {
