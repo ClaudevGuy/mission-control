@@ -139,14 +139,19 @@ export default function AgentDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Back Link */}
-      <Link
-        href="/agents"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="size-3.5" />
-        Back to Agents
-      </Link>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Link
+          href="/agents"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="size-4" />
+        </Link>
+        <div className="flex items-center gap-2.5">
+          <h1 className="text-lg font-semibold text-foreground">{agent.name}</h1>
+          <StatusBadge status={agent.status} size="sm" />
+        </div>
+      </div>
 
       <div className="border-b border-border mb-6">
           <div className="flex gap-6">
