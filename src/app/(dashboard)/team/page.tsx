@@ -9,6 +9,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { TeamRole } from "@/types/common";
 
+// Generate consistent avatar color from name
+const PALETTE = ["#00D4FF", "#A855F7", "#F59E0B", "#39FF14", "#EF4444", "#EC4899", "#10A37F"];
+function avatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return PALETTE[Math.abs(hash) % PALETTE.length];
+}
 const AVATAR_COLORS: Record<string, string> = {};
 
 const ROLE_STYLES: Record<TeamRole, { bg: string; border: string; text: string }> = {
@@ -103,7 +110,7 @@ export default function TeamPage() {
               <tbody>
                 {members.map((m) => {
                   const name = m.name || m.email || "Unknown";
-                  const color = AVATAR_COLORS[name] || "#888";
+                  const color = AVATAR_COLORS[name] || avatarColor(name);
                   const roleStyle = ROLE_STYLES[m.role];
                   const isOnline = m.lastActive ? new Date().getTime() - new Date(m.lastActive).getTime() < 3600000 : false;
                   return (
@@ -202,10 +209,10 @@ export default function TeamPage() {
               {auditLog.map((entry) => {
                 const actionType = entry.action.split(".")[1] || entry.action;
                 const actionColor = ACTION_COLORS[actionType] || "#888";
-                const avatarColor = AVATAR_COLORS[entry.userName] || "#888";
+                const entryAvatarColor = AVATAR_COLORS[entry.userName] || avatarColor(entry.userName);
                 return (
                   <div key={entry.id} className="flex items-start gap-3 px-4 py-3 border-b border-border/50 hover:bg-muted/30 transition-colors">
-                    <div className="size-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style={{ background: `${avatarColor}20`, color: avatarColor }}>
+                    <div className="size-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5" style={{ background: `${entryAvatarColor}20`, color: entryAvatarColor }}>
                       {entry.userName.split(" ").map((n) => n[0]).join("")}
                     </div>
                     <div className="flex-1 min-w-0">

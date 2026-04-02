@@ -79,9 +79,9 @@ export default function IncidentsPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <MetricCard label="Open Incidents" value={allIncidents.filter((i) => i.status !== "resolved").length} format="number" icon={AlertTriangle} color="#EF4444" />
-            <MetricCard label="Avg Response" value={14} format="number" icon={Clock} color="#F59E0B" />
-            <MetricCard label="MTTR (month)" value={2.5} format="number" icon={Activity} color="#00D4FF" />
-            <MetricCard label="This Month" value={7} format="number" trend={-41.7} icon={TrendingDown} color="#39FF14" />
+            <MetricCard label="Avg Response" value={0} format="number" icon={Clock} color="#F59E0B" />
+            <MetricCard label="MTTR (month)" value={0} format="number" icon={Activity} color="#00D4FF" />
+            <MetricCard label="This Month" value={allIncidents.length} format="number" icon={TrendingDown} color="#39FF14" />
           </div>
 
           <div className="grid grid-cols-3 gap-4">

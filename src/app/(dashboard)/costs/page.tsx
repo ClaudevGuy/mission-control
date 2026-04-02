@@ -47,17 +47,18 @@ export default function CostsPage() {
     fetch("/api/costs/model-savings").then(r => r.json()).then(d => setSavings(d.data)).catch(() => {});
   }, []);
 
-  const thisMonth = 0;
+  const totalAgentSpendRaw = agentCosts.reduce((s, a) => s + a.totalCost, 0);
+  const thisMonth = totalAgentSpendRaw;
   const lastMonth = 0;
-  const monthlyBudget = 0;
+  const monthlyBudget = budgets.length > 0 ? budgets.reduce((s, b) => s + (b.limit || 0), 0) : 0;
   const now = new Date();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const daysElapsed = Math.max(now.getDate(), 1);
-  const projected = Math.round((thisMonth / daysElapsed) * daysInMonth);
-  const underBudget = monthlyBudget - projected;
-  const budgetPct = Math.round((thisMonth / monthlyBudget) * 100);
+  const projected = daysElapsed > 0 ? Math.round((thisMonth / daysElapsed) * daysInMonth) : 0;
+  const underBudget = monthlyBudget > 0 ? monthlyBudget - projected : 0;
+  const budgetPct = monthlyBudget > 0 ? Math.round((thisMonth / monthlyBudget) * 100) : 0;
 
-  const totalAgentSpend = agentCosts.reduce((s, a) => s + a.totalCost, 0);
+  const totalAgentSpend = totalAgentSpendRaw;
   const sortedAgents = [...agentCosts].sort((a, b) => b.totalCost - a.totalCost);
 
   const donutData: { name: string; value: number; color: string }[] = [];
@@ -163,7 +164,7 @@ export default function CostsPage() {
             <h2 className="text-sm font-semibold text-foreground mb-4">Top Spenders by Agent</h2>
             <div className="space-y-0">
               {sortedAgents.map((agent, idx) => {
-                const pctOfTotal = (agent.totalCost / totalAgentSpend) * 100;
+                const pctOfTotal = totalAgentSpend > 0 ? (agent.totalCost / totalAgentSpend) * 100 : 0;
                 const spark = Array.from({ length: 7 }, () => agent.totalCost / 30 + (Math.random() - 0.5) * agent.totalCost / 60);
                 return (
                   <div
@@ -282,7 +283,7 @@ export default function CostsPage() {
                         {agent.trend >= 0 ? "+" : ""}{agent.trend.toFixed(1)}%
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{((agent.totalCost / totalAgentSpend) * 100).toFixed(1)}%</td>
+                    <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{totalAgentSpend > 0 ? ((agent.totalCost / totalAgentSpend) * 100).toFixed(1) : "0.0"}%</td>
                   </tr>
                 ))}
               </tbody>
