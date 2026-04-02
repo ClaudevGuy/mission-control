@@ -295,104 +295,132 @@ export default function CostsPage() {
       {/* ═══ BUDGET ═══ */}
       {tab === "budget" && (
         <div className="space-y-6">
-          {/* Total budget */}
-          <GlassPanel padding="lg">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Total Monthly Budget</h3>
-            <div className="flex items-center gap-4">
-              <span className="font-mono text-3xl font-bold text-foreground">{formatCurrency(monthlyBudget)}</span>
-              <div className="flex-1">
-                <div className="w-full h-3 rounded-full bg-muted/50">
-                  <div className="h-3 rounded-full bg-green-500 transition-all" style={{ width: `${budgetPct}%` }} />
+          {monthlyBudget > 0 ? (
+            <>
+              {/* Total budget */}
+              <GlassPanel padding="lg">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Total Monthly Budget</h3>
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-3xl font-bold text-foreground">{formatCurrency(monthlyBudget)}</span>
+                  <div className="flex-1">
+                    <div className="w-full h-3 rounded-full bg-muted/50">
+                      <div className="h-3 rounded-full bg-green-500 transition-all" style={{ width: `${budgetPct}%` }} />
+                    </div>
+                    <span className="text-xs text-muted-foreground mt-1 block">{formatCurrency(thisMonth)} spent · {budgetPct}% used · {formatCurrency(underBudget)} remaining</span>
+                  </div>
                 </div>
-                <span className="text-xs text-muted-foreground mt-1 block">{formatCurrency(thisMonth)} spent · {budgetPct}% used · {formatCurrency(underBudget)} remaining</span>
+              </GlassPanel>
+
+              {/* Per-category budgets */}
+              {budgets.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground">Category Budgets</h3>
+                  {budgets.map((b) => {
+                    const pct = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
+                    const color = pct > 90 ? "#EF4444" : pct > 70 ? "#F59E0B" : "#39FF14";
+                    return (
+                      <GlassPanel key={b.category} padding="md">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-medium text-foreground">{b.category}</h4>
+                          <span className="font-mono text-xs text-muted-foreground">{formatCurrency(b.spent)} / {formatCurrency(b.limit)}</span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-muted/50">
+                          <div className="h-2 rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%`, background: color }} />
+                        </div>
+                      </GlassPanel>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Alert threshold */}
+              <GlassPanel padding="lg">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Alert Threshold</h3>
+                <p className="text-xs text-muted-foreground mb-3">Notify when total spend reaches this % of budget</p>
+                <div className="flex items-center gap-4">
+                  <input type="range" min={50} max={100} value={budgetAlert} onChange={(e) => setBudgetAlert(Number(e.target.value))} className="flex-1 accent-[#00d992]" />
+                  <span className="font-mono text-sm text-foreground w-12 text-right">{budgetAlert}%</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-2">
+                  Alert triggers at {formatCurrency(Math.round(monthlyBudget * budgetAlert / 100))} spend
+                </p>
+              </GlassPanel>
+
+              {/* Projected */}
+              <GlassPanel padding="lg">
+                <h3 className="text-sm font-semibold text-foreground mb-2">End-of-Month Projection</h3>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-2xl font-bold text-green-400">{formatCurrency(projected)}</span>
+                </div>
+              </GlassPanel>
+            </>
+          ) : (
+            /* Empty state — no budget configured */
+            <>
+              <div className="flex flex-col items-center gap-4 py-16 text-center">
+                <div className="flex items-center justify-center size-14 rounded-2xl bg-muted/30 border border-border/50">
+                  <Target className="size-7 text-muted-foreground/25" />
+                </div>
+                <div>
+                  <p className="text-base font-semibold text-foreground">No budget configured</p>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+                    Set a monthly budget to track spending limits and get alerts before you overspend
+                  </p>
+                </div>
+                <Button onClick={() => toast.success("Budget configuration coming soon")} className="bg-[#00d992] hover:bg-[#00d992]/90 text-black mt-2">
+                  <Target className="size-4 mr-1.5" /> Set Monthly Budget
+                </Button>
               </div>
-            </div>
-          </GlassPanel>
 
-          {/* Per-category budgets */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">Category Budgets</h3>
-            {budgets.map((b) => {
-              const pct = Math.round((b.spent / b.limit) * 100);
-              const color = pct > 90 ? "#EF4444" : pct > 70 ? "#F59E0B" : "#39FF14";
-              return (
-                <GlassPanel key={b.category} padding="md">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-foreground">{b.category}</h4>
-                    <span className="font-mono text-xs text-muted-foreground">{formatCurrency(b.spent)} / {formatCurrency(b.limit)}</span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-muted/50">
-                    <div className="h-2 rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%`, background: color }} />
-                  </div>
-                  <div className="flex items-center justify-between mt-1.5">
-                    <span className="text-[10px] text-muted-foreground">{pct}% used</span>
-                    <span className="text-[10px] text-muted-foreground">Alert at {b.alertThreshold}%</span>
-                  </div>
+              {/* Show actual spend even without budget */}
+              {thisMonth > 0 && (
+                <GlassPanel padding="lg">
+                  <h3 className="text-sm font-semibold text-foreground mb-3">Current Spend</h3>
+                  <span className="font-mono text-2xl font-bold text-foreground">{formatCurrency(thisMonth)}</span>
+                  <p className="text-xs text-muted-foreground mt-1">Total spend this month (no budget limit set)</p>
                 </GlassPanel>
-              );
-            })}
-          </div>
-
-          {/* Alert threshold */}
-          <GlassPanel padding="lg">
-            <h3 className="text-sm font-semibold text-foreground mb-3">Alert Threshold</h3>
-            <p className="text-xs text-muted-foreground mb-3">Notify when total spend reaches this % of budget</p>
-            <div className="flex items-center gap-4">
-              <input
-                type="range"
-                min={50}
-                max={100}
-                value={budgetAlert}
-                onChange={(e) => setBudgetAlert(Number(e.target.value))}
-                className="flex-1 accent-[#00d992]"
-              />
-              <span className="font-mono text-sm text-foreground w-12 text-right">{budgetAlert}%</span>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-2">
-              Alert triggers at {formatCurrency(Math.round(monthlyBudget * budgetAlert / 100))} spend
-            </p>
-          </GlassPanel>
-
-          {/* Projected */}
-          <GlassPanel padding="lg">
-            <h3 className="text-sm font-semibold text-foreground mb-2">End-of-Month Projection</h3>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-2xl font-bold text-green-400">{formatCurrency(projected)}</span>
-              <span className="text-xs text-muted-foreground">±{formatCurrency(Math.round(projected * 0.03))} confidence interval</span>
-            </div>
-            <p className="text-xs text-green-400 mt-1">{formatCurrency(underBudget)} under {formatCurrency(monthlyBudget)} budget</p>
-          </GlassPanel>
+              )}
+            </>
+          )}
         </div>
       )}
 
       {/* ═══ INVOICES ═══ */}
       {tab === "invoices" && (
-        <GlassPanel padding="none">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                {["Invoice", "Month", "Amount", "Status", ""].map((h) => (
-                  <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {INVOICES.map((inv) => (
-                <tr key={inv.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs text-foreground">{inv.id}</td>
-                  <td className="px-4 py-3 text-foreground">{inv.month}</td>
-                  <td className="px-4 py-3 font-mono text-xs font-medium">{formatCurrency(inv.amount)}</td>
-                  <td className="px-4 py-3"><StatusBadge status={inv.status === "paid" ? "success" : "paused"} size="sm" /></td>
-                  <td className="px-4 py-3">
-                    <Button variant="ghost" size="xs" onClick={() => toast.success("Invoice downloaded")}>
-                      <Download className="size-3 mr-1" /> PDF
-                    </Button>
-                  </td>
+        INVOICES.length === 0 ? (
+          <div className="flex flex-col items-center gap-3 py-16 text-center">
+            <Download className="size-8 text-muted-foreground/20" />
+            <p className="text-sm font-medium text-muted-foreground">No invoices yet</p>
+            <p className="text-xs text-muted-foreground/50">Invoices will appear here at the end of each billing cycle</p>
+          </div>
+        ) : (
+          <GlassPanel padding="none">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  {["Invoice", "Month", "Amount", "Status", ""].map((h) => (
+                    <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </GlassPanel>
+              </thead>
+              <tbody>
+                {INVOICES.map((inv) => (
+                  <tr key={inv.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                    <td className="px-4 py-3 font-mono text-xs text-foreground">{inv.id}</td>
+                    <td className="px-4 py-3 text-foreground">{inv.month}</td>
+                    <td className="px-4 py-3 font-mono text-xs font-medium">{formatCurrency(inv.amount)}</td>
+                    <td className="px-4 py-3"><StatusBadge status={inv.status === "paid" ? "success" : "paused"} size="sm" /></td>
+                    <td className="px-4 py-3">
+                      <Button variant="ghost" size="xs" onClick={() => toast.success("Invoice downloaded")}>
+                        <Download className="size-3 mr-1" /> PDF
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </GlassPanel>
+        )
       )}
     </div>
   );

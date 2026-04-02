@@ -16,11 +16,12 @@ export function formatDateTime(date: Date | string): string {
 }
 
 export function formatCurrency(value: number): string {
+  const decimals = value > 0 && value < 1 ? 4 : 2;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    minimumFractionDigits: value < 1 ? 4 : 2,
-    maximumFractionDigits: value < 1 ? 4 : 2,
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   }).format(value);
 }
 
