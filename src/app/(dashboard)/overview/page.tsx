@@ -9,6 +9,7 @@ import { AgentStatusGrid } from "@/components/overview/AgentStatusGrid";
 import { CostBurnChart } from "@/components/overview/CostBurnChart";
 import { TopIssues } from "@/components/overview/TopIssues";
 import { RecentDeploys } from "@/components/overview/RecentDeploys";
+import { ActivityFeed } from "@/components/overview/ActivityFeed";
 import { useAgentsStore } from "@/stores/agents-store";
 import { useDeploymentsStore } from "@/stores/deployments-store";
 import { useIncidentsStore } from "@/stores/incidents-store";
@@ -41,8 +42,11 @@ export default function OverviewPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <CostBurnChart />
         <TopIssues />
-        <RecentDeploys />
+        <div className="lg:row-span-1">
+          <ActivityFeed />
+        </div>
       </div>
+      <RecentDeploys />
     </div>
   );
 }
