@@ -18,46 +18,14 @@ import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-// Agent model map for badges
-const AGENT_MODELS: Record<string, string> = {
-  DataPipelineAgent: "GPT-4", TestWriter: "Claude", InfraMonitor: "Custom",
-  CodeReviewer: "Claude", DocGenerator: "GPT-4", DeployBot: "Claude",
-  SecurityScanner: "Claude", BugHunter: "Claude", PerformanceOptimizer: "Gemini",
-  APIDesigner: "Claude",
-};
+// Agent model map for badges — populated from store data
+const AGENT_MODELS: Record<string, string> = {};
 
-// Realistic daily costs with variance (weekends lower, one spike)
-const DAILY_COSTS = (() => {
-  const data: { name: string; value: number }[] = [];
-  const now = new Date();
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const dayOfWeek = d.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    let base = isWeekend ? 420 : 560;
-    // Mid-month spike
-    if (i >= 13 && i <= 16) base += 120;
-    // Random variance
-    base += (Math.sin(i * 2.7) * 40) + (Math.cos(i * 1.3) * 30);
-    data.push({
-      name: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      value: Math.round(base),
-    });
-  }
-  return data;
-})();
+// Daily costs — empty, wire to real backend
+const DAILY_COSTS: { name: string; value: number }[] = [];
+const DAILY_BUDGET = 0;
 
-const DAILY_BUDGET = Math.round(20500 / 30);
-
-const INVOICES = [
-  { id: "INV-2026-03", month: "March 2026", amount: 16481, status: "pending" },
-  { id: "INV-2026-02", month: "February 2026", amount: 15892, status: "paid" },
-  { id: "INV-2026-01", month: "January 2026", amount: 14723, status: "paid" },
-  { id: "INV-2025-12", month: "December 2025", amount: 13987, status: "paid" },
-  { id: "INV-2025-11", month: "November 2025", amount: 12456, status: "paid" },
-  { id: "INV-2025-10", month: "October 2025", amount: 11892, status: "paid" },
-];
+const INVOICES: { id: string; month: string; amount: number; status: string }[] = [];
 
 export default function CostsPage() {
   const [tab, setTab] = useState<"overview" | "agents" | "budget" | "invoices">("overview");
@@ -68,9 +36,20 @@ export default function CostsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchCosts(); }, []);
 
-  const thisMonth = 16481;
-  const lastMonth = 15892;
-  const monthlyBudget = 20500;
+  const [savings, setSavings] = useState<{
+    actualCost: number; tier1Cost: number; savings: number; savingsPercent: number;
+    upgradeEvents: number;
+    tierDistribution: { tier1: { count: number; percent: number }; tier2: { count: number; percent: number }; tier3: { count: number; percent: number } };
+    totalCalls: number;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/costs/model-savings").then(r => r.json()).then(d => setSavings(d.data)).catch(() => {});
+  }, []);
+
+  const thisMonth = 0;
+  const lastMonth = 0;
+  const monthlyBudget = 0;
   const now = new Date();
   const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   const daysElapsed = Math.max(now.getDate(), 1);
@@ -81,12 +60,7 @@ export default function CostsPage() {
   const totalAgentSpend = agentCosts.reduce((s, a) => s + a.totalCost, 0);
   const sortedAgents = [...agentCosts].sort((a, b) => b.totalCost - a.totalCost);
 
-  const donutData = [
-    { name: "AI APIs", value: 2847, color: "#00D4FF" },
-    { name: "Infrastructure", value: 1245, color: "#A855F7" },
-    { name: "Third-Party", value: 389, color: "#F59E0B" },
-    { name: "Labor", value: 12000, color: "#39FF14" },
-  ];
+  const donutData: { name: string; value: number; color: string }[] = [];
 
   const tabs = [
     { id: "overview" as const, label: "Overview" },
@@ -217,6 +191,52 @@ export default function CostsPage() {
                 );
               })}
             </div>
+          </GlassPanel>
+
+          {/* ── Model Auto-Selection Savings ── */}
+          <GlassPanel padding="lg">
+            <h3 className="text-sm font-semibold text-foreground mb-4">Model Auto-Selection</h3>
+            {savings ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">If Always Tier 1</p>
+                    <p className="text-lg font-bold text-foreground mt-1">{formatCurrency(savings.tier1Cost)}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Actual Cost</p>
+                    <p className="text-lg font-bold text-[#00D4FF] mt-1">{formatCurrency(savings.actualCost)}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Savings</p>
+                    <p className="text-lg font-bold text-[#39FF14] mt-1">{formatCurrency(savings.savings)} <span className="text-xs font-normal text-muted-foreground">({savings.savingsPercent}%)</span></p>
+                  </div>
+                </div>
+                {/* Tier distribution bar */}
+                <div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Tier Distribution ({savings.totalCalls} calls)</p>
+                  <div className="flex h-3 rounded-full overflow-hidden bg-muted/30">
+                    {savings.tierDistribution.tier1.percent > 0 && (
+                      <div className="bg-purple-500/70 transition-all" style={{ width: `${savings.tierDistribution.tier1.percent}%` }} title={`Tier 1: ${savings.tierDistribution.tier1.percent}%`} />
+                    )}
+                    {savings.tierDistribution.tier2.percent > 0 && (
+                      <div className="bg-[#00D4FF]/70 transition-all" style={{ width: `${savings.tierDistribution.tier2.percent}%` }} title={`Tier 2: ${savings.tierDistribution.tier2.percent}%`} />
+                    )}
+                    {savings.tierDistribution.tier3.percent > 0 && (
+                      <div className="bg-green-500/70 transition-all" style={{ width: `${savings.tierDistribution.tier3.percent}%` }} title={`Tier 3: ${savings.tierDistribution.tier3.percent}%`} />
+                    )}
+                  </div>
+                  <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground">
+                    <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-purple-500/70" />T1: {savings.tierDistribution.tier1.percent}%</span>
+                    <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-[#00D4FF]/70" />T2: {savings.tierDistribution.tier2.percent}%</span>
+                    <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-green-500/70" />T3: {savings.tierDistribution.tier3.percent}%</span>
+                    {savings.upgradeEvents > 0 && <span className="text-amber-400">{savings.upgradeEvents} upgrade{savings.upgradeEvents !== 1 ? "s" : ""}</span>}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">No auto-selection data yet. Run agents with Auto strategy to see savings.</p>
+            )}
           </GlassPanel>
         </div>
       )}
