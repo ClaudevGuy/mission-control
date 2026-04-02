@@ -383,3 +383,24 @@
 .light .sidebar-root {
   box-shadow: inset -1px 0 0 rgba(0,0,0,0.03);
 }
+
+/* ═══ React Flow Canvas — Workflow Builder ═══ */
+.workflow-canvas {
+  background: var(--bg-primary) !important;
+}
+
+.workflow-canvas .react-flow__node {
+  cursor: grab;
+}
+
+.workflow-canvas .react-flow__node:active {
+  cursor: grabbing;
+}
+
+.react-flow__controls {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+}
+
+.react-flow__minimap {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+}
