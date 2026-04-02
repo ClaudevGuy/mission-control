@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Play, Square, RotateCcw, Zap, DollarSign, Clock, Bot, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { invalidate } from "@/lib/store-cache";
+import { useAgentsStore } from "@/stores/agents-store";
 import { cn } from "@/lib/utils";
 
 interface StreamInfo {
@@ -94,6 +96,13 @@ export function LiveExecutionPanel({ agentId }: Props) {
               setOutput((prev) => prev + event.content);
             } else if (event.type === "done") {
               setStats(event);
+              // Invalidate all dependent stores so next visit refetches
+              invalidate("agents");
+              invalidate("logs");
+              invalidate("costs");
+              invalidate("notifications");
+              // Refetch agents store immediately to update this page's data
+              useAgentsStore.getState().fetch();
             } else if (event.type === "error") {
               setError(event.message);
             }
@@ -108,6 +117,8 @@ export function LiveExecutionPanel({ agentId }: Props) {
       } else {
         setError((err as Error).message);
       }
+      // Invalidate agents store on error too (status changed in DB)
+      invalidate("agents");
     } finally {
       setIsStreaming(false);
       abortRef.current = null;
