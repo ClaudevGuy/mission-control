@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { LogEntry, ErrorGroup, LLMCall, TraceSpan } from "@/types/logs";
 import type { LogLevel } from "@/types/common";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 interface LogsStore {
   logs: LogEntry[];
@@ -35,6 +36,8 @@ export const useLogsStore = create<LogsStore>((set, get) => ({
   isLive: true,
 
   fetch: async () => {
+    if (isFresh("logs")) return;
+    markInflight("logs");
     set({ isLoading: true, error: null });
     try {
       const [logsRes, errorsRes, llmRes, tracesRes] = await Promise.all([
@@ -53,6 +56,7 @@ export const useLogsStore = create<LogsStore>((set, get) => ({
         llmRes.json(),
         tracesRes.json(),
       ]);
+      markFetched("logs");
       set({
         logs: logsData.data.entries,
         errorGroups: errorsData.data.groups,

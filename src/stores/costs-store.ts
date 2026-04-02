@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { CostBreakdown, AgentCost, Budget, Invoice } from "@/types/costs";
 import type { TimeSeriesPoint } from "@/types/common";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 interface CostsStore {
   breakdown: CostBreakdown[];
@@ -28,6 +29,8 @@ export const useCostsStore = create<CostsStore>((set, get) => ({
   dateRange: "30d",
 
   fetch: async () => {
+    if (isFresh("costs")) return;
+    markInflight("costs");
     set({ isLoading: true, error: null });
     try {
       const [breakdownRes, agentCostsRes, budgetsRes, invoicesRes, dailyRes] = await Promise.all([
@@ -49,6 +52,7 @@ export const useCostsStore = create<CostsStore>((set, get) => ({
         invoicesRes.json(),
         dailyRes.json(),
       ]);
+      markFetched("costs");
       set({
         breakdown: breakdownData.data.breakdowns,
         agentCosts: agentCostsData.data.costs,

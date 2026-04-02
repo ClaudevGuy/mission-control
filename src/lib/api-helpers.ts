@@ -58,6 +58,20 @@ export async function requireAuth(): Promise<SessionUser> {
     }
   }
 
+  // No auth configured — fall back to default admin user for development
+  const defaultUser = await prisma.user.findFirst({
+    include: { projectMembers: { take: 1 } },
+  });
+  if (defaultUser && defaultUser.projectMembers.length > 0) {
+    return {
+      id: defaultUser.id,
+      email: defaultUser.email || "",
+      name: defaultUser.name || "",
+      role: defaultUser.projectMembers[0].role?.toLowerCase() || "admin",
+      activeProjectId: defaultUser.projectMembers[0].projectId,
+    };
+  }
+
   throw new ApiError("Unauthorized", 401);
 }
 

@@ -37,45 +37,13 @@ const tooltipStyle = {
   labelStyle: { color: "hsl(var(--muted-foreground))" },
 };
 
-// ── Mock data helpers ─────────────────────────────────────────────────────────
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-function makeRunsData() {
-  return DAYS.map((day) => ({
-    day,
-    successful: Math.floor(Math.random() * 80 + 40),
-    failed: Math.floor(Math.random() * 12 + 2),
-  }));
-}
-
-function makeTokenData() {
-  return DAYS.map((day) => ({
-    day,
-    input: Math.floor(Math.random() * 200000 + 100000),
-    output: Math.floor(Math.random() * 80000 + 20000),
-  }));
-}
-
-const AGENT_NAMES = ["BugHunter", "CodeReview", "Deployer", "Monitor", "Tester"];
-
-function makeAgentRunCounts() {
-  return AGENT_NAMES.map((name) => ({ name, runs: Math.floor(Math.random() * 120 + 20) }));
-}
-
-function makeAgentCosts() {
-  return AGENT_NAMES.map((name) => ({
-    name,
-    cost: parseFloat((Math.random() * 18 + 2).toFixed(2)),
-  }));
-}
-
-const MODEL_BREAKDOWN = [
-  { model: "claude-3-5-sonnet", calls: 312 },
-  { model: "claude-3-5-haiku",  calls: 189 },
-  { model: "gpt-4o",           calls: 74  },
-  { model: "gemini-1.5-pro",   calls: 28  },
-];
-const MODEL_TOTAL = MODEL_BREAKDOWN.reduce((s, m) => s + m.calls, 0);
+// ── Data helpers (empty — wire to real backend) ──────────────────────────────
+function makeRunsData(): { day: string; successful: number; failed: number }[] { return []; }
+function makeTokenData(): { day: string; input: number; output: number }[] { return []; }
+function makeAgentRunCounts(): { name: string; runs: number }[] { return []; }
+function makeAgentCosts(): { name: string; cost: number }[] { return []; }
+const MODEL_BREAKDOWN: { model: string; calls: number }[] = [];
+const MODEL_TOTAL = 0;
 
 // ── Tab type ──────────────────────────────────────────────────────────────────
 type Tab = "performance" | "costs" | "usage";
@@ -134,10 +102,10 @@ export default function AnalyticsPage() {
       {tab === "performance" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Total Runs (7d)"  value="847"   sub="+12% vs last week" />
-            <StatCard label="Success Rate"     value="94.2%" sub="↑ 1.3pp" />
-            <StatCard label="Avg Run Duration" value="1m 23s" sub="↓ 8s vs last week" />
-            <StatCard label="Agents Active"    value="5"     sub="of 8 deployed" />
+            <StatCard label="Total Runs (7d)"  value="0" />
+            <StatCard label="Success Rate"     value="—" />
+            <StatCard label="Avg Run Duration" value="—" />
+            <StatCard label="Agents Active"    value="0" />
           </div>
 
           <div className="rounded-xl border border-border bg-card p-5">
@@ -183,10 +151,10 @@ export default function AnalyticsPage() {
       {tab === "costs" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Total Spend (7d)"     value="$284.50"   sub="budget: $500"       />
-            <StatCard label="Cost per Run"         value="$0.34"     sub="↑ $0.02"             />
-            <StatCard label="Most Expensive Agent" value="BugHunter" sub="$98.20 this week"    />
-            <StatCard label="Cost Efficiency"      value="2.8x"      sub="successful runs per $1" />
+            <StatCard label="Total Spend (7d)"     value="$0" />
+            <StatCard label="Cost per Run"         value="—" />
+            <StatCard label="Most Expensive Agent" value="—" />
+            <StatCard label="Cost Efficiency"      value="—" />
           </div>
 
           {burnData.length > 0 && (
@@ -229,10 +197,10 @@ export default function AnalyticsPage() {
       {tab === "usage" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Total Tokens (7d)"  value="4.2M"  sub="input + output"      />
-            <StatCard label="Avg Tokens / Run"   value="4,960" sub="↓ 3% vs last week"   />
-            <StatCard label="Context Hits Limit" value="12"    sub="runs truncated"       />
-            <StatCard label="Model Calls"        value="603"   sub="across 4 models"      />
+            <StatCard label="Total Tokens (7d)"  value="0" />
+            <StatCard label="Avg Tokens / Run"   value="—" />
+            <StatCard label="Context Hits Limit" value="0" />
+            <StatCard label="Model Calls"        value="0" />
           </div>
 
           <div className="rounded-xl border border-border bg-card p-5">

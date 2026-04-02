@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 import type { Agent, AgentRun } from "@/types/agents";
 import type { AgentStatus, ModelProvider } from "@/types/common";
 
@@ -28,11 +29,14 @@ export const useAgentsStore = create<AgentsStore>((set, get) => ({
   modelFilter: "all",
 
   fetch: async () => {
+    if (isFresh("agents")) return;
+    markInflight("agents");
     set({ isLoading: true, error: null });
     try {
       const res = await fetch("/api/agents");
       if (!res.ok) throw new Error("Failed to fetch agents");
       const { data } = await res.json();
+      markFetched("agents");
       set({ agents: data.agents, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });

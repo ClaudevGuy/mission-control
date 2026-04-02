@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { ResourceMetric, ServiceNode, APIEndpoint, QueueMetric } from "@/types/infrastructure";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 interface InfrastructureStore {
   resources: ResourceMetric[];
@@ -21,6 +22,8 @@ export const useInfrastructureStore = create<InfrastructureStore>((set, get) => 
   error: null,
 
   fetch: async () => {
+    if (isFresh("infrastructure")) return;
+    markInflight("infrastructure");
     set({ isLoading: true, error: null });
     try {
       const [resourcesRes, servicesRes, endpointsRes, queuesRes] = await Promise.all([
@@ -39,6 +42,7 @@ export const useInfrastructureStore = create<InfrastructureStore>((set, get) => 
         endpointsRes.json(),
         queuesRes.json(),
       ]);
+      markFetched("infrastructure");
       set({
         resources: resourcesData.data.resources,
         services: servicesData.data.services,

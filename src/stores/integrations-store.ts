@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Integration, Webhook } from "@/types/integrations";
 import type { IntegrationStatus } from "@/types/common";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 interface IntegrationsStore {
   integrations: Integration[];
@@ -23,6 +24,8 @@ export const useIntegrationsStore = create<IntegrationsStore>((set, get) => ({
   categoryFilter: "all",
 
   fetch: async () => {
+    if (isFresh("integrations")) return;
+    markInflight("integrations");
     set({ isLoading: true, error: null });
     try {
       const [integrationsRes, webhooksRes] = await Promise.all([
@@ -35,6 +38,7 @@ export const useIntegrationsStore = create<IntegrationsStore>((set, get) => ({
         integrationsRes.json(),
         webhooksRes.json(),
       ]);
+      markFetched("integrations");
       set({
         integrations: integrationsData.data.integrations,
         webhooks: webhooksData.data.webhooks,

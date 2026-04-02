@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Repository, Commit, PullRequest, CodeHealthScore } from "@/types/codebase";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 const emptyCodeHealth: CodeHealthScore = {
   overall: 0,
@@ -40,6 +41,8 @@ export const useCodebaseStore = create<CodebaseStore>((set, get) => ({
   showAgentCommitsOnly: false,
 
   fetch: async () => {
+    if (isFresh("codebase")) return;
+    markInflight("codebase");
     set({ isLoading: true, error: null });
     try {
       const [reposRes, commitsRes, prsRes, healthRes] = await Promise.all([
@@ -58,6 +61,7 @@ export const useCodebaseStore = create<CodebaseStore>((set, get) => ({
         prsRes.json(),
         healthRes.json(),
       ]);
+      markFetched("codebase");
       set({
         repositories: reposData.data.repositories,
         commits: commitsData.data.commits,

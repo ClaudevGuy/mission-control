@@ -8,6 +8,11 @@ import { Topbar } from "@/components/layout/Topbar";
 import { CommandPalette } from "@/components/layout/CommandPalette";
 import { KeyboardShortcuts } from "@/components/layout/KeyboardShortcuts";
 import { useUIStore } from "@/stores/ui-store";
+import { useAgentsStore } from "@/stores/agents-store";
+import { useDeploymentsStore } from "@/stores/deployments-store";
+import { useIncidentsStore } from "@/stores/incidents-store";
+import { useCostsStore } from "@/stores/costs-store";
+import { useNotificationsStore } from "@/stores/notifications-store";
 
 const GO_SHORTCUTS: Record<string, string> = {
   o: "/overview",
@@ -100,6 +105,21 @@ export default function DashboardLayout({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  // Prefetch all core data once on layout mount — makes page navigation instant
+  const fetchAgents = useAgentsStore((s) => s.fetch);
+  const fetchDeployments = useDeploymentsStore((s) => s.fetch);
+  const fetchIncidents = useIncidentsStore((s) => s.fetch);
+  const fetchCosts = useCostsStore((s) => s.fetch);
+  const fetchNotifications = useNotificationsStore((s) => s.fetch);
+  useEffect(() => {
+    fetchAgents();
+    fetchDeployments();
+    fetchIncidents();
+    fetchCosts();
+    fetchNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background transition-colors duration-200">

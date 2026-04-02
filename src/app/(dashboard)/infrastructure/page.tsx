@@ -26,20 +26,9 @@ const typeIcons: Record<string, React.ReactNode> = {
 };
 
 const gaugeColors = ["#00D4FF", "#A855F7", "#F59E0B", "#22C55E"];
-const gaugeDetails = [
-  { actual: "3.7 / 8 cores", spark: [38, 42, 40, 45, 43, 47, 44, 46, 42, 44, 45, 47] },
-  { actual: "5.0 / 8 GB", spark: [58, 60, 61, 63, 62, 64, 63, 61, 62, 63, 62, 63] },
-  { actual: "136 / 400 GB", spark: [33, 33, 33, 34, 34, 34, 34, 34, 34, 34, 34, 34] },
-  { actual: "284 Mbps / 1 Gbps", spark: [25, 28, 30, 27, 32, 29, 26, 31, 28, 27, 29, 28] },
-];
+const gaugeDetails: { actual: string; spark: number[] }[] = [];
 
-const AUTOSCALE_EVENTS = [
-  { service: "Worker Service", direction: "up" as const, from: 2, to: 4, reason: "CPU > 80% for 5 min", ago: "3 hours ago" },
-  { service: "Analytics Worker", direction: "down" as const, from: 3, to: 2, reason: "Queue depth below threshold", ago: "6 hours ago" },
-  { service: "API Gateway", direction: "up" as const, from: 3, to: 5, reason: "RPS exceeded 500/s", ago: "12 hours ago" },
-  { service: "Worker Service", direction: "down" as const, from: 4, to: 2, reason: "Scheduled scale-down (off-peak)", ago: "18 hours ago" },
-  { service: "API Gateway", direction: "down" as const, from: 5, to: 3, reason: "RPS normalized below 200/s", ago: "1 day ago" },
-];
+const AUTOSCALE_EVENTS: { service: string; direction: "up" | "down"; from: number; to: number; reason: string; ago: string }[] = [];
 
 function getServiceStatus(svc: ServiceNode): "healthy" | "degraded" | "down" {
   if (svc.status === "down") return "down";

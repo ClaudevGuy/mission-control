@@ -31,17 +31,7 @@ const ICON_MAP: Record<string, { icon: typeof GitBranch; color: string }> = {
   posthog: { icon: BarChart3, color: "#F9BD2B" },
 };
 
-const STATS: Record<string, string> = {
-  GitHub: "23 open PRs \u00b7 4 repos",
-  Slack: "3 channels connected",
-  Vercel: "7 deployments today",
-  AWS: "12 services monitored",
-  OpenAI: "12,847 calls \u00b7 $34.20",
-  Anthropic: "28,392 calls \u00b7 $67.80",
-  Datadog: "847 metrics/min",
-  Sentry: "3 unresolved errors",
-  Linear: "12 open issues",
-};
+const STATS: Record<string, string> = {};
 
 const FILTERS = ["All", "Connected", "Disconnected", "AI", "DevOps", "Monitoring", "Automation", "Payment"];
 
@@ -70,10 +60,8 @@ export default function IntegrationsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchIntegrations(); }, []);
 
-  // Add PostHog as error state
   const allIntegrations: (Integration & { effectiveStatus?: IntStatus })[] = [
     ...integrations,
-    { id: "int_013", name: "PostHog", description: "Product analytics and session replay", icon: "posthog", status: "error" as IntStatus, category: "monitoring" },
   ];
 
   const connected = allIntegrations.filter((i) => i.status === "connected").length;

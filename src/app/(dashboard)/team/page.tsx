@@ -9,10 +9,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { TeamRole } from "@/types/common";
 
-const AVATAR_COLORS: Record<string, string> = {
-  "Sarah Chen": "#00D4FF", "Marcus Johnson": "#A855F7", "Aisha Patel": "#F59E0B",
-  "James Wilson": "#39FF14", "Emily Rodriguez": "#EF4444",
-};
+const AVATAR_COLORS: Record<string, string> = {};
 
 const ROLE_STYLES: Record<TeamRole, { bg: string; border: string; text: string }> = {
   admin: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)", text: "#EF4444" },
@@ -234,8 +231,7 @@ export default function TeamPage() {
       {/* ═══ API KEYS ═══ */}
       {tab === "keys" && (() => {
         const API_KEYS_DISPLAY = [
-          ...apiKeys.map((k) => ({ ...k, status: "active" as const, expires: k.name === "Partner Integration" ? "2026-06-01" : null })),
-          { id: "key_005", name: "Legacy Webhook", prefix: "mc_old_e9c2", scopes: ["read"], createdAt: "2025-08-15T00:00:00Z", lastUsed: "2026-01-10T00:00:00Z", createdBy: "Marcus Johnson", status: "revoked" as const, expires: null },
+          ...apiKeys.map((k) => ({ ...k, status: "active" as "active" | "revoked", expires: k.name === "Partner Integration" ? "2026-06-01" : null })),
         ];
 
         return (

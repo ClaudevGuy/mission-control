@@ -415,9 +415,9 @@ export default function AgentDetailPage({
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Model Strategy</p>
                   <Badge variant="outline" className="bg-[#00D4FF]/10 text-[#00D4FF] border-[#00D4FF]/30">
-                    {(agent as Record<string, unknown>).modelStrategy === "cost_first" ? "Cost-First" :
-                     (agent as Record<string, unknown>).modelStrategy === "quality_first" ? "Quality-First" :
-                     (agent as Record<string, unknown>).modelStrategy === "manual" ? "Manual" : "Auto"}
+                    {agent.modelStrategy === "cost_first" ? "Cost-First" :
+                     agent.modelStrategy === "quality_first" ? "Quality-First" :
+                     agent.modelStrategy === "manual" ? "Manual" : "Auto"}
                   </Badge>
                 </div>
               </div>

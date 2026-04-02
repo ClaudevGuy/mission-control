@@ -799,8 +799,9 @@ async function main() {
   console.log(`  ${seedRepositories.length} repositories.`);
 
   // All commits belong to the first repo for simplicity
-  const primaryRepoId = seedRepositories[0].id;
+  const primaryRepoId = seedRepositories.length > 0 ? seedRepositories[0].id : null;
   for (const c of seedCommits) {
+    if (!primaryRepoId) break;
     await prisma.commit.create({
       data: {
         id: c.id,
@@ -819,6 +820,7 @@ async function main() {
   console.log(`  ${seedCommits.length} commits.`);
 
   for (const pr of seedPullRequests) {
+    if (!primaryRepoId) break;
     await prisma.pullRequest.create({
       data: {
         id: pr.id,

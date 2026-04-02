@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { AnalyticsData } from "@/types/analytics";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 const emptyAnalytics: AnalyticsData = {
   overview: { dau: 0, wau: 0, mau: 0, avgSession: 0, bounceRate: 0, pagesPerSession: 0 },
@@ -29,6 +30,8 @@ export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
   dateRange: "30d",
 
   fetch: async () => {
+    if (isFresh("analytics")) return;
+    markInflight("analytics");
     set({ isLoading: true, error: null });
     try {
       const [overviewRes, retentionRes, geoRes, featuresRes, funnelRes, growthRes] = await Promise.all([
@@ -53,6 +56,7 @@ export const useAnalyticsStore = create<AnalyticsStore>((set) => ({
         funnelRes.json(),
         growthRes.json(),
       ]);
+      markFetched("analytics");
       set({
         data: {
           overview: overviewData.data.snapshot,

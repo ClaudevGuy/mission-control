@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 import type { Deployment, EnvironmentStatus, FeatureFlag } from "@/types/deployments";
 import type { DeployStatus, Environment } from "@/types/common";
 
@@ -29,6 +30,8 @@ export const useDeploymentsStore = create<DeploymentsStore>((set, get) => ({
   statusFilter: "all",
 
   fetch: async () => {
+    if (isFresh("deployments")) return;
+    markInflight("deployments");
     set({ isLoading: true, error: null });
     try {
       const [deploymentsRes, environmentsRes, flagsRes] = await Promise.all([
@@ -44,6 +47,7 @@ export const useDeploymentsStore = create<DeploymentsStore>((set, get) => ({
         environmentsRes.json(),
         flagsRes.json(),
       ]);
+      markFetched("deployments");
       set({
         deployments: deploymentsData.data.deployments,
         environments: environmentsData.data.configs,

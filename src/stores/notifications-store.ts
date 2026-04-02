@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 export interface Notification {
   id: string;
@@ -28,11 +29,14 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
   error: null,
 
   fetch: async () => {
+    if (isFresh("notifications")) return;
+    markInflight("notifications");
     set({ isLoading: true, error: null });
     try {
       const res = await fetch("/api/notifications");
       if (!res.ok) throw new Error("Failed to fetch notifications");
       const { data } = await res.json();
+      markFetched("notifications");
       set({ notifications: data.notifications, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });

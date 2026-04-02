@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Incident, IncidentEvent, AlertRule, OnCallSchedule } from "@/types/incidents";
 import type { IncidentSeverity, IncidentStatus } from "@/types/common";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 interface IncidentsStore {
   incidents: Incident[];
@@ -30,6 +31,8 @@ export const useIncidentsStore = create<IncidentsStore>((set, get) => ({
   statusFilter: "all",
 
   fetch: async () => {
+    if (isFresh("incidents")) return;
+    markInflight("incidents");
     set({ isLoading: true, error: null });
     try {
       const [incidentsRes, alertsRes, onCallRes] = await Promise.all([
@@ -45,6 +48,7 @@ export const useIncidentsStore = create<IncidentsStore>((set, get) => ({
         alertsRes.json(),
         onCallRes.json(),
       ]);
+      markFetched("incidents");
       set({
         incidents: incidentsData.data.incidents,
         alertRules: alertsData.data.rules,

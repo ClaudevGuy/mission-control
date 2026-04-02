@@ -17,34 +17,7 @@ import { cn } from "@/lib/utils";
 /* ── File Tree ── */
 interface TreeNode { name: string; type: "folder" | "file"; children?: TreeNode[]; }
 
-const FILE_TREE: TreeNode[] = [
-  { name: "src", type: "folder", children: [
-    { name: "app", type: "folder", children: [
-      { name: "api", type: "folder", children: [
-        { name: "claims/route.ts", type: "file" },
-        { name: "auth/route.ts", type: "file" },
-        { name: "webhooks/route.ts", type: "file" },
-      ]},
-      { name: "dashboard", type: "folder", children: [
-        { name: "page.tsx", type: "file" },
-        { name: "layout.tsx", type: "file" },
-      ]},
-      { name: "layout.tsx", type: "file" },
-    ]},
-    { name: "components", type: "folder", children: [
-      { name: "ui", type: "folder", children: [] },
-      { name: "shared", type: "folder", children: [] },
-      { name: "features", type: "folder", children: [] },
-    ]},
-    { name: "lib", type: "folder", children: [
-      { name: "utils.ts", type: "file" },
-      { name: "api.ts", type: "file" },
-      { name: "auth.ts", type: "file" },
-    ]},
-    { name: "stores", type: "folder", children: [{ name: "app-store.ts", type: "file" }] },
-    { name: "types", type: "folder", children: [{ name: "index.ts", type: "file" }] },
-  ]},
-];
+const FILE_TREE: TreeNode[] = [];
 
 function FileTreeNode({ node, depth = 0 }: { node: TreeNode; depth?: number }) {
   const [open, setOpen] = useState(depth < 2);

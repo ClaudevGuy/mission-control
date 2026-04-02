@@ -11,26 +11,9 @@ import { useSettingsStore } from "@/stores/settings-store";
 
 const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Billing", "Integrations", "Danger Zone"];
 
-const NOTIF_EVENTS = [
-  { name: "P1 Incident", app: true, email: true, slack: true },
-  { name: "P2 Incident", app: true, email: true, slack: true },
-  { name: "P3 Incident", app: true, email: false, slack: false },
-  { name: "Deploy Success", app: true, email: false, slack: true },
-  { name: "Deploy Failure", app: true, email: true, slack: true },
-  { name: "Agent Error", app: true, email: false, slack: false },
-  { name: "Budget Alert", app: true, email: true, slack: false },
-  { name: "Agent Completed", app: false, email: false, slack: false },
-  { name: "New Team Member", app: true, email: true, slack: false },
-  { name: "Weekly Report", app: false, email: true, slack: false },
-];
+const NOTIF_EVENTS: { name: string; app: boolean; email: boolean; slack: boolean }[] = [];
 
-const LOGINS = [
-  { ip: "192.168.1.42", location: "San Francisco, US", device: "Chrome / macOS", time: "10 min ago", status: "success" },
-  { ip: "192.168.1.42", location: "San Francisco, US", device: "Chrome / macOS", time: "2h ago", status: "success" },
-  { ip: "203.0.113.88", location: "Unknown", device: "Firefox / Linux", time: "1d ago", status: "failed" },
-  { ip: "192.168.1.42", location: "San Francisco, US", device: "Mobile Safari", time: "2d ago", status: "success" },
-  { ip: "10.0.0.15", location: "New York, US", device: "Chrome / Windows", time: "3d ago", status: "success" },
-];
+const LOGINS: { ip: string; location: string; device: string; time: string; status: string }[] = [];
 
 const ACCENT_COLORS = [
   { name: "Cyan", value: "#00D4FF" }, { name: "Purple", value: "#A855F7" }, { name: "Green", value: "#39FF14" },

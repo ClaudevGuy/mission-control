@@ -2,27 +2,19 @@
 
 import React, { useState } from "react";
 import { PageHeader, GlassPanel } from "@/components/shared";
-import { Camera, ShieldCheck, Smartphone, Monitor, Globe } from "lucide-react";
+import { Camera, ShieldCheck, Globe } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-const SESSIONS = [
-  { device: "Chrome on MacBook Pro", icon: Monitor, location: "Tel Aviv, IL", lastActive: "Now", current: true, suspicious: false },
-  { device: "Safari on iPhone 15", icon: Smartphone, location: "Tel Aviv, IL", lastActive: "2 hours ago", current: false, suspicious: false },
-  { device: "Chrome on Windows", icon: Monitor, location: "Unknown", lastActive: "3 days ago", current: false, suspicious: true },
-];
+const SESSIONS: { device: string; icon: React.ComponentType<{ className?: string }>; location: string; lastActive: string; current: boolean; suspicious: boolean }[] = [];
 
-const CONNECTED = [
-  { name: "GitHub", connected: true, handle: "LoqdInDev", color: "#ffffff" },
-  { name: "Google", connected: false, handle: null, color: "#4285F4" },
-  { name: "Slack", connected: true, handle: "@operator", color: "#E01E5A" },
-];
+const CONNECTED: { name: string; connected: boolean; handle: string | null; color: string }[] = [];
 
 export default function ProfilePage() {
-  const [name, setName] = useState("Operator");
-  const [displayName, setDisplayName] = useState("Operator");
-  const [email, setEmail] = useState("operator@missioncontrol.ai");
-  const [jobTitle, setJobTitle] = useState("Lead Engineer");
+  const [name, setName] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
   const [timezone, setTimezone] = useState("America/Los_Angeles");
   const [landingPage, setLandingPage] = useState("/overview");
   const [dateFormat, setDateFormat] = useState("MM/DD/YYYY");

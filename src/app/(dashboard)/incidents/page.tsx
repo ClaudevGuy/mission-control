@@ -21,10 +21,7 @@ const SEV_BADGE: Record<IncidentSeverity, { bg: string; text: string }> = {
   P3: { bg: "rgba(255,255,255,0.1)", text: "#888" },
 };
 
-const AVATAR_COLORS: Record<string, string> = {
-  "Sarah Chen": "#00D4FF", "Marcus Johnson": "#A855F7", "Aisha Patel": "#F59E0B",
-  "James Wilson": "#39FF14", "Emily Rodriguez": "#EF4444",
-};
+const AVATAR_COLORS: Record<string, string> = {};
 
 function timeAgo(ts: string) {
   const diff = Date.now() - new Date(ts).getTime();
@@ -34,54 +31,14 @@ function timeAgo(ts: string) {
   return `${Math.floor(diff / 86400000)}d ago`;
 }
 
-// Extra mock incidents
-const EXTRA_INCIDENTS = [
-  {
-    id: "inc_004", title: "Database Connection Pool Exhausted", description: "PostgreSQL connection pool reached max 100 connections. New requests are being rejected.", severity: "P1" as IncidentSeverity, status: "open" as const,
-    createdAt: new Date(Date.now() - 45 * 60000).toISOString(), updatedAt: new Date(Date.now() - 30 * 60000).toISOString(), assignee: { id: "user-sarah", name: "Sarah Chen", email: null, image: null },
-    affectedServices: ["api-gateway", "worker-service"], timeline: [
-      { timestamp: new Date(Date.now() - 45 * 60000).toISOString(), actor: "InfraMonitor", action: "triggered", details: "Connection pool at 100/100" },
-      { timestamp: new Date(Date.now() - 40 * 60000).toISOString(), actor: "PagerDuty", action: "notified", details: "Sarah Chen paged" },
-    ],
-  },
-  {
-    id: "inc_005", title: "Worker Queue Backlog", description: "analytics-events queue depth at 8,940 items, processing rate insufficient to drain within SLA.", severity: "P2" as IncidentSeverity, status: "investigating" as const,
-    createdAt: new Date(Date.now() - 60 * 60000).toISOString(), updatedAt: new Date(Date.now() - 20 * 60000).toISOString(), assignee: { id: "user-marcus", name: "Marcus Johnson", email: null, image: null },
-    affectedServices: ["worker-service", "analytics-service"], timeline: [
-      { timestamp: new Date(Date.now() - 60 * 60000).toISOString(), actor: "AlertRule", action: "triggered", details: "Queue depth > 5000 for 5min" },
-      { timestamp: new Date(Date.now() - 55 * 60000).toISOString(), actor: "Marcus Johnson", action: "acknowledged", details: "Investigating" },
-    ],
-  },
-];
+// Extra incidents removed — data now comes from the store
+const EXTRA_INCIDENTS: never[] = [];
 
-const ALERT_RULES = [
-  { id: "ar_1", name: "High Error Rate", metric: "error_rate", condition: ">", threshold: "5%", duration: "5 min", channels: ["Slack", "PagerDuty"], enabled: true, lastTriggered: "2h ago" },
-  { id: "ar_2", name: "API Latency P95", metric: "p95_latency", condition: ">", threshold: "500ms", duration: "10 min", channels: ["Slack"], enabled: true, lastTriggered: "6h ago" },
-  { id: "ar_3", name: "Cost Anomaly", metric: "daily_spend", condition: ">", threshold: "$800", duration: "1 day", channels: ["Email"], enabled: true, lastTriggered: "3d ago" },
-  { id: "ar_4", name: "Agent Error Rate", metric: "agent_errors", condition: ">", threshold: "10%", duration: "5 min", channels: ["Slack"], enabled: true, lastTriggered: "1d ago" },
-  { id: "ar_5", name: "Context Window Full", metric: "context_usage", condition: ">", threshold: "95%", duration: "1 min", channels: ["Email"], enabled: false, lastTriggered: "Never" },
-  { id: "ar_6", name: "Queue Depth", metric: "queue_depth", condition: ">", threshold: "5,000", duration: "5 min", channels: ["PagerDuty"], enabled: true, lastTriggered: "45m ago" },
-];
+const ALERT_RULES: { id: string; name: string; metric: string; condition: string; threshold: string; duration: string; channels: string[]; enabled: boolean; lastTriggered: string }[] = [];
 
-const ONCALL = [
-  { day: "Mon", person: "Sarah Chen" }, { day: "Tue", person: "Sarah Chen" },
-  { day: "Wed", person: "Marcus Johnson" }, { day: "Thu", person: "Marcus Johnson" },
-  { day: "Fri", person: "Aisha Patel" }, { day: "Sat", person: "James Wilson" },
-  { day: "Sun", person: "James Wilson" },
-];
+const ONCALL: { day: string; person: string }[] = [];
 
-const HISTORY = [
-  { title: "CDN Cache Invalidation Failure", severity: "P2" as IncidentSeverity, duration: "1h 12m", resolvedBy: "Aisha Patel", mttr: "1h 45m", date: "Mar 28" },
-  { title: "Search Index Corruption", severity: "P1" as IncidentSeverity, duration: "3h 24m", resolvedBy: "Sarah Chen", mttr: "4h 02m", date: "Mar 25" },
-  { title: "Payment Webhook Timeout", severity: "P3" as IncidentSeverity, duration: "22m", resolvedBy: "Marcus Johnson", mttr: "35m", date: "Mar 22" },
-  { title: "Agent Context Window OOM", severity: "P2" as IncidentSeverity, duration: "45m", resolvedBy: "James Wilson", mttr: "1h 10m", date: "Mar 20" },
-  { title: "SSL Certificate Expiry Warning", severity: "P3" as IncidentSeverity, duration: "8m", resolvedBy: "InfraMonitor", mttr: "12m", date: "Mar 18" },
-  { title: "Database Migration Failure", severity: "P1" as IncidentSeverity, duration: "2h 48m", resolvedBy: "Sarah Chen", mttr: "3h 15m", date: "Mar 15" },
-  { title: "Rate Limiter Misconfiguration", severity: "P2" as IncidentSeverity, duration: "34m", resolvedBy: "Marcus Johnson", mttr: "50m", date: "Mar 12" },
-  { title: "Notification Service Down", severity: "P1" as IncidentSeverity, duration: "1h 56m", resolvedBy: "Aisha Patel", mttr: "2h 20m", date: "Mar 8" },
-  { title: "Cost Anomaly Spike", severity: "P3" as IncidentSeverity, duration: "15m", resolvedBy: "Sarah Chen", mttr: "18m", date: "Mar 5" },
-  { title: "Auth Token Leak Detection", severity: "P1" as IncidentSeverity, duration: "5h 12m", resolvedBy: "Sarah Chen", mttr: "6h 30m", date: "Mar 1" },
-];
+const HISTORY: { title: string; severity: IncidentSeverity; duration: string; resolvedBy: string; mttr: string; date: string }[] = [];
 
 export default function IncidentsPage() {
   const [tab, setTab] = useState<"active" | "rules" | "oncall" | "history">("active");

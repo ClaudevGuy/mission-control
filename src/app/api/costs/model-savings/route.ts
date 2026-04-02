@@ -1,9 +1,8 @@
-import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { withErrorHandler, requireAuth, getProjectId, apiResponse } from "@/lib/api-helpers";
 import { getTierConfig, type ProviderKey } from "@/lib/model-selector";
 
-export const GET = withErrorHandler(async (_request: NextRequest) => {
+export const GET = withErrorHandler(async () => {
   await requireAuth();
   const projectId = await getProjectId();
 

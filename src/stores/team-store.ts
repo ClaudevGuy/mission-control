@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { TeamMember, AuditLogEntry, APIKey } from "@/types/team";
 import type { TeamRole } from "@/types/common";
+import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
 
 interface TeamStore {
   members: TeamMember[];
@@ -23,6 +24,8 @@ export const useTeamStore = create<TeamStore>((set, get) => ({
   error: null,
 
   fetch: async () => {
+    if (isFresh("team")) return;
+    markInflight("team");
     set({ isLoading: true, error: null });
     try {
       const [membersRes, auditRes, keysRes] = await Promise.all([
@@ -38,10 +41,25 @@ export const useTeamStore = create<TeamStore>((set, get) => ({
         auditRes.json(),
         keysRes.json(),
       ]);
+      markFetched("team");
+      // Map raw Prisma data to TeamMember shape
+      const mappedMembers = (membersData.data.members || []).map((m: Record<string, unknown>) => {
+        const user = (m.user || {}) as Record<string, unknown>;
+        return {
+          id: (user.id || m.userId) as string,
+          name: (user.name || "") as string,
+          email: (user.email || "") as string,
+          role: ((m.role as string) || "viewer").toLowerCase() as TeamRole,
+          avatar: (user.avatar || user.image || "") as string,
+          lastActive: (m.joinedAt || "") as string,
+          twoFAEnabled: false,
+          agentsOwned: [] as string[],
+        };
+      });
       set({
-        members: membersData.data.members,
-        auditLog: auditData.data.entries,
-        apiKeys: keysData.data.keys,
+        members: mappedMembers,
+        auditLog: auditData.data.entries ?? [],
+        apiKeys: keysData.data.keys ?? [],
         isLoading: false,
       });
     } catch (error) {
