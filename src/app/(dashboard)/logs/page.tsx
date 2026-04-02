@@ -26,7 +26,7 @@ const LEVEL_STYLES: Record<string, { bg: string; text: string; rowBg: string }> 
   error: { bg: "rgba(239,68,68,0.1)", text: "#EF4444", rowBg: "bg-[#EF4444]/[0.03]" },
 };
 
-const SERVICES = ["api-gateway", "auth-service", "worker-service", "cache-service", "search-service", "notification-service", "analytics-service", "web-app"];
+const SERVICES: string[] = [];
 
 function formatTime(ts: string) {
   return new Date(ts).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -73,11 +73,11 @@ export default function LogsPage() {
     { id: "traces" as const, label: "Traces" },
   ];
 
-  // LLM stats
-  const totalLLMCalls = 45234;
-  const totalTokens = 2830000;
-  const totalLLMCost = 89.42;
-  const avgLatency = 1847;
+  // LLM stats — wire to real backend
+  const totalLLMCalls = 0;
+  const totalTokens = 0;
+  const totalLLMCost = 0;
+  const avgLatency = 0;
 
   return (
     <div className="space-y-6">
@@ -240,7 +240,7 @@ export default function LogsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  {["Time", "Model", "Provider", "Tokens In", "Tokens Out", "Latency", "Cost", ""].map((h) => (
+                  {["Time", "Model", "Tier", "Provider", "Tokens In", "Tokens Out", "Latency", "Cost", ""].map((h) => (
                     <th key={h} className="text-left text-xs font-medium text-muted-foreground px-4 py-3">{h}</th>
                   ))}
                 </tr>
@@ -251,6 +251,20 @@ export default function LogsPage() {
                     <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => setExpandedLLM(expandedLLM === call.id ? null : call.id)}>
                       <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground" suppressHydrationWarning>{formatTime(call.timestamp)}</td>
                       <td className="px-4 py-2.5"><ModelBadge model={call.agentName === "InfraMonitor" ? "Custom" : call.model.includes("claude") ? "Claude" : call.model.includes("gpt") ? "GPT-4" : "Gemini"} size="sm" /></td>
+                      <td className="px-3 py-2">
+                        {call.selectedTier ? (
+                          <span className={cn(
+                            "inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold",
+                            call.selectedTier === 1 ? "bg-purple-500/15 text-purple-400" :
+                            call.selectedTier === 2 ? "bg-[#00D4FF]/15 text-[#00D4FF]" :
+                            "bg-green-500/15 text-green-400"
+                          )}>
+                            T{call.selectedTier}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground/30 text-[10px]">—</span>
+                        )}
+                      </td>
                       <td className="px-4 py-2.5 font-mono text-[10px] text-muted-foreground truncate max-w-[140px]">{call.model}</td>
                       <td className="px-4 py-2.5 font-mono text-xs">{call.tokensIn.toLocaleString()}</td>
                       <td className="px-4 py-2.5 font-mono text-xs">{call.tokensOut.toLocaleString()}</td>
@@ -260,7 +274,7 @@ export default function LogsPage() {
                     </tr>
                     {expandedLLM === call.id && (
                       <tr className="border-b border-border">
-                        <td colSpan={8} className="px-4 py-4">
+                        <td colSpan={9} className="px-4 py-4">
                           <div className="space-y-3">
                             <div>
                               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Prompt</span>
@@ -275,6 +289,20 @@ export default function LogsPage() {
                               <span>Tokens: <span className="font-mono text-foreground">{(call.tokensIn + call.tokensOut).toLocaleString()}</span></span>
                               <span>Cost: <span className="font-mono text-foreground">{formatCurrency(call.cost)}</span></span>
                             </div>
+                            {call.selectionReason && (
+                              <div className="flex items-center gap-2 text-[10px]">
+                                <span className="text-muted-foreground">Selection:</span>
+                                <span className="font-mono text-foreground/70">{call.selectionReason}</span>
+                                {call.selectionDurationMs != null && (
+                                  <span className="text-muted-foreground/50">[{call.selectionDurationMs}ms]</span>
+                                )}
+                              </div>
+                            )}
+                            {call.wasUpgraded && (
+                              <div className="flex items-center gap-1.5 text-[10px] text-amber-400">
+                                <span>↑ Upgraded from T{call.originalTier} → T{call.selectedTier} after failed attempt</span>
+                              </div>
+                            )}
                           </div>
                         </td>
                       </tr>
