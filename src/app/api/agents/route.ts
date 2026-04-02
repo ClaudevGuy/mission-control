@@ -84,6 +84,7 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
       name: body.name,
       description: body.description,
       model: body.model as never,
+      modelStrategy: body.modelStrategy ?? "auto",
       systemPrompt: body.systemPrompt,
       temperature: body.temperature,
       maxTokens: body.maxTokens,
