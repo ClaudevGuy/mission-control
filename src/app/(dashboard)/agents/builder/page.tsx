@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Rocket, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Rocket, Check, Sparkles, Hand, DollarSign, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { GlassPanel, PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 
 const STEPS = [
   "Identity",
+  "Model Strategy",
   "System Prompt",
   "Tools",
   "Memory",
@@ -47,6 +48,7 @@ export default function AgentBuilderPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [model, setModel] = useState("Claude");
+  const [modelStrategy, setModelStrategy] = useState<"auto" | "manual" | "cost_first" | "quality_first">("auto");
 
   // Step 2 - System Prompt
   const [systemPrompt, setSystemPrompt] = useState("");
@@ -76,13 +78,13 @@ export default function AgentBuilderPage() {
 
   const canNext = () => {
     if (step === 0) return name.trim().length > 0;
-    if (step === 1) return systemPrompt.trim().length > 0;
+    if (step === 2) return systemPrompt.trim().length > 0;
     return true;
   };
 
   const handleDeploy = () => {
     toast.success(`Agent "${name}" deployed successfully!`, {
-      description: `Model: ${model} | Tools: ${Object.values(enabledTools).filter(Boolean).length} enabled`,
+      description: `Model: ${model} | Strategy: ${modelStrategy} | Tools: ${Object.values(enabledTools).filter(Boolean).length} enabled`,
     });
   };
 
@@ -183,8 +185,63 @@ export default function AgentBuilderPage() {
           </div>
         )}
 
-        {/* Step 2 - System Prompt */}
+        {/* Step 2 - Model Strategy */}
         {step === 1 && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-1">Model Strategy</h3>
+              <p className="text-xs text-muted-foreground">Choose how the system selects models for this agent&apos;s tasks.</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {([
+                { id: "auto" as const, label: "Auto", desc: "System selects optimal model per task", icon: Sparkles, recommended: true },
+                { id: "manual" as const, label: "Manual", desc: "Always use the provider's default model", icon: Hand },
+                { id: "cost_first" as const, label: "Cost-First", desc: "Always use cheapest model in family", icon: DollarSign },
+                { id: "quality_first" as const, label: "Quality-First", desc: "Always use strongest model", icon: Shield },
+              ] as const).map((opt) => {
+                const Icon = opt.icon;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => setModelStrategy(opt.id)}
+                    className={cn(
+                      "relative flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all",
+                      modelStrategy === opt.id
+                        ? "border-[#00D4FF]/40 bg-[#00D4FF]/[0.06]"
+                        : "border-border hover:border-border/80 hover:bg-muted/30"
+                    )}
+                  >
+                    {"recommended" in opt && opt.recommended && (
+                      <span className="absolute top-2.5 right-2.5 text-[9px] font-medium text-[#00D4FF] bg-[#00D4FF]/10 rounded-full px-2 py-0.5">
+                        Recommended
+                      </span>
+                    )}
+                    <Icon className={cn("size-5", modelStrategy === opt.id ? "text-[#00D4FF]" : "text-muted-foreground")} />
+                    <div>
+                      <span className="text-sm font-medium text-foreground block">{opt.label}</span>
+                      <span className="text-xs text-muted-foreground">{opt.desc}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {modelStrategy === "auto" && (
+              <div className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
+                <p className="text-xs font-medium text-foreground">Estimated distribution for this agent:</p>
+                <div className="space-y-1.5 text-xs text-muted-foreground font-mono">
+                  <div className="flex justify-between"><span>~40% of runs → Tier 3 (simple tasks)</span><span className="text-green-400">lowest cost</span></div>
+                  <div className="flex justify-between"><span>~45% of runs → Tier 2 (standard tasks)</span><span className="text-[#00D4FF]">balanced</span></div>
+                  <div className="flex justify-between"><span>~15% of runs → Tier 1 (complex tasks)</span><span className="text-purple-400">highest quality</span></div>
+                </div>
+                <p className="text-[10px] text-muted-foreground/60 mt-2">Est. savings vs always using Tier 2: ~30%</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 3 - System Prompt */}
+        {step === 2 && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-foreground">System Prompt</h3>
             <Textarea
@@ -200,8 +257,8 @@ export default function AgentBuilderPage() {
           </div>
         )}
 
-        {/* Step 3 - Tools */}
-        {step === 2 && (
+        {/* Step 4 - Tools */}
+        {step === 3 && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-foreground">Tools</h3>
             <p className="text-sm text-muted-foreground">Select the tools this agent can use.</p>
@@ -222,8 +279,8 @@ export default function AgentBuilderPage() {
           </div>
         )}
 
-        {/* Step 4 - Memory */}
-        {step === 3 && (
+        {/* Step 5 - Memory */}
+        {step === 4 && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-foreground">Memory Configuration</h3>
             <div className="space-y-4">
@@ -259,8 +316,8 @@ export default function AgentBuilderPage() {
           </div>
         )}
 
-        {/* Step 5 - Triggers */}
-        {step === 4 && (
+        {/* Step 6 - Triggers */}
+        {step === 5 && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-foreground">Triggers</h3>
             <div className="space-y-3">
@@ -349,8 +406,8 @@ export default function AgentBuilderPage() {
           </div>
         )}
 
-        {/* Step 6 - Review */}
-        {step === 5 && (
+        {/* Step 7 - Review */}
+        {step === 6 && (
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-foreground">Review &amp; Deploy</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -367,6 +424,7 @@ export default function AgentBuilderPage() {
                   <p className="text-xs text-muted-foreground">Model</p>
                   <Badge variant="outline" className="mt-1">{model}</Badge>
                 </div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Model Strategy</span><span>{modelStrategy === "auto" ? "Auto (Recommended)" : modelStrategy === "cost_first" ? "Cost-First" : modelStrategy === "quality_first" ? "Quality-First" : "Manual"}</span></div>
                 <div>
                   <p className="text-xs text-muted-foreground">System Prompt</p>
                   <p className="text-sm text-foreground truncate max-w-xs">
