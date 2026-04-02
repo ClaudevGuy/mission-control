@@ -283,6 +283,7 @@ model Project {
   growthMetrics      GrowthMetric[]
   notifications      Notification[]
   workflows          Workflow[]
+  teamInvites        TeamInvite[]
 }
 
 model ProjectMember {
@@ -707,6 +708,22 @@ model ApiKey {
   @@index([projectId])
   @@index([prefix])
   @@index([createdById])
+}
+
+model TeamInvite {
+  id        String   @id @default(cuid())
+  projectId String
+  email     String
+  role      String   @default("viewer")
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, email])
+  @@index([projectId, status])
 }
 
 // ============================================================================
