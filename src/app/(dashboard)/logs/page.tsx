@@ -73,11 +73,11 @@ export default function LogsPage() {
     { id: "traces" as const, label: "Traces" },
   ];
 
-  // LLM stats — wire to real backend
-  const totalLLMCalls = 0;
-  const totalTokens = 0;
-  const totalLLMCost = 0;
-  const avgLatency = 0;
+  // LLM stats — computed from real data
+  const totalLLMCalls = llmCalls.length;
+  const totalTokens = llmCalls.reduce((sum, c) => sum + c.tokensIn + c.tokensOut, 0);
+  const totalLLMCost = llmCalls.reduce((sum, c) => sum + c.cost, 0);
+  const avgLatency = llmCalls.length > 0 ? Math.round(llmCalls.reduce((sum, c) => sum + c.latency, 0) / llmCalls.length) : 0;
 
   return (
     <div className="space-y-6">
@@ -232,7 +232,7 @@ export default function LogsPage() {
             <MetricCard label="Total Tokens" value={totalTokens} format="tokens" icon={Zap} color="#A855F7" />
             <MetricCard label="Total Cost" value={totalLLMCost} format="currency" icon={DollarSign} color="#F59E0B" />
             <MetricCard label="Avg Latency" value={avgLatency} format="number" icon={Clock} color="#00d992" />
-            <MetricCard label="Error Rate" value={0.8} format="percent" icon={AlertTriangle} color="#EF4444" />
+            <MetricCard label="Error Rate" value={errorGroups.length > 0 && totalLLMCalls > 0 ? (errorGroups.length / totalLLMCalls) * 100 : 0} format="percent" icon={AlertTriangle} color="#EF4444" />
           </div>
 
           {/* LLM calls table */}
