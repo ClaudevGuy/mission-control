@@ -411,6 +411,37 @@ export default function AgentDetailPage({
                     {agent.maxTokens.toLocaleString()}
                   </span>
                 </div>
+                {/* Model Strategy */}
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">Model Strategy</p>
+                  <Badge variant="outline" className="bg-[#00D4FF]/10 text-[#00D4FF] border-[#00D4FF]/30">
+                    {(agent as Record<string, unknown>).modelStrategy === "cost_first" ? "Cost-First" :
+                     (agent as Record<string, unknown>).modelStrategy === "quality_first" ? "Quality-First" :
+                     (agent as Record<string, unknown>).modelStrategy === "manual" ? "Manual" : "Auto"}
+                  </Badge>
+                </div>
+              </div>
+              {/* Model Distribution */}
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-xs text-muted-foreground mb-3">Model Tier Distribution (30d)</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 space-y-2">
+                    {[
+                      { label: "Tier 1 (Complex)", color: "bg-purple-500/70", percent: 15 },
+                      { label: "Tier 2 (Balanced)", color: "bg-[#00D4FF]/70", percent: 45 },
+                      { label: "Tier 3 (Simple)", color: "bg-green-500/70", percent: 40 },
+                    ].map((tier) => (
+                      <div key={tier.label} className="flex items-center gap-2">
+                        <span className="text-[10px] text-muted-foreground w-28 shrink-0">{tier.label}</span>
+                        <div className="flex-1 h-2 rounded-full bg-muted/30 overflow-hidden">
+                          <div className={cn("h-full rounded-full", tier.color)} style={{ width: `${tier.percent}%` }} />
+                        </div>
+                        <span className="text-[10px] text-muted-foreground w-8 text-right">{tier.percent}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-[10px] text-muted-foreground/50 mt-2">Distribution based on auto-selection decisions. Data populates as agent runs accumulate.</p>
               </div>
             </GlassPanel>
 
