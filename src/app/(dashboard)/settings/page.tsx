@@ -6,8 +6,12 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Download, Trash2, Pause, RotateCcw, ShieldX, Bell, Shield } from "lucide-react";
+import { Download, Trash2, Pause, RotateCcw, ShieldX, Bell, Shield, Plus, X, Loader2, Link2 } from "lucide-react";
 import { useSettingsStore } from "@/stores/settings-store";
+import { useIntegrationsStore } from "@/stores/integrations-store";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { invalidate } from "@/lib/store-cache";
 
 const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Integrations", "Danger Zone"];
 
@@ -34,6 +38,14 @@ export default function SettingsPage() {
   const [require2FA, setRequire2FA] = useState(false);
   const [polling, setPolling] = useState(true);
   const [pollInterval, setPollInterval] = useState("5s");
+  // Integrations state
+  const { integrations, fetch: fetchIntegrations } = useIntegrationsStore();
+  const [addIntOpen, setAddIntOpen] = useState(false);
+  const [addIntName, setAddIntName] = useState("");
+  const [addIntKey, setAddIntKey] = useState("");
+  const [addIntCategory, setAddIntCategory] = useState("ai");
+  const [addingInt, setAddingInt] = useState(false);
+  const [addIntError, setAddIntError] = useState<string | null>(null);
   const projectName = useSettingsStore((s) => s.projectName);
   const projectDescription = useSettingsStore((s) => s.projectDescription);
   const storeSetProjectName = useSettingsStore((s) => s.setProjectName);
@@ -274,30 +286,62 @@ export default function SettingsPage() {
 
           {/* ─── INTEGRATIONS ─── */}
           {section === "Integrations" && (() => {
-            const connected = [
-              { name: "Anthropic (Claude)", desc: "AI model provider — powers agent execution", color: "#CC785C", status: "Active" },
-              { name: "Neon PostgreSQL", desc: "Serverless database — stores all project data", color: "#00d992", status: "Active" },
+            const coreServices = [
+              { name: "Anthropic (Claude)", desc: "AI model provider — powers agent execution", color: "#CC785C" },
+              { name: "Neon PostgreSQL", desc: "Serverless database — stores all project data", color: "#00d992" },
             ];
+
+            const handleAddInt = async () => {
+              if (!addIntName.trim() || !addIntKey.trim()) {
+                setAddIntError("Name and API key are required");
+                return;
+              }
+              setAddingInt(true);
+              setAddIntError(null);
+              try {
+                const res = await fetch("/api/integrations", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    name: addIntName.trim(),
+                    description: `${addIntName.trim()} integration`,
+                    icon: addIntName.trim().toLowerCase().replace(/\s+/g, "-"),
+                    category: addIntCategory,
+                    config: { apiKey: addIntKey.trim() },
+                  }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Failed to connect");
+                toast.success(`${addIntName} connected successfully`);
+                setAddIntOpen(false);
+                setAddIntName("");
+                setAddIntKey("");
+                invalidate("integrations");
+                fetchIntegrations();
+              } catch (err) {
+                setAddIntError((err as Error).message);
+              } finally {
+                setAddingInt(false);
+              }
+            };
 
             return (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Connected Services ({connected.length})</p>
-                  </div>
-                  <button
-                    className="text-xs font-medium text-black bg-[#00d992] rounded-lg px-3 py-1.5 hover:bg-[#00d992]/90 transition-colors"
-                    onClick={() => toast.success("To add an integration, add its API key to your .env file and restart the server")}
-                  >
-                    + Add Integration
-                  </button>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    Connected Services ({coreServices.length + integrations.filter((i) => i.status === "connected").length})
+                  </p>
+                  <Button size="sm" className="bg-[#00d992] hover:bg-[#00d992]/90 text-black" onClick={() => setAddIntOpen(true)}>
+                    <Plus className="size-3.5 mr-1" /> Add Integration
+                  </Button>
                 </div>
 
+                {/* Core services (always connected) */}
                 <div className="space-y-2">
-                  {connected.map((svc) => (
-                    <div key={svc.name} className="flex items-center justify-between rounded-lg border border-[#00d992]/20 bg-[#00d992]/[0.03] px-4 py-4">
+                  {coreServices.map((svc) => (
+                    <div key={svc.name} className="flex items-center justify-between rounded-lg border border-[#00d992]/20 bg-[#00d992]/[0.03] px-4 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-lg flex items-center justify-center text-sm font-bold" style={{ background: `${svc.color}15`, color: svc.color }}>
+                        <div className="size-9 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: `${svc.color}15`, color: svc.color }}>
                           {svc.name.charAt(0)}
                         </div>
                         <div>
@@ -306,22 +350,80 @@ export default function SettingsPage() {
                         </div>
                       </div>
                       <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-400">
-                        <span className="size-1.5 rounded-full bg-green-400 animate-pulse" />
-                        {svc.status}
+                        <span className="size-1.5 rounded-full bg-green-400 animate-pulse" /> Active
+                      </span>
+                    </div>
+                  ))}
+
+                  {/* User-added integrations from DB */}
+                  {integrations.filter((i) => i.status === "connected").map((integ) => (
+                    <div key={integ.id} className="flex items-center justify-between rounded-lg border border-[#00d992]/20 bg-[#00d992]/[0.03] px-4 py-3.5">
+                      <div className="flex items-center gap-3">
+                        <div className="size-9 rounded-lg flex items-center justify-center text-xs font-bold bg-[#00d992]/10 text-[#00d992]">
+                          {integ.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{integ.name}</p>
+                          <p className="text-xs text-muted-foreground">{integ.description || integ.category}</p>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-400">
+                        <span className="size-1.5 rounded-full bg-green-400 animate-pulse" /> Connected
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="rounded-lg border border-border bg-muted/10 p-4 space-y-2">
-                  <p className="text-xs font-medium text-foreground">How to add integrations</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Add the service&apos;s API key to your <code className="font-mono text-[#00d992] bg-[#00d992]/10 rounded px-1 py-0.5">.env</code> file and restart the dev server. Any service with an API key can be connected — there are no limits on what you can integrate.
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    See <code className="font-mono text-[#00d992] bg-[#00d992]/10 rounded px-1 py-0.5">.env.example</code> for common keys (OpenAI, GitHub, Slack, Vercel, Datadog, Sentry, Linear, PagerDuty).
-                  </p>
-                </div>
+                {/* Add Integration Modal */}
+                {addIntOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" onClick={() => setAddIntOpen(false)} />
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                      <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-2xl">
+                        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+                          <div className="flex items-center gap-2">
+                            <Link2 className="size-4 text-[#00d992]" />
+                            <h2 className="text-sm font-semibold text-foreground">Add Integration</h2>
+                          </div>
+                          <button onClick={() => setAddIntOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
+                        </div>
+                        <div className="px-5 py-5 space-y-4">
+                          <div>
+                            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Service Name</label>
+                            <Input placeholder="e.g. OpenAI, Slack, Vercel..." value={addIntName} onChange={(e) => { setAddIntName(e.target.value); setAddIntError(null); }} className="h-9" autoFocus />
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">API Key</label>
+                            <Input type="password" placeholder="sk-..." value={addIntKey} onChange={(e) => { setAddIntKey(e.target.value); setAddIntError(null); }} className="h-9 font-mono" />
+                            <p className="text-[10px] text-muted-foreground/50 mt-1">Stored encrypted. Never shared or logged.</p>
+                          </div>
+                          <div>
+                            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Category</label>
+                            <select value={addIntCategory} onChange={(e) => setAddIntCategory(e.target.value)} className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground">
+                              <option value="ai">AI Provider</option>
+                              <option value="monitoring">Monitoring</option>
+                              <option value="communication">Communication</option>
+                              <option value="source_control">Source Control</option>
+                              <option value="deployment">Deployment</option>
+                              <option value="automation">Automation</option>
+                            </select>
+                          </div>
+                          {addIntError && (
+                            <div className="rounded-lg border border-red-500/30 bg-red-500/[0.05] px-3 py-2">
+                              <p className="text-xs text-red-400">{addIntError}</p>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex justify-end gap-2 border-t border-border px-5 py-3">
+                          <Button variant="outline" size="sm" onClick={() => setAddIntOpen(false)} disabled={addingInt}>Cancel</Button>
+                          <Button size="sm" className="bg-[#00d992] hover:bg-[#00d992]/90 text-black" onClick={handleAddInt} disabled={addingInt || !addIntName.trim() || !addIntKey.trim()}>
+                            {addingInt ? <><Loader2 className="size-3.5 mr-1.5 animate-spin" />Connecting...</> : "Connect"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })()}
