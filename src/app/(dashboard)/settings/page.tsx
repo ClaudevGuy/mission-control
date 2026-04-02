@@ -374,6 +374,13 @@ export default function SettingsPage() {
                   ))}
                 </div>
 
+                {/* Fallback note */}
+                <div className="rounded-lg border border-border/50 bg-muted/5 px-4 py-3">
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground/70">Troubleshooting:</span> If an integration added here isn&apos;t working, you can also add the API key directly to your <code className="font-mono text-[#00d992] bg-[#00d992]/10 rounded px-1 py-0.5 text-[10px]">.env</code> file as a fallback. See <code className="font-mono text-[#00d992] bg-[#00d992]/10 rounded px-1 py-0.5 text-[10px]">.env.example</code> for the key names.
+                  </p>
+                </div>
+
                 {/* Add Integration Modal */}
                 {addIntOpen && (
                   <>
