@@ -42,20 +42,26 @@ export const useTeamStore = create<TeamStore>((set, get) => ({
         keysRes.json(),
       ]);
       markFetched("team");
-      // Map raw Prisma data to TeamMember shape
-      const mappedMembers = (membersData.data.members || []).map((m: Record<string, unknown>) => {
-        const user = (m.user || {}) as Record<string, unknown>;
-        return {
-          id: (user.id || m.userId) as string,
-          name: (user.name || "") as string,
-          email: (user.email || "") as string,
-          role: ((m.role as string) || "viewer").toLowerCase() as TeamRole,
-          avatar: (user.avatar || user.image || "") as string,
-          lastActive: (m.joinedAt || "") as string,
-          twoFAEnabled: false,
-          agentsOwned: [] as string[],
-        };
-      });
+      // Map raw Prisma data to TeamMember shape, filter out system admin
+      const mappedMembers = (membersData.data.members || [])
+        .filter((m: Record<string, unknown>) => {
+          const user = (m.user || {}) as Record<string, unknown>;
+          const email = (user.email || "") as string;
+          return !email.endsWith("@missioncontrol.local");
+        })
+        .map((m: Record<string, unknown>) => {
+          const user = (m.user || {}) as Record<string, unknown>;
+          return {
+            id: (user.id || m.userId) as string,
+            name: (user.name || "") as string,
+            email: (user.email || "") as string,
+            role: ((m.role as string) || "viewer").toLowerCase() as TeamRole,
+            avatar: (user.avatar || user.image || "") as string,
+            lastActive: (m.joinedAt || "") as string,
+            twoFAEnabled: false,
+            agentsOwned: [] as string[],
+          };
+        });
       set({
         members: mappedMembers,
         auditLog: auditData.data.entries ?? [],

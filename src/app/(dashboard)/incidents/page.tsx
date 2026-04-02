@@ -242,7 +242,7 @@ export default function IncidentsPage() {
             <div className="space-y-2">
               {[
                 { level: 1, action: "Notify assigned on-call", delay: "Immediately" },
-                { level: 2, action: "Notify team lead (Sarah Chen)", delay: "After 15 min" },
+                { level: 2, action: "Notify team lead", delay: "After 15 min" },
                 { level: 3, action: "Notify all admins", delay: "After 30 min" },
               ].map((esc) => (
                 <div key={esc.level} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/30">

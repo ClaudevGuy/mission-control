@@ -98,6 +98,20 @@ export default function TeamPage() {
             </Button>
           </div>
 
+          {members.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 py-16 text-center rounded-xl border border-border bg-card/50">
+              <div className="flex items-center justify-center size-12 rounded-xl bg-muted/30">
+                <UserPlus className="size-6 text-muted-foreground/25" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">No team members yet</p>
+                <p className="text-xs text-muted-foreground/50 mt-0.5">Invite your team to collaborate on Mission Control</p>
+              </div>
+              <Button size="sm" onClick={() => toast.success("Invite sent")} className="mt-1">
+                <UserPlus className="size-3.5 mr-1.5" /> Invite Member
+              </Button>
+            </div>
+          ) : (
           <GlassPanel padding="none">
             <table className="w-full text-sm">
               <thead>
@@ -160,6 +174,7 @@ export default function TeamPage() {
               </tbody>
             </table>
           </GlassPanel>
+          )}
 
         </div>
       )}

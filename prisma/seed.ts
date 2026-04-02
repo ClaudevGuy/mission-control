@@ -277,12 +277,9 @@ async function main() {
   console.log("Creating users...");
   const passwordHash = await bcrypt.hash("password123", 12);
 
+  // Single admin user for auth fallback — no mock team members
   const userDefs = [
-    { id: "usr_001", name: "Sarah Chen", email: "sarah@recoupfi.com", role: "ADMIN" as const, avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Sarah", twoFAEnabled: true, jobTitle: "CTO" },
-    { id: "usr_002", name: "Marcus Johnson", email: "marcus@recoupfi.com", role: "DEVELOPER" as const, avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Marcus", twoFAEnabled: true, jobTitle: "Senior Engineer" },
-    { id: "usr_003", name: "Aisha Patel", email: "aisha@recoupfi.com", role: "DEVELOPER" as const, avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aisha", twoFAEnabled: true, jobTitle: "Full-Stack Developer" },
-    { id: "usr_004", name: "James Wilson", email: "james@recoupfi.com", role: "AGENT_MANAGER" as const, avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=James", twoFAEnabled: false, jobTitle: "AI Operations Lead" },
-    { id: "usr_005", name: "Emily Rodriguez", email: "emily@recoupfi.com", role: "VIEWER" as const, avatar: "https://api.dicebear.com/9.x/avataaars/svg?seed=Emily", twoFAEnabled: false, jobTitle: "Product Manager" },
+    { id: "usr_admin", name: "Admin", email: "admin@missioncontrol.local", role: "ADMIN" as const, avatar: "", twoFAEnabled: false, jobTitle: "Administrator" },
   ];
 
   const users: Record<string, { id: string; name: string }> = {};
