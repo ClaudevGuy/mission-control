@@ -6,10 +6,10 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Download, Trash2, Pause, RotateCcw, ShieldX, CreditCard } from "lucide-react";
+import { Download, Trash2, Pause, RotateCcw, ShieldX } from "lucide-react";
 import { useSettingsStore } from "@/stores/settings-store";
 
-const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Billing", "Integrations", "Danger Zone"];
+const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Integrations", "Danger Zone"];
 
 const NOTIF_EVENTS: { name: string; app: boolean; email: boolean; slack: boolean }[] = [];
 
@@ -44,6 +44,17 @@ export default function SettingsPage() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchSettings(); }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("accent-color");
+    if (saved) {
+      setAccent(saved);
+      document.documentElement.style.setProperty("--primary", saved);
+      document.documentElement.style.setProperty("--ring", saved);
+      document.documentElement.style.setProperty("--sidebar-primary", saved);
+      document.documentElement.style.setProperty("--sidebar-ring", saved);
+    }
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -126,7 +137,15 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-semibold text-foreground mb-4">Accent Color</h3>
                 <div className="flex gap-3">
                   {ACCENT_COLORS.map((c) => (
-                    <button key={c.value} onClick={() => { setAccent(c.value); toast.success(`Accent: ${c.name}`); }} className={cn("size-8 rounded-full border-2 transition-transform hover:scale-110", accent === c.value ? "border-white scale-110" : "border-transparent")} style={{ background: c.value }} title={c.name} />
+                    <button key={c.value} onClick={() => {
+  setAccent(c.value);
+  document.documentElement.style.setProperty("--primary", c.value);
+  document.documentElement.style.setProperty("--ring", c.value);
+  document.documentElement.style.setProperty("--sidebar-primary", c.value);
+  document.documentElement.style.setProperty("--sidebar-ring", c.value);
+  localStorage.setItem("accent-color", c.value);
+  toast.success(`Accent: ${c.name}`);
+}} className={cn("size-8 rounded-full border-2 transition-transform hover:scale-110", accent === c.value ? "border-white scale-110" : "border-transparent")} style={{ background: c.value }} title={c.name} />
                   ))}
                 </div>
               </GlassPanel>
@@ -234,36 +253,6 @@ export default function SettingsPage() {
                 <h3 className="text-sm font-semibold text-foreground mb-2">Single Sign-On (SSO)</h3>
                 <p className="text-xs text-muted-foreground mb-3">Not configured. Supports Google, GitHub, and SAML.</p>
                 <button className="text-xs text-foreground bg-muted/50 rounded-lg px-4 py-2 hover:bg-muted" onClick={() => toast.success("SSO configuration opened")}>Configure SSO</button>
-              </GlassPanel>
-            </div>
-          )}
-
-          {/* ─── BILLING ─── */}
-          {section === "Billing" && (
-            <div className="space-y-6">
-              <GlassPanel padding="lg">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">Current Plan</h3>
-                    <span className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold mt-1 bg-[#00D4FF]/15 text-[#00D4FF]">PRO</span>
-                  </div>
-                  <span className="font-mono text-2xl font-bold text-foreground">$99<span className="text-sm text-muted-foreground font-normal">/mo</span></span>
-                </div>
-                <div className="space-y-3">
-                  <div><div className="flex justify-between text-xs mb-1"><span className="text-muted-foreground">Agents</span><span className="font-mono text-amber-400">10/10 used</span></div>
-                    <div className="w-full h-1.5 rounded-full bg-muted/50"><div className="h-1.5 rounded-full bg-amber-500" style={{ width: "100%" }} /></div></div>
-                  <div><div className="flex justify-between text-xs mb-1"><span className="text-muted-foreground">Team Seats</span><span className="font-mono text-foreground">5/10 used</span></div>
-                    <div className="w-full h-1.5 rounded-full bg-muted/50"><div className="h-1.5 rounded-full bg-green-500" style={{ width: "50%" }} /></div></div>
-                </div>
-                <button className="mt-4 text-xs font-medium text-primary-foreground bg-[#00D4FF] rounded-lg px-4 py-2 hover:bg-[#00D4FF]/80">Upgrade Plan</button>
-              </GlassPanel>
-              <GlassPanel padding="lg">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Payment Method</h3>
-                <div className="flex items-center gap-3">
-                  <CreditCard className="size-5 text-muted-foreground" />
-                  <div><p className="text-sm text-foreground">Visa ending in 4242</p><p className="text-[10px] text-muted-foreground">Expires 12/27</p></div>
-                  <button className="ml-auto text-xs text-foreground bg-muted/50 rounded-lg px-3 py-1.5 hover:bg-muted" onClick={() => toast.success("Payment method update initiated")}>Update Card</button>
-                </div>
               </GlassPanel>
             </div>
           )}
