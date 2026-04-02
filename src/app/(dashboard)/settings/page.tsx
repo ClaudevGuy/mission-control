@@ -19,17 +19,12 @@ const NOTIF_EVENTS: { name: string; app: boolean; email: boolean; slack: boolean
 
 const LOGINS: { ip: string; location: string; device: string; time: string; status: string }[] = [];
 
-const ACCENT_COLORS = [
-  { name: "Cyan", value: "#00d992" }, { name: "Purple", value: "#A855F7" }, { name: "Green", value: "#39FF14" },
-  { name: "Amber", value: "#F59E0B" }, { name: "Red", value: "#EF4444" }, { name: "White", value: "#FFFFFF" },
-];
 
 export default function SettingsPage() {
   const [section, setSection] = useState("General");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
   const { theme, setTheme } = useTheme();
-  const [accent, setAccent] = useState("#00d992");
   const [notifs, setNotifs] = useState(NOTIF_EVENTS);
   const [logRetention, setLogRetention] = useState(30);
   const [metricsRetention, setMetricsRetention] = useState(90);
@@ -57,16 +52,6 @@ export default function SettingsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchSettings(); }, []);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("accent-color");
-    if (saved) {
-      setAccent(saved);
-      document.documentElement.style.setProperty("--primary", saved);
-      document.documentElement.style.setProperty("--ring", saved);
-      document.documentElement.style.setProperty("--sidebar-primary", saved);
-      document.documentElement.style.setProperty("--sidebar-ring", saved);
-    }
-  }, []);
 
   return (
     <div className="space-y-6">
@@ -142,22 +127,6 @@ export default function SettingsPage() {
                     <button key={t} onClick={() => setTheme(t)} className={cn("rounded-lg border p-4 text-center text-sm font-medium capitalize transition-all", theme === t ? "border-primary/50 bg-primary/[0.06] text-foreground" : "border-border text-muted-foreground hover:text-foreground hover:border-border")}>
                       {t}
                     </button>
-                  ))}
-                </div>
-              </GlassPanel>
-              <GlassPanel padding="lg">
-                <h3 className="text-sm font-semibold text-foreground mb-4">Accent Color</h3>
-                <div className="flex gap-3">
-                  {ACCENT_COLORS.map((c) => (
-                    <button key={c.value} onClick={() => {
-  setAccent(c.value);
-  document.documentElement.style.setProperty("--primary", c.value);
-  document.documentElement.style.setProperty("--ring", c.value);
-  document.documentElement.style.setProperty("--sidebar-primary", c.value);
-  document.documentElement.style.setProperty("--sidebar-ring", c.value);
-  localStorage.setItem("accent-color", c.value);
-  toast.success(`Accent: ${c.name}`);
-}} className={cn("size-8 rounded-full border-2 transition-transform hover:scale-110", accent === c.value ? "border-white scale-110" : "border-transparent")} style={{ background: c.value }} title={c.name} />
                   ))}
                 </div>
               </GlassPanel>
