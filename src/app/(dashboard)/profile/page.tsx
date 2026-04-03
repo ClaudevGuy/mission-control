@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { PageHeader, GlassPanel } from "@/components/shared";
-import { Camera, ShieldCheck, Loader2 } from "lucide-react";
+import { Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -183,28 +183,6 @@ export default function ProfilePage() {
         <Button className="mt-4 bg-[#00d992] hover:bg-[#00d992]/90 text-black" onClick={handleSave} disabled={saving}>
           {saving ? <><Loader2 className="size-3.5 mr-1.5 animate-spin" />Saving...</> : "Save Changes"}
         </Button>
-      </GlassPanel>
-
-      {/* ─── Security ─── */}
-      <GlassPanel padding="lg">
-        <h3 className="text-sm font-semibold text-foreground mb-4">Security</h3>
-        <div className="space-y-5">
-          <div className="flex items-center justify-between max-w-2xl">
-            <div>
-              <p className="text-sm font-medium text-foreground">Two-Factor Authentication</p>
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                <ShieldCheck className="size-3.5" /> Not configured
-              </span>
-            </div>
-            <Button variant="outline" size="sm" onClick={() => toast.success("2FA setup coming soon")}>Enable 2FA</Button>
-          </div>
-
-          <div className="border-t border-border pt-4">
-            <p className="text-sm font-medium text-foreground mb-1">Change Password</p>
-            <p className="text-xs text-muted-foreground mb-3">Password authentication is managed by your auth provider</p>
-            <Button variant="outline" size="sm" onClick={() => toast.success("Password reset email sent")}>Reset Password</Button>
-          </div>
-        </div>
       </GlassPanel>
 
       {/* ─── Preferences ─── */}
