@@ -359,13 +359,19 @@ export default function SettingsPage() {
                             <td className="px-4 py-2.5">
                               <button
                                 className="text-[10px] text-muted-foreground hover:text-red-400 transition-colors"
-                                onClick={async () => {
-                                  if (!confirm(`Delete key "${k.name}"?`)) return;
-                                  try {
-                                    await fetch(`/api/team/api-keys/${k.id}`, { method: "DELETE" });
-                                    toast.success(`Key "${k.name}" deleted`);
-                                    fetchKeys();
-                                  } catch { toast.error("Failed to delete key"); }
+                                onClick={() => {
+                                  const name = k.name;
+                                  const id = k.id;
+                                  fetch(`/api/team/api-keys/${id}`, { method: "DELETE" })
+                                    .then((res) => {
+                                      if (res.ok) {
+                                        toast.success(`Key "${name}" deleted`);
+                                        setApiKeys((prev) => prev.filter((key) => key.id !== id));
+                                      } else {
+                                        toast.error("Failed to delete key");
+                                      }
+                                    })
+                                    .catch(() => toast.error("Failed to delete key"));
                                 }}
                               >
                                 <Trash2 className="size-3.5" />

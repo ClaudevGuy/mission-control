@@ -29,7 +29,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
 
   const [keys, total] = await Promise.all([
     prisma.apiKey.findMany({
-      where: { projectId },
+      where: { projectId, status: "active" },
       skip,
       take: limit,
       orderBy: { createdAt: "desc" },
@@ -48,7 +48,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
         },
       },
     }),
-    prisma.apiKey.count({ where: { projectId } }),
+    prisma.apiKey.count({ where: { projectId, status: "active" } }),
   ]);
 
   return apiResponse({
