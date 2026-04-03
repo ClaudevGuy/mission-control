@@ -10,6 +10,7 @@ import { CostBurnChart } from "@/components/overview/CostBurnChart";
 import { TopIssues } from "@/components/overview/TopIssues";
 import { RecentDeploys } from "@/components/overview/RecentDeploys";
 import { ActivityFeed } from "@/components/overview/ActivityFeed";
+import { ExternalAgentsWidget } from "@/components/overview/ExternalAgents";
 import { useAgentsStore } from "@/stores/agents-store";
 import { useDeploymentsStore } from "@/stores/deployments-store";
 import { useIncidentsStore } from "@/stores/incidents-store";
@@ -39,6 +40,7 @@ export default function OverviewPage() {
       <LiveStatsRow />
       <QuickActions />
       <AgentStatusGrid />
+      <ExternalAgentsWidget />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <CostBurnChart />
         <TopIssues />
