@@ -14,7 +14,6 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [timezone, setTimezone] = useState("UTC");
   const [landingPage, setLandingPage] = useState("/overview");
@@ -31,7 +30,6 @@ export default function ProfilePage() {
         if (user) {
           setName(user.name || "");
           setDisplayName(user.displayName || user.name || "");
-          setEmail(user.email || "");
           setJobTitle(user.jobTitle || "");
           setTimezone(user.timezone || "UTC");
           setAvatar(user.avatar || user.image || null);
@@ -139,7 +137,6 @@ export default function ProfilePage() {
                 Admin
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">{email || "No email set"}</p>
             {jobTitle && <p className="text-xs text-muted-foreground mt-0.5">{jobTitle}</p>}
           </div>
         </div>
@@ -156,11 +153,6 @@ export default function ProfilePage() {
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Display Name</label>
             <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-[#00d992]/50" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground block mb-1">Email</label>
-            <input value={email} disabled className="h-9 w-full rounded-lg border border-border bg-muted/20 px-3 text-sm text-muted-foreground outline-none cursor-not-allowed" />
-            <p className="text-[10px] text-muted-foreground/50 mt-0.5">Email cannot be changed</p>
           </div>
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Job Title</label>
