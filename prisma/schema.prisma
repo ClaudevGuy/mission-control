@@ -284,6 +284,8 @@ model Project {
   notifications      Notification[]
   workflows          Workflow[]
   teamInvites        TeamInvite[]
+  externalAgents     ExternalAgent[]
+  ingestEvents       IngestEvent[]
 }
 
 model ProjectMember {
@@ -1056,4 +1058,60 @@ model Notification {
   @@index([userId])
   @@index([projectId, userId, read])
   @@index([projectId, timestamp])
+}
+
+// ============================================================================
+// EXTERNAL AGENTS — agents registered from external frameworks
+// ============================================================================
+
+model ExternalAgent {
+  id           String   @id @default(cuid())
+  projectId    String
+  externalId   String          // ID from the source framework
+  source       String          // "paperclip" | "crewai" | "langgraph" | "custom"
+  name         String
+  description  String?  @db.Text
+  model        String?         // e.g. "claude-sonnet-4-6"
+  status       String   @default("idle")  // idle | running | error | completed
+  metadata     Json?           // arbitrary data from the source
+  lastEventAt  DateTime?
+  totalRuns    Int      @default(0)
+  totalCost    Float    @default(0)
+  totalTokens  Int      @default(0)
+  errorCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, source, externalId])
+  @@index([projectId])
+  @@index([projectId, source])
+  @@index([projectId, status])
+}
+
+model IngestEvent {
+  id          String   @id @default(cuid())
+  projectId   String
+  type        String          // agent.run.started | agent.run.completed | agent.run.failed | agent.status.changed | cost.incurred
+  source      String          // "paperclip" | "crewai" | etc
+  agentId     String?         // external agent ID
+  agentName   String?
+  model       String?
+  tokensIn    Int?
+  tokensOut   Int?
+  cost        Float?
+  duration    Int?            // ms
+  status      String?
+  error       String?  @db.Text
+  metadata    Json?
+  timestamp   DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, type])
+  @@index([projectId, source])
+  @@index([projectId, timestamp])
+  @@index([projectId, agentId])
 }
