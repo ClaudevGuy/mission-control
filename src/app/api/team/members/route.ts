@@ -18,6 +18,10 @@ const updateMemberRoleSchema = z.object({
   role: z.enum(["ADMIN", "DEVELOPER", "AGENT_MANAGER", "VIEWER"]),
 });
 
+const removeMemberSchema = z.object({
+  userId: z.string().min(1),
+});
+
 // ── GET /api/team/members ──
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
@@ -91,4 +95,40 @@ export const PATCH = withErrorHandler(async (request: NextRequest) => {
   });
 
   return apiResponse(member);
+});
+
+// ── DELETE /api/team/members ──
+
+export const DELETE = withErrorHandler(async (request: NextRequest) => {
+  const user = await requireRole("admin");
+  const projectId = await getProjectId();
+  const body = await validateBody(request, removeMemberSchema);
+
+  if (body.userId === user.id) {
+    return apiError("You cannot remove yourself", 400);
+  }
+
+  const existing = await prisma.projectMember.findUnique({
+    where: { userId_projectId: { userId: body.userId, projectId } },
+    include: { user: { select: { name: true, email: true } } },
+  });
+
+  if (!existing) {
+    return apiError("Member not found", 404);
+  }
+
+  await prisma.projectMember.delete({
+    where: { userId_projectId: { userId: body.userId, projectId } },
+  });
+
+  await logAuditEvent({
+    projectId,
+    userId: user.id,
+    userName: user.name,
+    action: "team.remove_member",
+    target: existing.user?.email || body.userId,
+    details: `Removed ${existing.user?.name || body.userId} from the project`,
+  });
+
+  return apiResponse({ success: true });
 });

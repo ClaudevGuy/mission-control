@@ -65,7 +65,9 @@ function formatTime(ts: string) {
 export default function TeamPage() {
   const [tab, setTab] = useState<"members" | "roles" | "audit" | "keys">("members");
   const { members, auditLog, apiKeys, fetch: fetchTeam } = useTeamStore();
-  const [removeTarget, setRemoveTarget] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
+  const [editRoleTarget, setEditRoleTarget] = useState<{ id: string; name: string; role: string } | null>(null);
+  const [newRole, setNewRole] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteRefreshKey, setInviteRefreshKey] = useState(0);
   const [apiKeyOpen, setApiKeyOpen] = useState(false);
@@ -171,8 +173,8 @@ export default function TeamPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="text-[10px] text-muted-foreground hover:text-[#00d992]" onClick={() => toast.success("Role editor opened")}>Edit Role</button>
-                          <button className="text-[10px] text-muted-foreground hover:text-red-400" onClick={() => setRemoveTarget(name)}>Remove</button>
+                          <button className="text-[10px] text-muted-foreground hover:text-[#00d992]" onClick={() => { setEditRoleTarget({ id: m.id, name, role: m.role }); setNewRole(m.role); }}>Edit Role</button>
+                          <button className="text-[10px] text-muted-foreground hover:text-red-400" onClick={() => setRemoveTarget({ id: m.id, name })}>Remove</button>
                         </div>
                       </td>
                     </tr>
@@ -346,11 +348,85 @@ export default function TeamPage() {
         open={!!removeTarget}
         onOpenChange={(open) => !open && setRemoveTarget(null)}
         title="Remove Team Member"
-        description={`Are you sure you want to remove ${removeTarget}? They will lose access immediately.`}
+        description={`Are you sure you want to remove ${removeTarget?.name}? They will lose access immediately.`}
         confirmLabel="Remove"
         variant="danger"
-        onConfirm={() => { toast.success(`${removeTarget} removed`); setRemoveTarget(null); }}
+        onConfirm={async () => {
+          try {
+            const res = await fetch("/api/team/members", {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userId: removeTarget?.id }),
+            });
+            if (!res.ok) { const e = await res.json(); throw new Error(e.error || "Failed"); }
+            toast.success(`${removeTarget?.name} removed`);
+            invalidate("team");
+            fetchTeam();
+          } catch (err) {
+            toast.error((err as Error).message);
+          }
+          setRemoveTarget(null);
+        }}
       />
+
+      {/* Edit Role Modal */}
+      {editRoleTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]" onClick={() => setEditRoleTarget(null)}>
+          <div className="w-[380px] rounded-xl border border-border bg-card p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold text-foreground mb-1">Edit Role</h3>
+            <p className="text-xs text-muted-foreground/60 mb-4">Change role for {editRoleTarget.name}</p>
+            <div className="space-y-2 mb-4">
+              {["ADMIN", "DEVELOPER", "AGENT_MANAGER", "VIEWER"].map((role) => (
+                <button
+                  key={role}
+                  onClick={() => setNewRole(role)}
+                  className={cn(
+                    "w-full flex items-center justify-between rounded-lg border p-3 text-left text-xs transition-colors",
+                    newRole === role ? "border-[#00d992]/40 bg-[#00d992]/[0.04]" : "border-border/50 hover:border-border"
+                  )}
+                >
+                  <div>
+                    <span className="font-medium text-foreground">{role.replace("_", " ")}</span>
+                    <p className="text-[10px] text-muted-foreground/50 mt-0.5">
+                      {role === "ADMIN" ? "Full access, manage team and settings" :
+                       role === "DEVELOPER" ? "Deploy agents, trigger workflows, view all data" :
+                       role === "AGENT_MANAGER" ? "Manage agents and workflows only" :
+                       "Read-only access to dashboards and logs"}
+                    </p>
+                  </div>
+                  {newRole === role && <span className="size-2 rounded-full bg-[#00d992] shrink-0" />}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setEditRoleTarget(null)}>Cancel</Button>
+              <Button
+                size="sm"
+                className="bg-[#00d992] hover:bg-[#00d992]/90 text-black"
+                disabled={newRole === editRoleTarget.role}
+                onClick={async () => {
+                  try {
+                    const res = await fetch("/api/team/members", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ userId: editRoleTarget.id, role: newRole }),
+                    });
+                    if (!res.ok) { const e = await res.json(); throw new Error(e.error || "Failed"); }
+                    toast.success(`${editRoleTarget.name} is now ${newRole.replace("_", " ")}`);
+                    invalidate("team");
+                    fetchTeam();
+                  } catch (err) {
+                    toast.error((err as Error).message);
+                  }
+                  setEditRoleTarget(null);
+                }}
+              >
+                Save Role
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <InviteMemberModal
         open={inviteOpen}
