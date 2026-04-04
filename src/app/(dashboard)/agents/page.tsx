@@ -215,24 +215,25 @@ function TemplatesRow() {
   const onPointerDown = (e: React.PointerEvent) => {
     isDragging.current = true;
     hasDragged.current = false;
-    startX.current = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    startX.current = e.pageX;
     scrollLeft.current = scrollRef.current?.scrollLeft || 0;
-    scrollRef.current!.style.cursor = "grabbing";
-    scrollRef.current!.setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
-    const x = e.pageX - (scrollRef.current?.offsetLeft || 0);
-    const walk = x - startX.current;
-    if (Math.abs(walk) > 5) hasDragged.current = true;
-    scrollRef.current!.scrollLeft = scrollLeft.current - walk;
+    const walk = e.pageX - startX.current;
+    if (Math.abs(walk) > 8) {
+      hasDragged.current = true;
+      scrollRef.current!.style.cursor = "grabbing";
+    }
+    if (hasDragged.current) {
+      scrollRef.current!.scrollLeft = scrollLeft.current - walk;
+    }
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = () => {
     isDragging.current = false;
-    scrollRef.current!.style.cursor = "grab";
-    scrollRef.current!.releasePointerCapture(e.pointerId);
+    if (scrollRef.current) scrollRef.current.style.cursor = "grab";
   };
 
   const handleUseTemplate = (t: typeof TEMPLATES[0]) => {
