@@ -226,49 +226,92 @@ header.pub {
 /* ─── Cover / Hero ────────────────────────────────────────────────────── */
 
 .cover {
-  padding: 64px 0 80px;
+  padding: 72px 0 96px;
   position: relative;
 }
 
 .cover-grid {
   display: grid;
-  grid-template-columns: 1fr 220px;
-  gap: 64px;
+  grid-template-columns: 1fr 248px;
+  gap: 80px;
   align-items: start;
 }
 .cover-grid > main { min-width: 0; }
 
-.marginalia {
-  border-left: 1px solid var(--hairline);
-  padding: 12px 0 12px 24px;
+.cover-subhead {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  max-width: 62ch;
+}
+.cover-subhead .num {
   font-family: var(--serif);
   font-style: italic;
-  font-variation-settings: "opsz" 14, "SOFT" 100, "wght" 360;
-  font-size: 14px;
-  line-height: 1.55;
+  font-variation-settings: "opsz" 48, "SOFT" 100, "wght" 340;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.cover-subhead .deck-line {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 24, "SOFT" 100, "wght" 360;
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--charcoal);
+  letter-spacing: -0.012em;
+}
+
+.marginalia {
+  padding: 0;
+  font-family: var(--serif);
   color: var(--charcoal);
   position: sticky;
   top: 40px;
 }
+.marginalia .m-card {
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  padding: 28px 26px 24px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+.marginalia .m-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
 .marginalia .m-label {
   font-family: var(--mono);
-  font-style: normal;
   font-size: 10px;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 14px;
-  display: block;
+  color: var(--ink);
+}
+.marginalia .m-pg {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
 }
 .marginalia .m-fact {
   font-family: var(--serif);
   font-style: italic;
-  font-variation-settings: "opsz" 36, "SOFT" 100, "wght" 360;
-  font-size: 34px;
+  font-variation-settings: "opsz" 48, "SOFT" 100, "wght" 340;
+  font-size: 38px;
   line-height: 1;
   color: var(--ink);
-  letter-spacing: -0.018em;
+  letter-spacing: -0.022em;
   margin-bottom: 8px;
+  display: block;
 }
 .marginalia .m-sub {
   font-family: var(--sans);
@@ -276,19 +319,26 @@ header.pub {
   font-size: 12px;
   color: var(--gray);
   line-height: 1.5;
-  margin-bottom: 28px;
+  margin-bottom: 22px;
+}
+.marginalia .m-sub:last-child { margin-bottom: 0; }
+.marginalia .m-sub code {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 11px;
+  color: var(--ink);
 }
 .marginalia .m-divider {
   height: 1px;
   background: var(--hairline);
-  margin: 0 0 20px;
+  margin: 0 0 18px;
 }
 
 .kicker {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 56px;
+  margin-bottom: 40px;
 }
 .kicker-bar {
   width: 48px;
@@ -302,16 +352,24 @@ header.pub {
   text-transform: uppercase;
   color: var(--accent);
 }
+.kicker-date {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-left: auto;
+}
 
 .cover h1 {
   font-family: var(--serif);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 10, "wght" 340;
-  font-size: clamp(48px, 6.8vw, 116px);
-  line-height: 0.96;
-  letter-spacing: -0.03em;
+  font-size: clamp(46px, 5.6vw, 96px);
+  line-height: 0.98;
+  letter-spacing: -0.028em;
   color: var(--ink);
-  max-width: 18ch;
+  max-width: 16ch;
 }
 
 .cover h1 .it {
@@ -326,10 +384,10 @@ header.pub {
 }
 
 .deck {
-  margin-top: 56px;
+  margin-top: 40px;
   max-width: 54ch;
-  font-size: 19px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.58;
   color: var(--charcoal);
   letter-spacing: -0.003em;
 }
@@ -338,15 +396,15 @@ header.pub {
   font-family: var(--serif);
   font-style: italic;
   font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 400;
-  font-size: 5em;
+  font-size: 4.4em;
   line-height: 0.85;
   float: left;
-  margin: 0.05em 14px -0.05em 0;
+  margin: 0.04em 14px -0.05em 0;
   color: var(--accent);
 }
 
 .byline {
-  margin-top: 48px;
+  margin-top: 44px;
   display: flex;
   gap: 28px;
   align-items: center;
@@ -398,71 +456,68 @@ header.pub {
 }
 .cta-secondary:hover { background: var(--paper-deep); }
 
-/* ─── Section: Synopsis (three briefs) ────────────────────────────────── */
+/* ─── Section: Subject strip (compressed positioning) ─────────────────── */
 
-.synopsis {
-  padding: 96px 0 104px;
+.subject-strip {
+  padding: 44px 0 48px;
   border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  background: var(--paper-deep);
 }
-
-.synopsis-rule {
+.strip-rule {
   display: flex;
-  justify-content: space-between;
-  padding: 12px 0 44px;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
   font-family: var(--mono);
   font-size: 10.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gray);
 }
-.synopsis-rule .fold {
-  font-family: var(--serif);
-  font-style: italic;
-  font-variation-settings: "opsz" 14, "SOFT" 100;
-  font-size: 13px;
-  letter-spacing: 0;
-  color: var(--charcoal);
-  text-transform: none;
+.strip-rule .strip-sep {
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
 }
+.strip-rule .strip-page { color: var(--accent); }
 
-.synopsis-grid {
+.strip-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 64px;
-  padding-top: 32px;
+  gap: 48px;
+  align-items: start;
 }
-
-.brief {
-  position: relative;
+.strip-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: baseline;
+  padding-right: 16px;
+  border-right: 1px solid var(--hairline);
 }
-.brief .folio {
+.strip-item:last-child { border-right: 0; padding-right: 0; }
+.strip-item .strip-num {
   font-family: var(--serif);
-  font-weight: 400;
-  font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 400;
   font-style: italic;
-  font-size: 72px;
+  font-variation-settings: "opsz" 48, "SOFT" 100, "wght" 340;
+  font-size: 28px;
   line-height: 1;
   color: var(--accent);
-  margin-bottom: 28px;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
-.brief h3 {
+.strip-item .strip-text {
   font-family: var(--serif);
-  font-weight: 400;
-  font-variation-settings: "opsz" 36, "SOFT" 0, "wght" 420;
-  font-size: 28px;
-  line-height: 1.1;
-  letter-spacing: -0.018em;
-  margin-bottom: 16px;
+  font-variation-settings: "opsz" 18, "SOFT" 0, "wght" 400;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  letter-spacing: -0.005em;
 }
-.brief h3 em {
+.strip-item .strip-text em {
   font-style: italic;
-  font-variation-settings: "opsz" 36, "SOFT" 100, "wght" 380;
-}
-.brief p {
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--charcoal);
+  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 420;
+  color: var(--accent);
 }
 
 /* ─── Section: Feature story ──────────────────────────────────────────── */
@@ -662,12 +717,641 @@ header.pub {
   border-top: 1px solid var(--hairline);
 }
 
+/* ─── Feature plate wrapper + Agent meta strip ───────────────────────── */
+
+.feature-plate {
+  margin-top: 72px;
+}
+
+.agent-meta {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  margin-top: 40px;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+}
+.am-item {
+  padding: 20px 22px 22px;
+  border-right: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.am-item:last-child { border-right: 0; }
+.am-item:first-child { padding-left: 0; }
+.am-item:last-child { padding-right: 0; }
+.am-item .am-k {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.am-item .am-v {
+  font-family: var(--serif);
+  font-variation-settings: "opsz" 24, "SOFT" 0, "wght" 420;
+  font-size: 17px;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.am-item .am-v.ok {
+  color: var(--accent);
+  font-style: italic;
+  font-variation-settings: "opsz" 24, "SOFT" 100, "wght" 400;
+}
+.am-item .am-d {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 16, "SOFT" 100, "wght" 360;
+  font-size: 12.5px;
+  color: var(--gray);
+  line-height: 1.4;
+}
+.am-item .am-d em {
+  font-style: normal;
+  color: var(--charcoal);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variation-settings: normal;
+}
+.am-item .am-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  margin-right: 4px;
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--paper);
+  vertical-align: 2px;
+}
+.am-item .am-tag.accent { background: var(--accent); }
+.am-item .am-tags { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.am-item .am-tags .am-tag { margin: 0; }
+
+/* ─── Exhibit plates — UI mockups framed as editorial figures ─────────── */
+
+.exhibit-plate {
+  padding: 96px 0 112px;
+  border-top: 1px solid var(--ink);
+  background: var(--paper);
+}
+.exhibit-plate .frame { max-width: 1200px; margin: 0 auto; }
+
+.plate-caption {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 32px;
+  margin-bottom: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.plate-caption .plate-num {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 36, "SOFT" 100, "wght" 340;
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: -0.012em;
+}
+.plate-caption .plate-title {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 24, "SOFT" 100, "wght" 360;
+  font-size: 20px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.plate-caption .plate-meta {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.plate-shell {
+  background: #0d0c0a;
+  border: 1px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #e7e2d3;
+  position: relative;
+  overflow: hidden;
+}
+
+.plate-chrome {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+}
+.plate-chrome .dots { display: flex; gap: 6px; }
+.plate-chrome .dot { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+.plate-chrome .dot.red { background: #e96d5a; }
+.plate-chrome .dot.amber { background: #e8b24d; }
+.plate-chrome .dot.green { background: #5fbf7a; }
+.plate-chrome .url {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.04em;
+  flex: 1;
+  text-align: center;
+}
+.plate-chrome .live {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5fbf7a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.plate-chrome .live::before {
+  content: "";
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #5fbf7a;
+  box-shadow: 0 0 8px #5fbf7a;
+  animation: plate-pulse 1.6s ease-in-out infinite;
+}
+@keyframes plate-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Plate I — the Console (live execution) */
+.plate-console {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  min-height: 480px;
+}
+.plate-console .agent-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.plate-console .agent-bar .avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c83524, #e85a3d);
+  display: grid; place-items: center;
+  color: #0d0c0a;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+}
+.plate-console .agent-bar .agent-name {
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px;
+  color: #e7e2d3;
+  font-weight: 500;
+}
+.plate-console .agent-bar .agent-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.45);
+  margin-left: auto;
+}
+.plate-console .agent-bar .tier-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: rgba(95,191,122,0.12);
+  color: #5fbf7a;
+  padding: 4px 10px;
+  border: 1px solid rgba(95,191,122,0.3);
+}
+
+.plate-console .chat {
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #e7e2d3;
+}
+.plate-console .turn {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.plate-console .turn .who {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.4);
+  padding-top: 3px;
+}
+.plate-console .turn.assistant .who { color: #c83524; }
+.plate-console .turn .msg {
+  max-width: 58ch;
+  color: #e7e2d3;
+}
+.plate-console .turn .msg em {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  color: #f5f1e8;
+  font-weight: 400;
+  font-size: 1.02em;
+}
+.plate-console .turn .msg code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.92em;
+  color: #f0a87a;
+  background: rgba(240,168,122,0.08);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.plate-console .cursor {
+  display: inline-block;
+  width: 8px; height: 16px;
+  background: #c83524;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: plate-blink 1s step-end infinite;
+}
+@keyframes plate-blink {
+  50% { opacity: 0; }
+}
+
+.plate-console .stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.015);
+}
+.plate-console .stat-cell {
+  padding: 14px 20px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.plate-console .stat-cell:last-child { border-right: 0; }
+.plate-console .stat-cell .k {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.4);
+  margin-bottom: 6px;
+}
+.plate-console .stat-cell .v {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 36, "SOFT" 0, "wght" 380;
+  font-size: 22px;
+  color: #f5f1e8;
+  letter-spacing: -0.02em;
+}
+.plate-console .stat-cell.savings .v {
+  color: #5fbf7a;
+  font-style: italic;
+}
+
+/* Plate II — the Overview dashboard */
+.plate-dash {
+  padding: 28px;
+}
+.plate-dash .d-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.plate-dash .d-top .title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  color: #f5f1e8;
+  font-weight: 400;
+  font-variation-settings: "opsz" 24, "SOFT" 0, "wght" 380;
+  letter-spacing: -0.014em;
+}
+.plate-dash .d-top .ts {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.4);
+}
+
+.plate-dash .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.plate-dash .s-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 16px 18px;
+}
+.plate-dash .s-card .s-k {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.4);
+  margin-bottom: 10px;
+}
+.plate-dash .s-card .s-v {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 48, "SOFT" 0, "wght" 360;
+  font-size: 28px;
+  color: #f5f1e8;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.plate-dash .s-card .s-d {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: #5fbf7a;
+  margin-top: 8px;
+}
+.plate-dash .s-card.warn .s-v { color: #e96d5a; }
+.plate-dash .s-card.warn .s-d { color: #e96d5a; }
+
+.plate-dash .d-body {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 18px;
+}
+.plate-dash .agents {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 16px 18px;
+}
+.plate-dash .agents .a-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.plate-dash .agents .a-head .t {
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 12px;
+  color: #e7e2d3;
+  letter-spacing: 0.02em;
+}
+.plate-dash .agents .a-head .ct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(231,226,211,0.4);
+  letter-spacing: 0.15em;
+}
+.plate-dash .agent-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+.plate-dash .agent-row:last-child { border-bottom: 0; }
+.plate-dash .agent-row .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #5fbf7a;
+  box-shadow: 0 0 6px rgba(95,191,122,0.5);
+}
+.plate-dash .agent-row .dot.amber { background: #e8b24d; box-shadow: 0 0 6px rgba(232,178,77,0.4); }
+.plate-dash .agent-row .dot.red { background: #e96d5a; box-shadow: 0 0 6px rgba(233,109,90,0.4); }
+.plate-dash .agent-row .n {
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 12.5px;
+  color: #e7e2d3;
+}
+.plate-dash .agent-row .r {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(231,226,211,0.4);
+  letter-spacing: 0.08em;
+}
+.plate-dash .agent-row .c {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 18, "SOFT" 0, "wght" 400;
+  font-size: 12.5px;
+  color: #e7e2d3;
+  font-style: italic;
+}
+
+.plate-dash .chart {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+}
+.plate-dash .chart .c-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.plate-dash .chart .c-head .t {
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 12px;
+  color: #e7e2d3;
+  letter-spacing: 0.02em;
+}
+.plate-dash .chart .c-head .v {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-variation-settings: "opsz" 24, "SOFT" 100, "wght" 360;
+  font-size: 18px;
+  color: #5fbf7a;
+  letter-spacing: -0.012em;
+}
+.plate-dash .chart svg { width: 100%; display: block; }
+.plate-dash .chart .c-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  color: rgba(231,226,211,0.35);
+  letter-spacing: 0.1em;
+}
+
+.plate-footnote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 360;
+  font-size: 14px;
+  color: var(--gray);
+  margin-top: 22px;
+  max-width: 68ch;
+  line-height: 1.55;
+}
+.plate-footnote code {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 11.5px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+/* ─── Handshake strip: the three-command install ──────────────────────── */
+
+.handshake {
+  padding: 96px 0 104px;
+  background: var(--paper-deep, #efe8d7);
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+.handshake .frame { max-width: 1040px; margin: 0 auto; }
+.handshake-rule {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.handshake-rule .sep { flex: 1; height: 1px; background: var(--hairline); }
+.handshake-rule .pg { color: var(--accent); }
+
+.handshake-head {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 56px;
+  align-items: end;
+  margin-bottom: 36px;
+}
+.handshake-head h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 10, "wght" 340;
+  font-size: clamp(40px, 4.2vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.024em;
+  color: var(--ink);
+  max-width: 16ch;
+}
+.handshake-head h2 em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 300;
+  color: var(--accent);
+}
+.handshake-head .lede {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 360;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--charcoal);
+  padding-bottom: 8px;
+  max-width: 40ch;
+}
+
+.handshake-block {
+  background: #0d0c0a;
+  border: 1px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 28px 32px 30px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  color: #e7e2d3;
+  font-size: 14px;
+  line-height: 1.7;
+  position: relative;
+}
+.handshake-block::before {
+  content: "terminal";
+  position: absolute;
+  top: 10px; right: 14px;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.35);
+}
+.handshake-block .line { display: flex; gap: 14px; align-items: baseline; }
+.handshake-block .prompt {
+  color: #c83524;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.handshake-block .cmd { color: #f5f1e8; }
+.handshake-block .cmd .k { color: #f0a87a; }
+.handshake-block .cmd .s { color: #5fbf7a; }
+.handshake-block .comment {
+  color: rgba(231,226,211,0.45);
+  font-style: italic;
+}
+.handshake-block .out {
+  color: rgba(231,226,211,0.55);
+  padding-left: 28px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  font-size: 12.5px;
+}
+
+.handshake-foot {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--hairline);
+}
+.handshake-foot .hf-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.handshake-foot .hf-k {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.handshake-foot .hf-v {
+  font-family: var(--serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 24, "SOFT" 100, "wght" 360;
+  font-size: 20px;
+  color: var(--ink);
+  letter-spacing: -0.012em;
+}
+.handshake-foot .hf-d {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--charcoal);
+  line-height: 1.45;
+}
+
 /* ─── Interlude: the Intelligence piece — full-bleed black ─────────────── */
 
 .interlude {
   background: var(--night);
   color: var(--night-text);
-  padding: 112px 0 120px;
+  padding: 120px 0 128px;
   position: relative;
   overflow: hidden;
 }
@@ -675,6 +1359,17 @@ header.pub {
 .interlude .frame {
   position: relative;
   z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.interlude .head {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 72px;
+  align-items: end;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
 }
 
 .interlude .cat {
@@ -686,7 +1381,7 @@ header.pub {
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 56px;
+  margin-bottom: 28px;
 }
 .interlude .cat::before {
   content: "";
@@ -698,9 +1393,9 @@ header.pub {
   font-family: var(--serif);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 30, "wght" 300;
-  font-size: clamp(48px, 5.6vw, 92px);
-  line-height: 0.98;
-  letter-spacing: -0.028em;
+  font-size: clamp(40px, 4.4vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -0.024em;
   max-width: 18ch;
 }
 .interlude h2 em {
@@ -709,87 +1404,93 @@ header.pub {
   color: var(--accent);
 }
 
-.interlude .ledger {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 72px;
-  margin-top: 72px;
-  align-items: start;
-}
-
-.interlude .ledger-copy {
-  font-size: 17px;
-  line-height: 1.6;
+.interlude .head-copy {
+  font-size: 15.5px;
+  line-height: 1.65;
   color: var(--night-text);
-  max-width: 52ch;
+  padding-bottom: 8px;
+  max-width: 44ch;
 }
-.interlude .ledger-copy p + p { margin-top: 18px; }
-.interlude .ledger-copy em {
+.interlude .head-copy em {
   font-family: var(--serif);
   font-style: italic;
-  font-variation-settings: "opsz" 20, "SOFT" 100, "wght" 400;
+  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 400;
   color: var(--paper);
-  font-size: 1.05em;
 }
 
-.ledger-table {
-  border-top: 1px solid rgba(255,255,255,0.15);
-}
-.ledger-row {
+.interlude .stats {
   display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  padding: 24px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  grid-template-columns: 1fr 1fr 1fr;
+  margin-top: 56px;
+  border: 1px solid rgba(255,255,255,0.12);
 }
-.ledger-row .name {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.interlude .stat {
+  padding: 40px 36px 36px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  position: relative;
 }
-.ledger-row .name .lbl {
+.interlude .stat:last-child { border-right: 0; }
+.interlude .stat .lbl {
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--night-muted);
+  color: var(--accent);
+  display: block;
+  margin-bottom: 20px;
 }
-.ledger-row .name .desc {
+.interlude .stat .value {
+  font-family: var(--serif);
+  font-variation-settings: "opsz" 72, "SOFT" 0, "wght" 340;
+  font-size: clamp(40px, 3.8vw, 58px);
+  line-height: 1;
+  letter-spacing: -0.026em;
+  color: var(--night-text);
+  display: block;
+  margin-bottom: 14px;
+}
+.interlude .stat .desc {
   font-family: var(--serif);
   font-style: italic;
-  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 320;
+  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 340;
   font-size: 14px;
-  color: var(--night-text);
+  line-height: 1.4;
+  color: var(--night-muted);
+  max-width: 22ch;
 }
-.ledger-row .value {
-  font-family: var(--serif);
-  font-variation-settings: "opsz" 72, "SOFT" 0, "wght" 350;
-  font-size: 52px;
-  letter-spacing: -0.025em;
-  color: var(--night-text);
+.interlude .stat.highlight {
+  background: rgba(200,53,36,0.06);
 }
-.ledger-row.highlight .value {
+.interlude .stat.highlight .value {
   color: var(--accent);
   font-style: italic;
   font-variation-settings: "opsz" 72, "SOFT" 100, "wght" 320;
 }
+.interlude .stat .mark {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.25);
+}
 
 .interlude .pull {
-  margin-top: 88px;
-  padding: 56px 0 8px;
-  border-top: 1px solid rgba(255,255,255,0.15);
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 72px;
-  align-items: end;
+  margin-top: 64px;
+  padding: 56px 0 0;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  text-align: center;
 }
 .interlude .pull blockquote {
   font-family: var(--serif);
   font-variation-settings: "opsz" 72, "SOFT" 30, "wght" 320;
-  font-size: clamp(28px, 2.9vw, 44px);
-  line-height: 1.18;
-  letter-spacing: -0.016em;
-  max-width: 22ch;
+  font-size: clamp(24px, 2.2vw, 32px);
+  line-height: 1.34;
+  letter-spacing: -0.012em;
+  max-width: 42ch;
+  margin: 0 auto;
+  color: var(--night-text);
 }
 .interlude .pull blockquote em {
   font-style: italic;
@@ -797,173 +1498,214 @@ header.pub {
   color: var(--accent);
 }
 .interlude .pull .attrib {
-  margin-top: 22px;
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--night-muted);
-}
-.interlude .pull .commentary {
-  font-family: var(--serif);
+  margin-top: 32px;
+  font-family: var(--sans);
   font-style: italic;
-  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 360;
-  font-size: 16px;
+  font-size: 13.5px;
   line-height: 1.55;
   color: var(--night-muted);
-  max-width: 36ch;
-  padding-left: 36px;
-  border-left: 1px solid rgba(255,255,255,0.15);
+  max-width: 52ch;
+  margin-left: auto;
+  margin-right: auto;
 }
-.interlude .pull .commentary em {
+.interlude .pull .attrib code {
+  font-family: var(--mono);
   font-style: normal;
+  font-size: 11.5px;
   color: var(--night-text);
-  font-variation-settings: "opsz" 18, "SOFT" 0, "wght" 400;
-  font-family: var(--sans);
-  font-size: 14px;
-  letter-spacing: -0.002em;
+  letter-spacing: 0.01em;
 }
 
 /* ─── Feature: Integrate ──────────────────────────────────────────────── */
 
 .integrate {
-  padding: 120px 0 128px;
+  padding: 112px 0 120px;
   border-top: 1px solid var(--ink);
 }
+
+.integrate-rule {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.integrate-rule .sep { flex: 1; height: 1px; background: var(--hairline); }
+.integrate-rule .pg { color: var(--accent); }
+
 .integrate-head {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1.1fr 1fr;
   gap: 72px;
   align-items: end;
-  padding-bottom: 72px;
+  padding-bottom: 48px;
   border-bottom: 1px solid var(--hairline);
-  margin-bottom: 72px;
+  margin-bottom: 64px;
 }
-.integrate-head aside {
-  font-family: var(--serif);
-  font-variation-settings: "opsz" 144, "SOFT" 50, "wght" 320;
-  font-style: italic;
-  font-size: 88px;
-  line-height: 0.88;
-  letter-spacing: -0.03em;
-}
-.integrate-head aside span { color: var(--accent); }
-.integrate-head main h2 {
+.integrate-head h2 {
   font-family: var(--serif);
   font-weight: 300;
   font-variation-settings: "opsz" 144, "SOFT" 30, "wght" 320;
-  font-size: clamp(36px, 4.4vw, 64px);
+  font-size: clamp(36px, 4.2vw, 64px);
   line-height: 1.02;
   letter-spacing: -0.024em;
+  max-width: 14ch;
 }
-.integrate-head main h2 em {
+.integrate-head h2 em {
   font-style: italic;
   font-variation-settings: "opsz" 144, "SOFT" 100, "wght" 300;
+  color: var(--accent);
 }
-.integrate-head main .lede {
-  margin-top: 28px;
-  font-size: 17px;
+.integrate-head .lede {
+  font-family: var(--serif);
+  font-variation-settings: "opsz" 20, "SOFT" 0, "wght" 380;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--charcoal);
-  max-width: 58ch;
+  max-width: 46ch;
+  padding-bottom: 6px;
+}
+.integrate-head .lede em {
+  font-style: italic;
+  font-variation-settings: "opsz" 20, "SOFT" 100, "wght" 420;
+  color: var(--ink);
 }
 
 .integrate-body {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 80px;
-  align-items: start;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 56px;
+  align-items: stretch;
 }
 
 .catalog {
   border-top: 1px solid var(--ink);
+  align-self: start;
 }
 .catalog-entry {
   display: grid;
-  grid-template-columns: 40px 1fr auto;
+  grid-template-columns: 32px 1fr auto;
   align-items: baseline;
-  padding: 20px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--hairline);
-  transition: padding-left .25s;
+  transition: padding-left .25s, background .2s;
+  cursor: default;
 }
 .catalog-entry:hover {
   padding-left: 10px;
-  color: var(--accent);
+  background: rgba(200,53,36,0.03);
 }
 .catalog-entry .num {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10.5px;
   letter-spacing: 0.16em;
   color: var(--gray);
 }
 .catalog-entry .nm {
   font-family: var(--serif);
-  font-variation-settings: "opsz" 24, "wght" 400;
-  font-size: 22px;
-  letter-spacing: -0.015em;
+  font-variation-settings: "opsz" 24, "wght" 420;
+  font-size: 19px;
+  letter-spacing: -0.012em;
+  color: var(--ink);
 }
 .catalog-entry:hover .nm { color: var(--accent); }
 .catalog-entry .meta {
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--gray);
 }
-
-/* Specimen — the code block presented as a printed artifact */
-
-.specimen {
-  background: var(--paper-deep);
-  border: 1px solid var(--ink);
-  padding: 40px 44px 44px;
-  position: relative;
-}
-.specimen::before {
-  content: "SPECIMEN / INTEGRATION BRIEF";
-  position: absolute;
-  top: -10px;
-  left: 40px;
-  background: var(--paper);
-  padding: 0 10px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  color: var(--charcoal);
-}
-.specimen-head {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 22px;
-  margin-bottom: 22px;
-  border-bottom: 1px solid var(--hairline);
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--charcoal);
-}
-.specimen-head em {
+.catalog-foot {
+  padding: 16px 0 0;
   font-family: var(--serif);
   font-style: italic;
-  font-variation-settings: "opsz" 14, "SOFT" 100;
-  letter-spacing: 0;
-  text-transform: none;
-  font-size: 13px;
+  font-variation-settings: "opsz" 18, "SOFT" 100, "wght" 360;
+  font-size: 14px;
   color: var(--gray);
+  line-height: 1.5;
 }
-pre.code {
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.75;
+.catalog-foot em {
+  font-style: normal;
   color: var(--ink);
+  font-variation-settings: "opsz" 18, "SOFT" 0, "wght" 420;
+}
+
+/* Specimen — dark terminal-styled code block (matches plate aesthetic) */
+
+.specimen {
+  background: #0d0c0a;
+  border: 1px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+.specimen-chrome {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+}
+.specimen-chrome .dots { display: flex; gap: 6px; }
+.specimen-chrome .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+.specimen-chrome .dot.red { background: #e96d5a; }
+.specimen-chrome .dot.amber { background: #e8b24d; }
+.specimen-chrome .dot.green { background: #5fbf7a; }
+.specimen-chrome .file {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: rgba(231,226,211,0.55);
+}
+.specimen-chrome .file .dim { color: rgba(231,226,211,0.3); }
+.specimen-chrome .mark {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(231,226,211,0.35);
+}
+.specimen-body {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  flex: 1;
+}
+.specimen-gutter {
+  padding: 24px 0 24px;
+  background: rgba(255,255,255,0.015);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  text-align: right;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  line-height: 1.75;
+  color: rgba(231,226,211,0.25);
+  user-select: none;
+}
+.specimen-gutter span { display: block; padding-right: 14px; }
+pre.code {
+  margin: 0;
+  padding: 24px 28px 28px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: #e7e2d3;
   white-space: pre;
   overflow-x: auto;
 }
-pre.code .k { color: var(--accent); font-weight: 500; }
-pre.code .s { color: var(--charcoal); font-style: italic; font-family: var(--serif); font-size: 14px; font-variation-settings: "opsz" 14, "SOFT" 100, "wght" 400; }
-pre.code .c { color: var(--gray); font-style: italic; font-family: var(--serif); font-size: 13px; }
-pre.code .n { color: var(--ink-warm); }
+pre.code .k { color: #c83524; font-weight: 500; }
+pre.code .s { color: #5fbf7a; }
+pre.code .c { color: rgba(231,226,211,0.4); font-style: italic; }
+pre.code .n { color: #f0a87a; }
+pre.code .p { color: rgba(231,226,211,0.55); }
 
 /* ─── Field Notes (ops grid) ──────────────────────────────────────────── */
 
@@ -1006,21 +1748,26 @@ pre.code .n { color: var(--ink-warm); }
 
 .notes-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 0;
   margin-top: 0;
+  border-top: 1px solid var(--hairline);
 }
 .note {
-  grid-column: span 2;
-  padding: 48px 36px 44px 0;
-  border-right: 1px solid var(--hairline);
+  padding: 52px 48px 48px;
   border-bottom: 1px solid var(--hairline);
-  padding-right: 36px;
   position: relative;
 }
-.note:nth-child(3n) { border-right: 0; padding-right: 0; }
-.note:nth-child(3n+2),
-.note:nth-child(3n+3) { padding-left: 36px; }
+.note:nth-child(odd) {
+  border-right: 1px solid var(--hairline);
+  padding-left: 0;
+  padding-right: 56px;
+}
+.note:nth-child(even) {
+  padding-left: 56px;
+  padding-right: 0;
+}
+.note:nth-last-child(-n+2) { border-bottom: 0; padding-bottom: 8px; }
 
 .note .no {
   font-family: var(--mono);
@@ -1033,20 +1780,22 @@ pre.code .n { color: var(--ink-warm); }
 .note h4 {
   font-family: var(--serif);
   font-weight: 400;
-  font-variation-settings: "opsz" 36, "SOFT" 0, "wght" 400;
-  font-size: 26px;
+  font-variation-settings: "opsz" 48, "SOFT" 0, "wght" 400;
+  font-size: 32px;
   line-height: 1.1;
-  letter-spacing: -0.018em;
-  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+  margin-bottom: 18px;
+  max-width: 22ch;
 }
 .note h4 em {
   font-style: italic;
-  font-variation-settings: "opsz" 36, "SOFT" 100, "wght" 360;
+  font-variation-settings: "opsz" 48, "SOFT" 100, "wght" 360;
 }
 .note p {
-  font-size: 14.5px;
+  font-size: 15.5px;
   line-height: 1.6;
   color: var(--charcoal);
+  max-width: 48ch;
 }
 .note .mark {
   margin-top: 20px;
@@ -1353,21 +2102,30 @@ pre.code .n { color: var(--ink-warm); }
 @media (max-width: 1080px) {
   .frame { padding: 0 32px; }
   .cover-grid { grid-template-columns: 1fr; gap: 48px; }
-  .marginalia { position: static; border-left: 0; border-top: 1px solid var(--hairline); padding: 32px 0 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
-  .marginalia .m-divider { display: none; }
-  .interlude .pull { grid-template-columns: 1fr; gap: 40px; }
-  .interlude .pull .commentary { padding-left: 0; border-left: 0; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.15); }
-  .synopsis-grid { grid-template-columns: 1fr; gap: 56px; }
+  .marginalia { position: static; }
+  .marginalia .m-card { box-shadow: none; }
+  .interlude .pull { padding: 48px 0 8px; margin-top: 72px; }
+  .strip-row { grid-template-columns: 1fr; gap: 24px; }
+  .strip-item { border-right: 0; padding-right: 0; padding-bottom: 24px; border-bottom: 1px solid var(--hairline); }
+  .strip-item:last-child { border-bottom: 0; padding-bottom: 0; }
   .feature-head { grid-template-columns: 1fr; gap: 48px; }
   .feature-head aside .num { font-size: 96px; }
   .dossier { grid-template-columns: 1fr; gap: 40px; }
   .dossier-right { border-left: 0; padding-left: 0; padding-top: 32px; border-top: 1px solid var(--hairline); }
-  .interlude .ledger { grid-template-columns: 1fr; gap: 60px; }
+  .interlude .head { grid-template-columns: 1fr; gap: 32px; align-items: start; }
+  .interlude .stats { grid-template-columns: 1fr; }
+  .interlude .stat { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .interlude .stat:last-child { border-bottom: 0; }
+  .plate-console .stats-bar { grid-template-columns: 1fr 1fr; }
+  .plate-console .stat-cell:nth-child(2) { border-right: 0; }
+  .plate-console .stat-cell:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .plate-dash .stat-grid { grid-template-columns: 1fr 1fr; }
+  .plate-dash .d-body { grid-template-columns: 1fr; }
   .integrate-head { grid-template-columns: 1fr; gap: 32px; align-items: start; }
   .integrate-body { grid-template-columns: 1fr; gap: 56px; }
-  .notes-grid { grid-template-columns: repeat(2, 1fr); }
-  .note { grid-column: span 1; padding-left: 0 !important; padding-right: 24px; }
-  .note:nth-child(even) { border-right: 0; padding-right: 0; padding-left: 24px !important; }
+  .note { padding: 36px 28px !important; }
+  .note:nth-child(odd) { padding-right: 28px !important; padding-left: 28px !important; }
+  .note:nth-child(even) { padding-right: 28px !important; padding-left: 28px !important; }
   .manifesto-spread { grid-template-columns: 1fr; gap: 56px; }
   .colophon-card { position: static; }
   .colophon-grid { grid-template-columns: 1fr 1fr; }
@@ -1385,14 +2143,24 @@ pre.code .n { color: var(--ink-warm); }
   .running-folio { display: none; }
   .cover { padding: 48px 0 72px; }
   .deck::first-letter { font-size: 3.6em; }
-  .synopsis, .feature-one, .integrate, .field-notes { padding: 80px 0; }
+  .feature-one, .integrate, .field-notes { padding: 80px 0; }
+  .subject-strip { padding: 32px 0 36px; }
+  .agent-meta { grid-template-columns: 1fr 1fr; }
+  .am-item { border-right: 0; border-bottom: 1px solid var(--hairline); padding: 18px 0 !important; }
+  .am-item:nth-child(odd) { padding-right: 16px !important; }
+  .am-item:nth-child(even) { padding-left: 16px !important; border-left: 1px solid var(--hairline); }
+  .am-item:nth-last-child(-n+2) { border-bottom: 0; }
+  .handshake { padding: 72px 0 80px; }
+  .handshake-head { grid-template-columns: 1fr; gap: 24px; align-items: start; }
+  .handshake-foot { grid-template-columns: 1fr; gap: 24px; }
+  .handshake-block { padding: 24px 20px; font-size: 12.5px; }
   .interlude { padding: 120px 0; }
   .manifesto { padding: 120px 0 140px; }
   .notes-grid { grid-template-columns: 1fr; }
   .note { border-right: 0 !important; padding-left: 0 !important; padding-right: 0; }
   .colophon-grid { grid-template-columns: 1fr; gap: 36px; }
   .colophon-bottom { flex-direction: column; gap: 14px; }
-  .interlude .ledger-row .value { font-size: 36px; }
+  .interlude .stat .value { font-size: 42px; }
 }
 </style>
 </head>
@@ -1438,7 +2206,7 @@ pre.code .n { color: var(--ink-warm); }
         <span class="nav-sep">◆</span>
         <a href="#field">Field</a>
         <span class="nav-sep">◆</span>
-        <a href="https://github.com/ClaudevGuy/mission-control">Repository ↗</a>
+        <a href="https://github.com/ClaudevGuy/MotherShip">Repository ↗</a>
       </nav>
     </div>
     <hr class="rule">
@@ -1453,125 +2221,198 @@ pre.code .n { color: var(--ink-warm); }
         <div class="kicker reveal">
           <span class="kicker-bar"></span>
           <span class="kicker-text">The Cover Story</span>
+          <span class="kicker-date">Vol. 01 · Issue 01</span>
         </div>
 
         <h1 class="reveal">
-          Your agents are already<br>
-          <span class="it">shipping</span>. This is where<br>
-          you start <span class="it">watching<span class="accent-dot">.</span></span>
+          Your agents are <span class="it">shipping</span>.<br>
+          This is where you<br>
+          start <span class="it">watching<span class="accent-dot">.</span></span>
         </h1>
 
+        <div class="cover-subhead reveal">
+          <span class="num">¶</span>
+          <span class="deck-line">An open-source operations suite for AI agents — self-hosted, framework-agnostic, opinionated about cost.</span>
+        </div>
+
         <p class="deck reveal">
-          Mothership is an open-source operations suite for AI agents. Every run, every token, every decision — visible, searchable, auditable. It connects to the agents you already wrote in any framework and to the ones you build inside it, then routes each request to the cheapest model that still passes your evals. Self-hosted. Free. Yours to extend.
+          Mothership connects to the agents you already wrote — CrewAI, LangGraph, bespoke Python, anything — and to the ones you build inside it. Every run, every token, every decision is visible, searchable, auditable. Each request routes to the cheapest model that still passes your evals. Your keys stay yours.
         </p>
 
         <div class="byline reveal">
-          <a class="cta-pair" href="http://localhost:3000">
-            <span class="cta-primary">Open the Console <span>→</span></span>
-            <span class="cta-secondary">Clone on GitHub</span>
+          <a class="cta-pair" href="https://github.com/ClaudevGuy/MotherShip">
+            <span class="cta-primary">Clone the Repository <span>→</span></span>
+            <span class="cta-secondary">Read the Docs</span>
           </a>
-          <span class="meta">No signup · No email · Runs on your hardware</span>
+          <span class="meta">No signup · No email · Your hardware</span>
         </div>
       </main>
 
       <aside class="marginalia reveal">
-        <span class="m-label">In this issue</span>
-        <div class="m-fact">68.8%</div>
-        <div class="m-sub">Average cost reduction after enabling auto-routing. From the intelligence piece, p. 03.</div>
+        <div class="m-card">
+          <div class="m-header">
+            <span class="m-label">In This Issue</span>
+            <span class="m-pg">p. 01</span>
+          </div>
 
-        <div class="m-divider"></div>
+          <span class="m-fact">68.8%</span>
+          <div class="m-sub">Average cost reduction after enabling auto-routing — from <em>The Intelligence</em>, p. 03.</div>
 
-        <div class="m-fact">≈ 90s</div>
-        <div class="m-sub">Time from <code style="font-family:var(--mono); font-style:normal; font-size:11px;">git clone</code> to the first agent executing on your own stack.</div>
+          <div class="m-divider"></div>
 
-        <div class="m-divider"></div>
+          <span class="m-fact">14</span>
+          <div class="m-sub">Frameworks supported out of the box — CrewAI, LangGraph, Paperclip, OpenAI Agents, and more.</div>
 
-        <div class="m-fact">MIT</div>
-        <div class="m-sub">License. No rug pulls, no free tier that expires, no email wall.</div>
+          <div class="m-divider"></div>
+
+          <span class="m-fact">MIT</span>
+          <div class="m-sub">License. No rug pulls, no expiring free tier, no email wall.</div>
+        </div>
       </aside>
     </div>
   </div>
 </section>
 
-<!-- ═══ SYNOPSIS ═══ -->
-<section class="synopsis" id="subject" data-folio-name="The Subject" data-folio-page="02">
+<!-- ═══ SUBJECT STRIP — compressed positioning line ═══ -->
+<section class="subject-strip" id="subject" data-folio-name="The Subject" data-folio-page="02">
   <div class="frame">
-    <div class="synopsis-rule">
-      <span>§ The Subject</span>
-      <span class="fold">Three briefs on what Mothership is, and isn't.</span>
-      <span>p. 01</span>
+    <div class="strip-rule reveal">
+      <span class="strip-sig">§ The Subject</span>
+      <span class="strip-sep"></span>
+      <span class="strip-page">p. 02</span>
     </div>
-    <div class="synopsis-grid reveal stagger">
-      <div class="brief">
-        <div class="folio">I.</div>
-        <h3>It is <em>a control plane</em>, not another framework.</h3>
-        <p>You already chose your framework — CrewAI, LangGraph, Paperclip, OpenAI's Agent SDK, or the 400 lines of homemade TypeScript that refuses to die. Mothership sits above all of them. One console, every run, every cost.</p>
+    <div class="strip-row reveal stagger">
+      <div class="strip-item">
+        <span class="strip-num">i.</span>
+        <span class="strip-text">A <em>control plane</em>, not another framework — sits above the agents you already wrote.</span>
       </div>
-      <div class="brief">
-        <div class="folio">II.</div>
-        <h3>It is <em>self-hosted</em>, which is the point.</h3>
-        <p>Your prompts are product. Your logs are leverage. Both belong on your infrastructure, not in a third-party database priced per seat. Mothership runs on Postgres and Vercel, or any Node host, or Docker. Your keys stay yours.</p>
+      <div class="strip-item">
+        <span class="strip-num">ii.</span>
+        <span class="strip-text"><em>Self-hosted</em> by design — your prompts, your logs, your keys stay on your infrastructure.</span>
       </div>
-      <div class="brief">
-        <div class="folio">III.</div>
-        <h3>It is <em>opinionated</em> about cost.</h3>
-        <p>Every request is profiled and routed to the cheapest tier that will pass. Opus for the work that matters. Haiku for the classification most teams overpay for. The savings show up on each run, and summarize for the month.</p>
+      <div class="strip-item">
+        <span class="strip-num">iii.</span>
+        <span class="strip-text"><em>Opinionated</em> about cost — every request routes to the cheapest model that still passes.</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ FEATURE ONE — BUILD & RUN ═══ -->
+<!-- ═══ FEATURE ONE — BUILD & RUN (merged with Plate I) ═══ -->
 <section class="feature-one" data-folio-name="Feature — Build &amp; Run" data-folio-page="03">
   <div class="frame">
     <div class="feature-head">
       <aside class="reveal">
-        <div class="cat">Feature</div>
+        <div class="cat">Feature · 01</div>
         <div class="num">§ <span class="one">01</span></div>
         <div class="label">On the act of shipping an agent into production.</div>
       </aside>
       <main class="reveal">
         <h2>Build one in a minute.<br>Run it <em>like you mean it.</em></h2>
         <p class="lede">
-          The quick-create takes a name and a prompt. Auto-routing picks the model. The live panel streams tokens the way a terminal streams logs — only with a cost ticker next to them, a tier badge above them, and a replay button waiting when the last one finishes. Multi-turn by default. Every run is a record. Every record is searchable. Every decision is explained.
+          The quick-create takes a name and a prompt. Auto-routing picks the model. The live panel streams tokens the way a terminal streams logs — with a cost ticker, a tier badge, a replay button, and multi-turn by default. Every run is a searchable record. Every decision is explained.
         </p>
       </main>
     </div>
 
-    <!-- Dossier: an "agent record" presented as a printed field record -->
-    <div class="dossier reveal">
-      <div class="dossier-left">
-        <h4>Marcus — code reviewer</h4>
-        <div class="sub">Active since March 14. 2,840 runs, nothing burning.</div>
-        <dl class="dossier-fields">
-          <dt>Prompt version</dt>
-          <dd><span class="tag">v12</span> Live. Last edited 4 days ago.</dd>
-
-          <dt>Model policy</dt>
-          <dd>Auto. Tier 3 on 83% of runs, Tier 1 on PRs tagged <em>security</em>.</dd>
-
-          <dt>Tooling</dt>
-          <dd><span class="tag">github</span><span class="tag">filesystem</span><span class="tag tag-accent">linters</span></dd>
-
-          <dt>Last eval</dt>
-          <dd class="ok">Passed — 94%, 42 cases, judge quiet.</dd>
-
-          <dt>Cost / month</dt>
-          <dd>$47.12 — $189 under budget for the quarter.</dd>
-
-          <dt>Latest run</dt>
-          <dd>4 min ago. <em>Found 2 issues, one suggestion.</em></dd>
-        </dl>
+    <!-- The artifact: live console for "Marcus — code reviewer" -->
+    <div class="feature-plate">
+      <div class="plate-caption reveal">
+        <span class="plate-num">Plate I.</span>
+        <span class="plate-title">Marcus — code reviewer. Captured mid-run.</span>
+        <span class="plate-meta">Exhibit · p. 03a</span>
       </div>
-      <div class="dossier-right">
-        <div class="caption">From the exhibit — Field record no. 087</div>
-        <p class="exhibit">
-          "Scanning diff (47 LOC). Two issues: <em>auth.ts:47</em> concatenates input into SQL — use parameterized queries. <em>config.ts:12</em> hardcodes JWT_SECRET — move to env. One suggestion on async error handling. Ready to comment?"
-        </p>
-        <p class="footnote">
-          Each record links through to the full input, output, tool calls, token breakdown, and the model-selection reasoning that produced it. Nothing is a mystery.
-        </p>
+
+      <div class="plate-shell reveal">
+        <div class="plate-chrome">
+          <div class="dots"><span class="dot red"></span><span class="dot amber"></span><span class="dot green"></span></div>
+          <div class="url">mothership.local / agents / marcus · code-reviewer</div>
+          <div class="live">Streaming</div>
+        </div>
+
+        <div class="plate-console">
+          <div class="agent-bar">
+            <div class="avatar">M</div>
+            <div>
+              <div class="agent-name">Marcus — code reviewer</div>
+            </div>
+            <span class="tier-badge">Tier 3 · Haiku 4</span>
+            <span class="agent-sub">Run #2,841 · 00:01.4s</span>
+          </div>
+
+          <div class="chat">
+            <div class="turn user">
+              <span class="who">You</span>
+              <div class="msg">Review <code>PR #247</code> — auth rewrite. Flag anything risky before merge.</div>
+            </div>
+            <div class="turn assistant">
+              <span class="who">Marcus</span>
+              <div class="msg">
+                Scanning diff (47 LOC across <em>auth.ts</em> and <em>config.ts</em>). Two issues, one suggestion —<br><br>
+                <strong style="color:#f5f1e8; font-weight:500;">1.</strong> <code>auth.ts:47</code> concatenates user input into a SQL string. Use parameterized queries — Prisma's <code>$queryRaw</code> is already imported above.<br><br>
+                <strong style="color:#f5f1e8; font-weight:500;">2.</strong> <code>config.ts:12</code> hardcodes <code>JWT_SECRET</code>. Move to <em>env</em> and fail-fast if absent.<br><br>
+                <strong style="color:#f5f1e8; font-weight:500;">3.</strong> <em>Suggestion</em> — the async error handler in <code>middleware.ts</code> swallows rejections quietly. Propose logging to the<span class="cursor"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-bar">
+            <div class="stat-cell">
+              <div class="k">Tokens</div>
+              <div class="v">842</div>
+            </div>
+            <div class="stat-cell">
+              <div class="k">Cost</div>
+              <div class="v">$0.0023</div>
+            </div>
+            <div class="stat-cell savings">
+              <div class="k">Saved vs Tier 1</div>
+              <div class="v">$0.0891</div>
+            </div>
+            <div class="stat-cell">
+              <div class="k">Elapsed</div>
+              <div class="v">1.4s</div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- Agent meta strip — distilled from the old dossier -->
+      <div class="agent-meta reveal stagger">
+        <div class="am-item">
+          <span class="am-k">Prompt</span>
+          <span class="am-v"><span class="am-tag">v12</span> live</span>
+          <span class="am-d">edited 4d ago</span>
+        </div>
+        <div class="am-item">
+          <span class="am-k">Model policy</span>
+          <span class="am-v">Auto · Tier 3 on 83%</span>
+          <span class="am-d">Tier 1 on <em>security</em> PRs</span>
+        </div>
+        <div class="am-item">
+          <span class="am-k">Tooling</span>
+          <span class="am-v am-tags"><span class="am-tag">github</span><span class="am-tag">filesystem</span><span class="am-tag accent">linters</span></span>
+        </div>
+        <div class="am-item">
+          <span class="am-k">Last eval</span>
+          <span class="am-v ok">94% passed</span>
+          <span class="am-d">42 cases · judge quiet</span>
+        </div>
+        <div class="am-item">
+          <span class="am-k">Cost / month</span>
+          <span class="am-v">$47.12</span>
+          <span class="am-d">$189 under budget</span>
+        </div>
+        <div class="am-item">
+          <span class="am-k">Lifetime</span>
+          <span class="am-v">2,840 runs</span>
+          <span class="am-d">since March 14</span>
+        </div>
+      </div>
+
+      <p class="plate-footnote reveal">
+        The <code>Tier 3 · Haiku 4</code> badge means the routing engine downgraded from the default Opus — an eval at <code>evals/code-review.ts</code> had already certified Haiku at 94% parity for diffs under 100 LOC. The savings line appears on every run, not just this one. Each record links through to the full input, output, tool calls, and the model-selection reasoning that produced it.
+      </p>
     </div>
   </div>
 </section>
@@ -1579,54 +2420,44 @@ pre.code .n { color: var(--ink-warm); }
 <!-- ═══ INTERLUDE — THE INTELLIGENCE PIECE ═══ -->
 <section class="interlude" id="intelligence" data-folio-name="The Intelligence" data-folio-page="04">
   <div class="frame">
-    <div class="cat reveal">Long form · The Intelligence</div>
-
-    <h2 class="reveal">
-      Every request, routed to the <em>cheapest model that works.</em>
-    </h2>
-
-    <div class="ledger">
-      <div class="ledger-copy reveal">
-        <p>The routing engine profiles each task on the way in — <em>task complexity, expected output size, agent category, whether the run touches production</em> — and selects the lowest tier that will still pass. Production-critical paths get Tier 1. The classifications, summaries, and reformatting that most teams quietly overpay for get Tier 3.</p>
-        <p>The engine's reasoning is recorded on every call. If it upgrades a run mid-month, you see why. If it downgrades from Opus to Haiku on a reformatting job, you see the reasoning and the eval score that permitted it.</p>
-        <p>The savings are not a marketing number. They appear on every run as <em>"Saved $X.XX vs Tier 1,"</em> and they summarize on the dashboard per agent, per team, per month. Finance stops asking. Engineering stops defending.</p>
+    <div class="head">
+      <div class="reveal">
+        <div class="cat">Long form · The Intelligence</div>
+        <h2>
+          Every request, routed to the <em>cheapest model that works.</em>
+        </h2>
       </div>
+      <div class="head-copy reveal">
+        <p>Every task is profiled on the way in — <em>complexity, output size, whether it touches production</em> — and routed to the lowest tier that will still pass your evals. The reasoning is recorded on every call. Savings appear inline.</p>
+      </div>
+    </div>
 
-      <div class="ledger-table reveal">
-        <div class="ledger-row">
-          <div class="name">
-            <span class="lbl">30-day baseline</span>
-            <span class="desc">What a pinned-Opus policy would have cost</span>
-          </div>
-          <div class="value">$1,247</div>
-        </div>
-        <div class="ledger-row">
-          <div class="name">
-            <span class="lbl">30-day actual</span>
-            <span class="desc">What Mothership's routing delivered instead</span>
-          </div>
-          <div class="value">$389</div>
-        </div>
-        <div class="ledger-row highlight">
-          <div class="name">
-            <span class="lbl">Recovered</span>
-            <span class="desc">A 68.8% reduction across 14,212 billable calls</span>
-          </div>
-          <div class="value">$858</div>
-        </div>
+    <div class="stats reveal stagger">
+      <div class="stat">
+        <span class="mark">i.</span>
+        <span class="lbl">30-Day Baseline</span>
+        <span class="value">$1,247</span>
+        <span class="desc">Pinned-Opus policy</span>
+      </div>
+      <div class="stat">
+        <span class="mark">ii.</span>
+        <span class="lbl">30-Day Actual</span>
+        <span class="value">$389</span>
+        <span class="desc">Routed by Mothership</span>
+      </div>
+      <div class="stat highlight">
+        <span class="mark">iii.</span>
+        <span class="lbl">Recovered</span>
+        <span class="value">$858</span>
+        <span class="desc">68.8% across 14,212 calls</span>
       </div>
     </div>
 
     <div class="pull reveal">
-      <div>
-        <blockquote>
-          Opus for <em>the work that matters.</em> Haiku for <em>the work everyone quietly overpays for.</em>
-        </blockquote>
-        <div class="attrib">— The routing thesis, in one line</div>
-      </div>
-      <p class="commentary">
-        The routing engine ships with a default policy tuned for developer workloads — <em>classification, summarization, code review, documentation, triage.</em> It can be overridden per-agent, per-request, or disabled entirely. Source code in <code style="font-family:var(--mono); font-size:12px; color:var(--night-text);">/lib/model-selector.ts</code>, opinions welcome.
-      </p>
+      <blockquote>
+        Opus for <em>the work that matters.</em><br>Haiku for <em>the work everyone quietly overpays for.</em>
+      </blockquote>
+      <div class="attrib">Default policy in <code>/lib/model-selector.ts</code> — override per-agent, per-request, or off entirely.</div>
     </div>
   </div>
 </section>
@@ -1634,78 +2465,219 @@ pre.code .n { color: var(--ink-warm); }
 <!-- ═══ INTEGRATE ═══ -->
 <section class="integrate" id="integrate" data-folio-name="Integrate" data-folio-page="05">
   <div class="frame">
-    <div class="integrate-head">
-      <aside class="reveal">§ <span>02</span></aside>
-      <main class="reveal">
-        <h2>Bring <em>what you already built.</em></h2>
-        <p class="lede">
-          Mothership ships a lightweight SDK that ingests run events from any framework. Your CrewAI pipeline, your LangGraph graph, your Paperclip workflow, your bespoke Python — fourteen lines and each of them shows up on the console. Full cost tracking, run history, eval coverage. No rewrites.
-        </p>
-      </main>
+    <div class="integrate-rule reveal">
+      <span>§ 02 · Integrate</span>
+      <span class="sep"></span>
+      <span class="pg">p. 05</span>
+    </div>
+
+    <div class="integrate-head reveal">
+      <h2>Bring <em>what you already built.</em></h2>
+      <p class="lede">
+        Mothership ships a lightweight SDK that ingests run events from any framework — <em>fourteen lines, no rewrites.</em> Your CrewAI pipeline, your LangGraph graph, your bespoke Python. Each of them shows up on the console with full cost tracking, run history, and eval coverage.
+      </p>
     </div>
 
     <div class="integrate-body">
-      <div class="catalog reveal stagger">
-        <div class="catalog-entry">
-          <span class="num">01</span>
-          <span class="nm">CrewAI</span>
-          <span class="meta">Supported · Python</span>
+      <div>
+        <div class="catalog reveal stagger">
+          <div class="catalog-entry">
+            <span class="num">01</span>
+            <span class="nm">CrewAI</span>
+            <span class="meta">Python</span>
+          </div>
+          <div class="catalog-entry">
+            <span class="num">02</span>
+            <span class="nm">LangGraph</span>
+            <span class="meta">Python · JS</span>
+          </div>
+          <div class="catalog-entry">
+            <span class="num">03</span>
+            <span class="nm">Paperclip</span>
+            <span class="meta">TypeScript</span>
+          </div>
+          <div class="catalog-entry">
+            <span class="num">04</span>
+            <span class="nm">OpenAI Agents SDK</span>
+            <span class="meta">Python · JS</span>
+          </div>
+          <div class="catalog-entry">
+            <span class="num">05</span>
+            <span class="nm">AutoGen</span>
+            <span class="meta">Python</span>
+          </div>
+          <div class="catalog-entry">
+            <span class="num">06</span>
+            <span class="nm">MCP servers</span>
+            <span class="meta">Protocol</span>
+          </div>
+          <div class="catalog-entry">
+            <span class="num">07</span>
+            <span class="nm">Custom / homegrown</span>
+            <span class="meta">REST · 14 lines</span>
+          </div>
         </div>
-        <div class="catalog-entry">
-          <span class="num">02</span>
-          <span class="nm">LangGraph</span>
-          <span class="meta">Supported · Python / JS</span>
-        </div>
-        <div class="catalog-entry">
-          <span class="num">03</span>
-          <span class="nm">Paperclip</span>
-          <span class="meta">Supported · TypeScript</span>
-        </div>
-        <div class="catalog-entry">
-          <span class="num">04</span>
-          <span class="nm">OpenAI Agents SDK</span>
-          <span class="meta">Supported · Python / JS</span>
-        </div>
-        <div class="catalog-entry">
-          <span class="num">05</span>
-          <span class="nm">AutoGen</span>
-          <span class="meta">Supported · Python</span>
-        </div>
-        <div class="catalog-entry">
-          <span class="num">06</span>
-          <span class="nm">MCP servers</span>
-          <span class="meta">Supported · Protocol</span>
-        </div>
-        <div class="catalog-entry">
-          <span class="num">07</span>
-          <span class="nm">Custom / homegrown</span>
-          <span class="meta">REST · 14 lines</span>
-        </div>
+        <p class="catalog-foot reveal">
+          Not in the list? <em>Write a POST.</em> The SDK is a thin wrapper around one endpoint — <code style="font-family:var(--mono); font-style:normal; font-size:11.5px; color:var(--ink);">POST /api/runs</code>.
+        </p>
       </div>
 
       <div class="specimen reveal">
-        <div class="specimen-head">
-          <span>agents.ts</span>
-          <em>Integration brief, abridged.</em>
+        <div class="specimen-chrome">
+          <div class="dots"><span class="dot red"></span><span class="dot amber"></span><span class="dot green"></span></div>
+          <span class="file"><span class="dim">src /</span> agents.ts</span>
+          <span class="mark">Integration brief</span>
         </div>
+        <div class="specimen-body">
+          <div class="specimen-gutter"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span></div>
 <pre class="code"><span class="k">import</span> { Mothership } <span class="k">from</span> <span class="s">'@mothership/sdk'</span>
 
 <span class="k">const</span> mc = <span class="k">new</span> <span class="n">Mothership</span>({
-  url:    <span class="s">'https://ops.yourcompany.com'</span>,
-  apiKey: process.env.<span class="n">MC_KEY</span>,
-  source: <span class="s">'crewai'</span>,
+  url<span class="p">:</span>    <span class="s">'https://ops.yourcompany.com'</span>,
+  apiKey<span class="p">:</span> process.env.<span class="n">MC_KEY</span>,
+  source<span class="p">:</span> <span class="s">'crewai'</span>,
 })
 
 <span class="c">// Pipe every agent run into the console.</span>
 <span class="k">await</span> mc.<span class="n">trackRun</span>({
-  agent:  { id: <span class="s">'researcher'</span>, name: <span class="s">'Market Researcher'</span> },
-  status: <span class="s">'completed'</span>,
-  tokens: { in: 842, out: 1204 },
-  cost:   0.0384,
-  model:  <span class="s">'claude-sonnet-4-6'</span>,
+  agent<span class="p">:</span>  { id<span class="p">:</span> <span class="s">'researcher'</span>, name<span class="p">:</span> <span class="s">'Market Researcher'</span> },
+  status<span class="p">:</span> <span class="s">'completed'</span>,
+  tokens<span class="p">:</span> { in<span class="p">:</span> 842, out<span class="p">:</span> 1204 },
+  cost<span class="p">:</span>   0.0384,
+  model<span class="p">:</span>  <span class="s">'claude-sonnet-4-6'</span>,
 })</pre>
+        </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═══ PLATE II — THE OVERVIEW ═══ -->
+<section class="exhibit-plate" data-folio-name="Plate II. The Overview" data-folio-page="05a">
+  <div class="frame">
+    <div class="plate-caption reveal">
+      <span class="plate-num">Plate II.</span>
+      <span class="plate-title">The Overview — one console, every agent.</span>
+      <span class="plate-meta">Exhibit · p. 05a</span>
+    </div>
+
+    <div class="plate-shell reveal">
+      <div class="plate-chrome">
+        <div class="dots"><span class="dot red"></span><span class="dot amber"></span><span class="dot green"></span></div>
+        <div class="url">mothership.local / overview</div>
+        <div class="live">Live</div>
+      </div>
+
+      <div class="plate-dash">
+        <div class="d-top">
+          <div class="title">Overview <span style="font-family:var(--mono); font-style:normal; font-size:11px; color:rgba(231,226,211,0.4); letter-spacing:0.14em; text-transform:uppercase; margin-left:10px;">—&nbsp; 14 agents</span></div>
+          <div class="ts">Tuesday, 14:32 UTC</div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="s-card">
+            <div class="s-k">Active</div>
+            <div class="s-v">11</div>
+            <div class="s-d">+2 since morning</div>
+          </div>
+          <div class="s-card warn">
+            <div class="s-k">Failing</div>
+            <div class="s-v">1</div>
+            <div class="s-d" style="color:#e96d5a;">needle-threader · 2m</div>
+          </div>
+          <div class="s-card">
+            <div class="s-k">Cost today</div>
+            <div class="s-v">$12.84</div>
+            <div class="s-d">saved $47.60</div>
+          </div>
+          <div class="s-card">
+            <div class="s-k">Runs today</div>
+            <div class="s-v">3,218</div>
+            <div class="s-d">+18% vs avg</div>
+          </div>
+        </div>
+
+        <div class="d-body">
+          <div class="agents">
+            <div class="a-head">
+              <span class="t">Agent grid</span>
+              <span class="ct">14 agents · 11 active</span>
+            </div>
+            <div class="agent-row">
+              <span class="dot"></span>
+              <span class="n">Marcus · code reviewer</span>
+              <span class="r">2,841 runs</span>
+              <span class="c">$0.0023</span>
+            </div>
+            <div class="agent-row">
+              <span class="dot"></span>
+              <span class="n">Atlas · doc triage</span>
+              <span class="r">1,420 runs</span>
+              <span class="c">$0.0014</span>
+            </div>
+            <div class="agent-row">
+              <span class="dot amber"></span>
+              <span class="n">Penny · support classifier</span>
+              <span class="r">904 runs</span>
+              <span class="c">$0.0008</span>
+            </div>
+            <div class="agent-row">
+              <span class="dot"></span>
+              <span class="n">Gwen · release notes</span>
+              <span class="r">312 runs</span>
+              <span class="c">$0.0041</span>
+            </div>
+            <div class="agent-row">
+              <span class="dot red"></span>
+              <span class="n">Needle-Threader · rate-limited</span>
+              <span class="r">88 runs</span>
+              <span class="c" style="color:#e96d5a;">429s</span>
+            </div>
+            <div class="agent-row">
+              <span class="dot"></span>
+              <span class="n">Cartwright · data extractor</span>
+              <span class="r">2,110 runs</span>
+              <span class="c">$0.0011</span>
+            </div>
+          </div>
+
+          <div class="chart">
+            <div class="c-head">
+              <span class="t">Savings this month</span>
+              <span class="v">$858</span>
+            </div>
+            <svg viewBox="0 0 240 110" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="plate-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#5fbf7a" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#5fbf7a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- baseline grid -->
+              <line x1="0" y1="30" x2="240" y2="30" stroke="rgba(255,255,255,0.05)" stroke-dasharray="2 3"/>
+              <line x1="0" y1="60" x2="240" y2="60" stroke="rgba(255,255,255,0.05)" stroke-dasharray="2 3"/>
+              <line x1="0" y1="90" x2="240" y2="90" stroke="rgba(255,255,255,0.05)" stroke-dasharray="2 3"/>
+              <!-- area under curve -->
+              <path d="M0,92 L10,88 L22,84 L34,72 L46,76 L58,64 L70,58 L82,48 L94,52 L106,42 L118,34 L130,38 L142,28 L154,32 L166,22 L178,18 L190,24 L202,16 L214,12 L226,14 L240,8 L240,110 L0,110 Z" fill="url(#plate-grad)"/>
+              <!-- line -->
+              <path d="M0,92 L10,88 L22,84 L34,72 L46,76 L58,64 L70,58 L82,48 L94,52 L106,42 L118,34 L130,38 L142,28 L154,32 L166,22 L178,18 L190,24 L202,16 L214,12 L226,14 L240,8" fill="none" stroke="#5fbf7a" stroke-width="1.5"/>
+              <!-- marker -->
+              <circle cx="240" cy="8" r="3" fill="#5fbf7a"/>
+              <circle cx="240" cy="8" r="6" fill="none" stroke="#5fbf7a" stroke-opacity="0.4"/>
+            </svg>
+            <div class="c-foot">
+              <span>Mar 01</span>
+              <span>—</span>
+              <span>Today</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="plate-footnote reveal">
+      The overview prioritizes <em>"are my agents healthy?"</em> over showing every metric the system can produce. Four stats up top — <code>active</code>, <code>failing</code>, <code>cost today</code>, <code>runs today</code> — then an agent grid with traffic-light status, then the thirty-day savings chart. Everything else lives one click away.
+    </p>
   </div>
 </section>
 
@@ -1740,24 +2712,57 @@ pre.code .n { color: var(--ink-warm); }
       </div>
 
       <div class="note">
-        <div class="no">No. 04 — Audit</div>
-        <h4>Everything, <em>forever.</em></h4>
-        <p>Every create, update, delete — who, when, what. Searchable. Exportable. Signed. The answer to "who changed the prompt last Friday" takes six seconds, not forty minutes.</p>
-        <div class="mark">Immutable · scoped · queryable</div>
+        <div class="no">No. 04 — Safeguards</div>
+        <h4>An audit trail, and <em>a kill switch.</em></h4>
+        <p>Every create, update, delete — who, when, what — signed and searchable. And for the moment an agent decides to recurse forever at 3 a.m., a single admin-scoped button that stops everything in under a second. Confirmed. Logged. Quiet.</p>
+        <div class="mark">Immutable · admin-scoped · one click</div>
       </div>
+    </div>
+  </div>
+</section>
 
-      <div class="note">
-        <div class="no">No. 05 — Cost forecast</div>
-        <h4>A quiet <em>crystal ball.</em></h4>
-        <p>Trailing-7-day average, week-over-week trend arrow. Projected monthly spend against budget with a red line you cannot miss. When routing catches a 3× upgrade, it's flagged for review.</p>
-        <div class="mark">$389 projected · under budget</div>
+<!-- ═══ HANDSHAKE — the three-command install ═══ -->
+<section class="handshake" data-folio-name="The Handshake" data-folio-page="07">
+  <div class="frame">
+    <div class="handshake-rule reveal">
+      <span>§ The Handshake</span>
+      <span class="sep"></span>
+      <span class="pg">p. 07</span>
+    </div>
+
+    <div class="handshake-head reveal">
+      <h2>Three commands. <em>Ninety seconds.</em></h2>
+      <p class="lede">No signup wall, no waitlist, no onboarding funnel. You clone a repository, you install dependencies, you run a dev server. Then the console is yours.</p>
+    </div>
+
+    <div class="handshake-block reveal">
+      <div class="line"><span class="prompt">$</span><span class="cmd"><span class="k">git</span> clone <span class="s">https://github.com/ClaudevGuy/MotherShip</span></span></div>
+      <div class="out">Cloning into 'MotherShip'…  ✓  18,426 lines, 184 files.</div>
+
+      <div class="line"><span class="prompt">$</span><span class="cmd">cd MotherShip &amp;&amp; <span class="k">npm</span> install</span></div>
+      <div class="out">added 827 packages in 14s  ✓  postgres schema ready.</div>
+
+      <div class="line"><span class="prompt">$</span><span class="cmd"><span class="k">npm</span> run dev</span></div>
+      <div class="out"><span style="color:#5fbf7a;">▲ Next.js 14</span>  —  ready on <span style="color:#f0a87a;">http://localhost:3000</span>  in 1.2s</div>
+
+      <div class="line" style="margin-top:10px;"><span class="comment"># You're in. Create an agent, connect a key, ship a run.</span></div>
+    </div>
+
+    <div class="handshake-foot reveal stagger">
+      <div class="hf-item">
+        <span class="hf-k">Requires</span>
+        <span class="hf-v">Node 20 · Postgres</span>
+        <span class="hf-d">Neon, Supabase, or a local instance — pick one.</span>
       </div>
-
-      <div class="note">
-        <div class="no">No. 06 — Kill switch</div>
-        <h4>One button, <em>no ceremony.</em></h4>
-        <p>For the moment a prompt change drops a zero off a pricing field, or an agent decides to recurse forever at 3 a.m. Admin-scoped, confirmed, audit-logged. Everything stops in under a second.</p>
-        <div class="mark">Admin · confirmed · logged</div>
+      <div class="hf-item">
+        <span class="hf-k">First run</span>
+        <span class="hf-v">≈ 90 seconds</span>
+        <span class="hf-d">Clone → install → dev server → first agent streaming.</span>
+      </div>
+      <div class="hf-item">
+        <span class="hf-k">Deploy</span>
+        <span class="hf-v">Local, your server, Docker</span>
+        <span class="hf-d">No hosted tier. Your keys, your infra, your rules.</span>
       </div>
     </div>
   </div>
@@ -1780,7 +2785,7 @@ pre.code .n { color: var(--ink-warm); }
           <p>There is <em>no signup.</em> There is no free tier that turns into a paywall at the worst moment. There is a repository, a docker-compose, and a README that fits on one screen. Clone it, read it, keep it.</p>
           <p>If you extend it, send a pull request. If you disagree with a routing heuristic, fork it. This is a publication you edit as you read.</p>
         </div>
-        <a class="cta-pair manifesto-cta" href="https://github.com/ClaudevGuy/mission-control">
+        <a class="cta-pair manifesto-cta" href="https://github.com/ClaudevGuy/MotherShip">
           <span class="cta-primary">Clone the repository <span>→</span></span>
           <span class="cta-secondary">Read the documentation</span>
         </a>
@@ -1848,7 +2853,7 @@ pre.code .n { color: var(--ink-warm); }
       <div>
         <h5>The Archive</h5>
         <ul>
-          <li><a href="https://github.com/ClaudevGuy/mission-control">Repository ↗</a></li>
+          <li><a href="https://github.com/ClaudevGuy/MotherShip">Repository ↗</a></li>
           <li><a href="#">Documentation</a></li>
           <li><a href="#">Changelog</a></li>
           <li><a href="#">Issues</a></li>
