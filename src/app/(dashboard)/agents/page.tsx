@@ -10,7 +10,6 @@ import { formatRelativeTime, formatNumber, formatCurrency } from "@/lib/format";
 import { invalidate } from "@/lib/store-cache";
 import {
   PageHeader,
-  LiveIndicator,
   DataTable,
   StatusBadge,
   ModelBadge,
@@ -507,7 +506,6 @@ export default function AgentsPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="AI Agents" description="Monitor, manage, and deploy autonomous AI agents">
-        <LiveIndicator />
         <Button size="sm" onClick={() => setQuickCreateOpen(true)}>
           <Plus className="size-3.5 mr-1" />
           Create Agent

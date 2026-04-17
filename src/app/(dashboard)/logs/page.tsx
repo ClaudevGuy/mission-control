@@ -6,7 +6,6 @@ import { useLogsStore } from "@/stores/logs-store";
 import { useLogStream } from "@/lib/hooks/use-log-stream";
 import {
   PageHeader,
-  LiveIndicator,
   GlassPanel,
   StatusBadge,
   MetricCard,
@@ -83,9 +82,7 @@ export default function LogsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Logs & Observability" description="Unified log stream, error tracking, and AI call inspection">
-        <LiveIndicator />
-      </PageHeader>
+      <PageHeader title="Logs & Observability" description="Unified log stream, error tracking, and AI call inspection" />
 
       <div className="border-b border-border">
         <div className="flex gap-6">

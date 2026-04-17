@@ -37,6 +37,8 @@
 
     /* Semantic palette — use strictly for meaning, never as brand */
     --color-success: #00d992;           /* Money saved, healthy runs, passing evals, live */
+    --color-live-dot: #39FF14;          /* Iconic neon on charcoal */
+    --color-live-text: #39FF14;
     --color-cyan: #f5f1e8;              /* legacy alias → monochrome cream */
     --color-green: #00d992;             /* legacy alias → success emerald */
     --color-amber: #F59E0B;             /* Warnings: budget, rate-limit */
@@ -110,6 +112,8 @@
     --accent: #ece5d4;
     --accent-foreground: #0e0e0e;
     --destructive: #B91C1C;             /* Deeper crimson — reads distinct from oxblood brand */
+    --color-live-dot: #059669;          /* Emerald-600 — solid on paper, not neon */
+    --color-live-text: #047857;         /* Emerald-700 — text-contrast on paper */
     --border: #d4ccbc;                  /* Hairline */
     --input: rgba(14, 14, 14, 0.08);
     --ring: #c83524;                    /* Oxblood focus ring */

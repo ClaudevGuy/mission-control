@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { useInfrastructureStore } from "@/stores/infrastructure-store";
 import {
   PageHeader,
-  LiveIndicator,
   GlassPanel,
   GaugeWidget,
   DataTable,
@@ -58,9 +57,7 @@ export default function InfrastructurePage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Infrastructure" description="Server health, resource utilization, and infrastructure topology">
-        <LiveIndicator />
-      </PageHeader>
+      <PageHeader title="Infrastructure" description="Server health, resource utilization, and infrastructure topology" />
 
       {/* ── Resource Gauges ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
