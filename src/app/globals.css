@@ -91,67 +91,67 @@
     --reactflow-controls-text: #8b949e;
   }
 
-  /* ═══ LIGHT THEME ═══ */
+  /* ═══ LIGHT THEME — Editorial paper / inked text / oxblood accent (mirrors /landing) ═══ */
   .light {
-    --background: #F5F5F8;
-    --foreground: #1A1A2E;
-    --card: #FFFFFF;
-    --card-foreground: #1A1A2E;
-    --popover: #FFFFFF;
-    --popover-foreground: #1A1A2E;
-    --primary: #1A1A2E;                 /* Dark ink — inverted monochrome primary */
-    --primary-foreground: #FFFFFF;
-    --brand-rgb: 26 26 46;              /* Dark ink (light mode): mirrors --primary */
-    --ink-rgb: 26 26 46;                /* Text/accent neutral (light mode = dark ink) */
-    --secondary: #F0F0F5;
-    --secondary-foreground: #1A1A2E;
-    --muted: #EBEBF0;
-    --muted-foreground: #6B6B80;
-    --accent: #F0F0F5;
-    --accent-foreground: #1A1A2E;
-    --destructive: #DC2626;
-    --border: rgba(0, 0, 0, 0.08);
-    --input: rgba(0, 0, 0, 0.06);
-    --ring: #1A1A2E;
+    --background: #f5f1e8;              /* Warm uncoated paper */
+    --foreground: #0e0e0e;              /* Printed ink */
+    --card: #faf6ec;                    /* Lifted paper, a touch whiter than bg */
+    --card-foreground: #0e0e0e;
+    --popover: #faf6ec;
+    --popover-foreground: #0e0e0e;
+    --primary: #0e0e0e;                 /* Ink — monochrome architectural primary */
+    --primary-foreground: #f5f1e8;      /* Paper on ink buttons */
+    --brand-rgb: 200 53 36;             /* Oxblood — subtle editorial accent tint */
+    --ink-rgb: 14 14 14;                /* Ink — neutral text/accent tint */
+    --secondary: #ece5d4;               /* Deeper card stock */
+    --secondary-foreground: #0e0e0e;
+    --muted: #ece5d4;
+    --muted-foreground: #7a7465;        /* Editorial gray */
+    --accent: #ece5d4;
+    --accent-foreground: #0e0e0e;
+    --destructive: #B91C1C;             /* Deeper crimson — reads distinct from oxblood brand */
+    --border: #d4ccbc;                  /* Hairline */
+    --input: rgba(14, 14, 14, 0.08);
+    --ring: #c83524;                    /* Oxblood focus ring */
 
-    --sidebar: #FFFFFF;
-    --sidebar-foreground: #1A1A2E;
-    --sidebar-primary: #1A1A2E;
-    --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #F0F0F5;
-    --sidebar-accent-foreground: #1A1A2E;
-    --sidebar-border: rgba(0, 0, 0, 0.08);
+    --sidebar: #faf6ec;
+    --sidebar-foreground: #0e0e0e;
+    --sidebar-primary: #0e0e0e;
+    --sidebar-primary-foreground: #f5f1e8;
+    --sidebar-accent: #ece5d4;
+    --sidebar-accent-foreground: #0e0e0e;
+    --sidebar-border: #d4ccbc;
 
     /* Theme-specific */
-    --bg-primary: #F5F5F8;
-    --bg-secondary: #EBEBF0;
-    --bg-card: #FFFFFF;
-    --bg-hover: rgba(0, 0, 0, 0.03);
-    --border-subtle: rgba(0, 0, 0, 0.08);
-    --border-strong: rgba(0, 0, 0, 0.15);
-    --text-primary: #1A1A2E;
-    --text-secondary: #5a5856;
-    --text-muted: #7a7775;
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(0, 0, 0, 0.08);
-    --glass-hover-border: rgba(0, 0, 0, 0.15);
-    --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 12px rgba(0, 0, 0, 0.02);
-    --card-shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.08), 0 0 18px rgba(0, 0, 0, 0.04);
-    --sidebar-bg: linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%);
-    --topbar-bg: rgba(255, 255, 255, 0.9);
-    --dot-color: rgba(0, 0, 0, 0.06);
-    --ambient-top: rgba(26, 26, 46, 0.03);
-    --ambient-bottom-right: rgba(99, 102, 241, 0.03);
-    --scrollbar-thumb: rgba(0, 0, 0, 0.12);
-    --scrollbar-hover: rgba(0, 0, 0, 0.2);
+    --bg-primary: #f5f1e8;
+    --bg-secondary: #ece5d4;
+    --bg-card: #faf6ec;
+    --bg-hover: rgba(14, 14, 14, 0.03);
+    --border-subtle: rgba(14, 14, 14, 0.06);
+    --border-strong: rgba(14, 14, 14, 0.12);
+    --text-primary: #0e0e0e;
+    --text-secondary: #3a3529;          /* Charcoal */
+    --text-muted: #7a7465;              /* Editorial gray */
+    --glass-bg: rgba(250, 246, 236, 0.85);
+    --glass-border: #d4ccbc;
+    --glass-hover-border: rgba(14, 14, 14, 0.15);
+    --card-shadow: 0 1px 3px rgba(14, 14, 14, 0.05), 0 0 12px rgba(14, 14, 14, 0.02);
+    --card-shadow-hover: 0 2px 6px rgba(14, 14, 14, 0.08), 0 0 18px rgba(14, 14, 14, 0.04);
+    --sidebar-bg: linear-gradient(180deg, #faf6ec 0%, #f5f1e8 100%);
+    --topbar-bg: rgba(245, 241, 232, 0.9);
+    --dot-color: rgba(14, 14, 14, 0.06);
+    --ambient-top: rgba(200, 53, 36, 0.035);       /* Oxblood whisper */
+    --ambient-bottom-right: rgba(14, 14, 14, 0.02);
+    --scrollbar-thumb: rgba(14, 14, 14, 0.14);
+    --scrollbar-hover: rgba(14, 14, 14, 0.22);
 
     /* React Flow canvas */
-    --reactflow-bg: #F5F5F8;
-    --reactflow-dot: rgba(0, 0, 0, 0.07);
-    --reactflow-minimap-bg: #FFFFFF;
-    --reactflow-controls-bg: #FFFFFF;
-    --reactflow-controls-border: rgba(0, 0, 0, 0.08);
-    --reactflow-controls-text: #555;
+    --reactflow-bg: #f5f1e8;
+    --reactflow-dot: rgba(14, 14, 14, 0.07);
+    --reactflow-minimap-bg: #faf6ec;
+    --reactflow-controls-bg: #faf6ec;
+    --reactflow-controls-border: #d4ccbc;
+    --reactflow-controls-text: #7a7465;
 
     color-scheme: light;
   }

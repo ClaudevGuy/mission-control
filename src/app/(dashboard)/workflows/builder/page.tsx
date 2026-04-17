@@ -466,8 +466,8 @@ function WorkflowBuilderInner() {
           style={{
             width: "100%",
             height: "100%",
-            backgroundColor: isDark ? "#050507" : "#F5F5F8",
-            backgroundImage: `radial-gradient(circle, ${isDark ? "rgb(var(--ink-rgb) / 0.10)" : "rgba(0,0,0,0.07)"} 1px, transparent 1px)`,
+            backgroundColor: isDark ? "#050507" : "#f5f1e8",
+            backgroundImage: `radial-gradient(circle, ${isDark ? "rgb(var(--ink-rgb) / 0.10)" : "rgba(14,14,14,0.07)"} 1px, transparent 1px)`,
             backgroundSize: "24px 24px",
           }}
         >
