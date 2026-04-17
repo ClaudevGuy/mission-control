@@ -230,8 +230,10 @@ Create test suites to measure and track agent quality:
 Chain agents into pipelines on a React Flow canvas:
 
 - Custom node types: Trigger (manual / schedule / webhook / event), Agent, End
+- One trigger per workflow — the sidebar marks the active trigger and clicking a different one swaps it in place (keeps connections intact)
 - Animated connection edges
 - Validation before activation
+- Theme-aware node palette — the End terminal renders as emerald on paper, neon on charcoal
 - **Real execution** — Calls agents via the sync endpoint, pipes output between steps, saves complete `WorkflowRun` records with step-level results
 
 ### Audit Log
@@ -315,6 +317,15 @@ All destructive operations use a consistent ConfirmDialog pattern:
 
 - **Navigation** — Jump to any page with `g + [key]` (see shortcuts below)
 - **Quick Actions** — Deploy Agent (→ builder), Run Eval (→ dialog), New Workflow (→ dialog), Kill Switch (→ confirm + kill-all)
+
+### Dark & Light Themes
+
+Both themes are first-class and share the same editorial grammar as the landing page:
+
+- **Dark** (default) — Charcoal paper with cream ink, iconic neon accents (live dot, success terminal) against a deep background
+- **Light** — Warm uncoated paper (`#f5f1e8`), printed ink (`#0e0e0e`), oxblood accent (`#c83524`), emerald semantic greens that stay legible on cream
+- Semantic colors are driven by CSS tokens (`--color-live-*`, `--color-end-rgb`, `--color-success`, etc.) so a new theme is a token swap, not a component sweep
+- Toggle in the topbar or the `/settings` → Appearance tab
 
 ## Project Structure
 
