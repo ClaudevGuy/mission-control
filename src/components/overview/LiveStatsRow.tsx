@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 interface StatCardProps {
   label: string;
   value: string | number;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   tone?: "neutral" | "success" | "danger" | "warn";
   pulse?: boolean;
   delta?: { value: number; unit?: "%" | "" };

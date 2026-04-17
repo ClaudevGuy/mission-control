@@ -4,9 +4,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Bot,
   Zap,
-  GitBranch,
   FileCode,
   FlaskConical,
   Shield,
