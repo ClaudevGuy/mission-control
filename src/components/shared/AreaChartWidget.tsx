@@ -17,6 +17,7 @@ interface AreaChartWidgetProps {
   color?: string;
   height?: number;
   formatValue?: (value: number) => string;
+  showDots?: boolean;
 }
 
 function ChartTooltip({
@@ -33,60 +34,110 @@ function ChartTooltip({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border bg-card/95 backdrop-blur-xl px-3 py-2 shadow-xl">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-sm font-mono font-medium text-foreground">
+      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </p>
+      <p className="text-sm font-mono font-semibold text-foreground">
         {formatValue(payload[0].value)}
       </p>
     </div>
   );
 }
 
+function trimTrailingZeros(s: string): string {
+  if (!s.includes(".")) return s;
+  return s.replace(/0+$/, "").replace(/\.$/, "");
+}
+
 export function AreaChartWidget({
   data,
-  color = "#f5f1e8",
+  color = "var(--primary)",
   height = 200,
   formatValue = formatNumber,
+  showDots = true,
 }: AreaChartWidgetProps) {
-  const gradientId = `area-gradient-${color.replace("#", "")}`;
+  const uid = React.useId();
+  const gradientId = `area-gradient-${uid}`;
+  const glowId = `area-glow-${uid}`;
+
+  const axisFormat = (v: number) => trimTrailingZeros(formatValue(v));
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
+      <AreaChart data={data} margin={{ top: 8, right: 12, bottom: 0, left: -8 }}>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+            <stop offset="60%" stopColor={color} stopOpacity={0.08} />
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
+          <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
         <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="rgba(255,255,255,0.04)"
+          strokeDasharray="2 4"
+          stroke="rgb(var(--ink-rgb) / 0.06)"
           vertical={false}
         />
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}
+          tick={{
+            fontSize: 10,
+            fill: "rgb(var(--ink-rgb) / 0.45)",
+            fontFamily: "monospace",
+          }}
           axisLine={false}
           tickLine={false}
+          tickMargin={8}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}
+          tick={{
+            fontSize: 10,
+            fill: "rgb(var(--ink-rgb) / 0.45)",
+            fontFamily: "monospace",
+          }}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(v) => formatValue(v)}
+          tickFormatter={axisFormat}
+          width={52}
         />
         <Tooltip
           content={<ChartTooltip formatValue={formatValue} />}
-          cursor={{ stroke: "rgba(255,255,255,0.1)" }}
+          cursor={{
+            stroke: color,
+            strokeOpacity: 0.3,
+            strokeWidth: 1,
+            strokeDasharray: "3 3",
+          }}
         />
         <Area
           type="monotone"
           dataKey="value"
           stroke={color}
-          strokeWidth={2}
+          strokeWidth={2.25}
           fill={`url(#${gradientId})`}
-          dot={false}
-          activeDot={{ r: 4, fill: color, stroke: "#0E0E13", strokeWidth: 2 }}
+          filter={`url(#${glowId})`}
+          dot={
+            showDots
+              ? {
+                  r: 3,
+                  fill: "#0E0E13",
+                  stroke: color,
+                  strokeWidth: 2,
+                }
+              : false
+          }
+          activeDot={{
+            r: 5,
+            fill: color,
+            stroke: "#0E0E13",
+            strokeWidth: 2,
+          }}
         />
       </AreaChart>
     </ResponsiveContainer>

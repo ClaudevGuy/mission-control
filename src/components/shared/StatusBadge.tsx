@@ -31,8 +31,8 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
     animation: "badge-pulse 1.5s ease-in-out infinite",
   },
   idle: {
-    bg: "rgba(255,255,255,0.03)",
-    border: "rgba(255,255,255,0.12)",
+    bg: "rgb(var(--ink-rgb) / 0.03)",
+    border: "rgb(var(--ink-rgb) / 0.12)",
     text: "#888888",
     dot: "#888888",
   },
@@ -50,10 +50,10 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
     animation: "badge-pulse 0.8s ease-in-out infinite",
   },
   deploying: {
-    bg: "rgba(245, 241, 232,0.08)",
-    border: "rgba(245, 241, 232,0.31)",
-    text: "#f5f1e8",
-    dot: "#f5f1e8",
+    bg: "rgb(var(--brand-rgb) / 0.08)",
+    border: "rgb(var(--brand-rgb) / 0.31)",
+    text: "var(--primary)",
+    dot: "var(--primary)",
     animation: "badge-spin 1s linear infinite",
   },
   success: {
@@ -69,15 +69,15 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
     dot: "#EF4444",
   },
   in_progress: {
-    bg: "rgba(245, 241, 232,0.08)",
-    border: "rgba(245, 241, 232,0.31)",
-    text: "#f5f1e8",
-    dot: "#f5f1e8",
+    bg: "rgb(var(--brand-rgb) / 0.08)",
+    border: "rgb(var(--brand-rgb) / 0.31)",
+    text: "var(--primary)",
+    dot: "var(--primary)",
     animation: "badge-spin 1s linear infinite",
   },
   pending: {
-    bg: "rgba(255,255,255,0.03)",
-    border: "rgba(255,255,255,0.12)",
+    bg: "rgb(var(--ink-rgb) / 0.03)",
+    border: "rgb(var(--ink-rgb) / 0.12)",
     text: "#888888",
     dot: "#666666",
   },
@@ -108,8 +108,8 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
     dot: "#39FF14",
   },
   disconnected: {
-    bg: "rgba(255,255,255,0.03)",
-    border: "rgba(255,255,255,0.12)",
+    bg: "rgb(var(--ink-rgb) / 0.03)",
+    border: "rgb(var(--ink-rgb) / 0.12)",
     text: "#888888",
     dot: "#666666",
   },
@@ -122,8 +122,8 @@ const STATUS_STYLES: Record<string, StatusStyle> = {
 };
 
 const DEFAULT_STYLE: StatusStyle = {
-  bg: "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.12)",
+  bg: "rgb(var(--ink-rgb) / 0.03)",
+  border: "rgb(var(--ink-rgb) / 0.12)",
   text: "#888888",
   dot: "#666666",
 };

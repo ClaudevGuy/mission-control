@@ -183,7 +183,7 @@ export default function IntegrationsPage() {
               <div className="flex-1 mt-2">
                 <p className="text-[13px] text-muted-foreground line-clamp-1">{integ.description}</p>
                 {isConnected && integ.lastSync && (
-                  <p className="font-mono text-[11px] text-[#f5f1e8] mt-1" suppressHydrationWarning>Last sync: {formatTimeShort(integ.lastSync)}</p>
+                  <p className="font-mono text-[11px] text-brand mt-1" suppressHydrationWarning>Last sync: {formatTimeShort(integ.lastSync)}</p>
                 )}
                 {isConnected && stat && (
                   <p className="text-[11px] text-muted-foreground mt-0.5">{stat}</p>
@@ -205,7 +205,7 @@ export default function IntegrationsPage() {
                 )}
                 {integ.status === "disconnected" && (
                   <button
-                    className="text-[10px] font-medium text-primary-foreground bg-[#f5f1e8] rounded px-3 py-1 hover:bg-[#f5f1e8]/80 transition-colors"
+                    className="text-[10px] font-medium text-primary-foreground bg-brand rounded px-3 py-1 hover:bg-brand/80 transition-colors"
                     onClick={() => handleConnect(integ.name, integ.icon)}
                   >
                     Connect
@@ -229,10 +229,10 @@ export default function IntegrationsPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <Webhook className="size-4 text-[#f5f1e8]" />
+            <Webhook className="size-4 text-brand" />
             Webhooks
           </h2>
-          <button className="flex items-center gap-1.5 text-xs font-medium text-[#f5f1e8] hover:underline" onClick={() => toast.success("Webhook created")}>
+          <button className="flex items-center gap-1.5 text-xs font-medium text-brand hover:underline" onClick={() => toast.success("Webhook created")}>
             <Plus className="size-3" /> Add Webhook
           </button>
         </div>
@@ -278,7 +278,7 @@ export default function IntegrationsPage() {
                     <Switch
                       checked={wh.status === "active"}
                       onCheckedChange={() => toast.success(`Webhook ${wh.status === "active" ? "paused" : "activated"}`)}
-                      className="data-[state=checked]:bg-[#f5f1e8]"
+                      className="data-[state=checked]:bg-brand"
                     />
                   </td>
                 </tr>

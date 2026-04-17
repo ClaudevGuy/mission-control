@@ -18,9 +18,9 @@ interface Invite {
 
 const ROLE_STYLES: Record<string, { bg: string; border: string; text: string }> = {
   admin: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)", text: "#EF4444" },
-  developer: { bg: "rgba(245, 241, 232,0.12)", border: "rgba(245, 241, 232,0.3)", text: "#f5f1e8" },
+  developer: { bg: "rgb(var(--brand-rgb) / 0.12)", border: "rgb(var(--brand-rgb) / 0.3)", text: "var(--primary)" },
   agent_manager: { bg: "rgba(168,85,247,0.12)", border: "rgba(168,85,247,0.3)", text: "#A855F7" },
-  viewer: { bg: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.12)", text: "#888" },
+  viewer: { bg: "rgb(var(--ink-rgb) / 0.05)", border: "rgb(var(--ink-rgb) / 0.12)", text: "#888" },
 };
 
 function timeAgo(ts: string) {

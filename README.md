@@ -78,7 +78,11 @@ npx prisma db seed    # Create default project + admin user
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The overview page gives you a 3-step onboarding guide when empty, then switches to the populated dashboard once you create your first agent.
+Open [http://localhost:3000](http://localhost:3000). When the project is empty, the overview shows a color-coded 3-step onboarding (Create / Run / Evaluate) — each card tinted in its own accent (amber, purple, emerald) with a consistent footer baseline. Once an agent exists, the overview switches to the live dashboard:
+
+- **System health strip** — pulsing status dot, live/degraded/critical states, environment tag
+- **Cost Burn widget** — trailing spend total, working 7d/14d/30d/90d range selector, and a ±% trend vs the prior period
+- **Top Issues** — `HEALTHY`/`ACTIVE` pill, incident feed or a glowing emerald all-clear empty state
 
 ## Adding AI Providers
 

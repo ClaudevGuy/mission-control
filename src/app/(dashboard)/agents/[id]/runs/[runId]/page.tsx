@@ -56,7 +56,7 @@ interface ApiResponse {
 
 function StatusIcon({ status }: { status: string }) {
   const s = status.toLowerCase();
-  if (s === "run_success" || s === "success") return <CheckCircle2 className="size-4 text-[#f5f1e8]" />;
+  if (s === "run_success" || s === "success") return <CheckCircle2 className="size-4 text-brand" />;
   if (s === "run_failed" || s === "failed" || s === "error") return <XCircle className="size-4 text-red-400" />;
   if (s === "run_running" || s === "running") return <Loader2 className="size-4 text-amber-400 animate-spin" />;
   return <Clock className="size-4 text-muted-foreground" />;
@@ -114,7 +114,7 @@ export default function RunDetailPage({
       <div className="space-y-6">
         <PageHeader title="Run Details" description="Loading..." />
         <div className="flex items-center justify-center py-24">
-          <div className="size-6 rounded-full border-2 border-[#f5f1e8]/20 border-t-[#f5f1e8] animate-spin" />
+          <div className="size-6 rounded-full border-2 border-brand/20 border-t-brand animate-spin" />
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ export default function RunDetailPage({
 
   const { run, agent, selection } = data;
   const tierColor = run.tier === 1 ? "bg-purple-500/15 text-purple-400 border-purple-500/30" :
-                    run.tier === 2 ? "bg-[#f5f1e8]/15 text-[#f5f1e8] border-[#f5f1e8]/30" :
+                    run.tier === 2 ? "bg-brand/15 text-brand border-brand/30" :
                     run.tier === 3 ? "bg-green-500/15 text-green-400 border-green-500/30" : "";
   const toolCalls = run.toolCalls ?? [];
 
@@ -160,7 +160,7 @@ export default function RunDetailPage({
       {/* Stat row */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile icon={Clock} label="Duration" value={`${(run.duration / 1000).toFixed(2)}s`} color="#8b949e" />
-        <StatTile icon={Zap} label="Tokens" value={formatNumber(run.tokensUsed)} color="#f5f1e8"
+        <StatTile icon={Zap} label="Tokens" value={formatNumber(run.tokensUsed)} color="var(--primary)"
           sub={run.tokensIn != null && run.tokensOut != null ? `${formatNumber(run.tokensIn)} in / ${formatNumber(run.tokensOut)} out` : undefined}
         />
         <StatTile icon={DollarSign} label="Cost" value={formatCurrency(run.cost)} color="#F59E0B" />

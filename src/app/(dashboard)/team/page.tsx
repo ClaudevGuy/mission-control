@@ -14,7 +14,7 @@ import { CreateApiKeyModal } from "@/components/team/CreateApiKeyModal";
 import { PendingInvites } from "@/components/team/PendingInvites";
 
 // Generate consistent avatar color from name
-const PALETTE = ["#f5f1e8", "#A855F7", "#F59E0B", "#39FF14", "#EF4444", "#EC4899", "#10A37F"];
+const PALETTE = ["var(--primary)", "#A855F7", "#F59E0B", "#39FF14", "#EF4444", "#EC4899", "#10A37F"];
 function avatarColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -24,9 +24,9 @@ const AVATAR_COLORS: Record<string, string> = {};
 
 const ROLE_STYLES: Record<TeamRole, { bg: string; border: string; text: string }> = {
   admin: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)", text: "#EF4444" },
-  developer: { bg: "rgba(245, 241, 232,0.12)", border: "rgba(245, 241, 232,0.3)", text: "#f5f1e8" },
+  developer: { bg: "rgb(var(--brand-rgb) / 0.12)", border: "rgb(var(--brand-rgb) / 0.3)", text: "var(--primary)" },
   agent_manager: { bg: "rgba(168,85,247,0.12)", border: "rgba(168,85,247,0.3)", text: "#A855F7" },
-  viewer: { bg: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.12)", text: "#888" },
+  viewer: { bg: "rgb(var(--ink-rgb) / 0.05)", border: "rgb(var(--ink-rgb) / 0.12)", text: "#888" },
 };
 
 const PERMISSIONS = [
@@ -42,14 +42,14 @@ const PERM_MATRIX: Record<string, boolean[]> = {
 
 const ACTION_COLORS: Record<string, string> = {
   create: "#39FF14", connect: "#39FF14", invite: "#39FF14",
-  update: "#f5f1e8", toggle: "#f5f1e8", restart: "#f5f1e8", update_role: "#F59E0B",
-  trigger: "#f5f1e8", rollback: "#F59E0B",
+  update: "var(--primary)", toggle: "var(--primary)", restart: "var(--primary)", update_role: "#F59E0B",
+  trigger: "var(--primary)", rollback: "#F59E0B",
   delete: "#EF4444", revoke: "#EF4444", pause: "#F59E0B",
   resolve: "#39FF14",
 };
 
 const SCOPE_COLORS: Record<string, string> = {
-  read: "#39FF14", write: "#f5f1e8", admin: "#EF4444", agents: "#A855F7", deploy: "#F59E0B",
+  read: "#39FF14", write: "var(--primary)", admin: "#EF4444", agents: "#A855F7", deploy: "#F59E0B",
 };
 
 function formatTime(ts: string) {
@@ -91,7 +91,7 @@ export default function TeamPage() {
           {tabs.map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)} className={cn("pb-2.5 text-sm font-medium transition-colors relative", tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}>
               {t.label}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -173,7 +173,7 @@ export default function TeamPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="text-[10px] text-muted-foreground hover:text-[#f5f1e8]" onClick={() => { setEditRoleTarget({ id: m.id, name, role: m.role }); setNewRole(m.role); }}>Edit Role</button>
+                          <button className="text-[10px] text-muted-foreground hover:text-brand" onClick={() => { setEditRoleTarget({ id: m.id, name, role: m.role }); setNewRole(m.role); }}>Edit Role</button>
                           <button className="text-[10px] text-muted-foreground hover:text-red-400" onClick={() => setRemoveTarget({ id: m.id, name })}>Remove</button>
                         </div>
                       </td>
@@ -279,7 +279,7 @@ export default function TeamPage() {
                 <Key className="size-8 text-muted-foreground/20" />
                 <p className="text-sm font-medium text-muted-foreground">No API keys yet</p>
                 <p className="text-xs text-muted-foreground/50">Create a key to access the API programmatically</p>
-                <button className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-[#f5f1e8] px-4 py-2 text-xs font-medium text-black hover:bg-[#f5f1e8]/90" onClick={() => setApiKeyOpen(true)}>
+                <button className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-xs font-medium text-primary-foreground hover:bg-brand/90" onClick={() => setApiKeyOpen(true)}>
                   <Key className="size-3.5" /> Create your first key
                 </button>
               </div>
@@ -304,7 +304,7 @@ export default function TeamPage() {
                             <span className={cn("font-mono text-xs", isRevoked ? "text-muted-foreground/50 line-through" : "text-muted-foreground")}>sk-{key.prefix}-••••••••</span>
                             {!isRevoked && (
                               <button onClick={() => { navigator.clipboard.writeText(`sk-${key.prefix}-mock`); toast.success("Copied"); }}>
-                                <Copy className="size-3 text-muted-foreground/30 hover:text-[#f5f1e8]" />
+                                <Copy className="size-3 text-muted-foreground/30 hover:text-brand" />
                               </button>
                             )}
                           </div>
@@ -382,7 +382,7 @@ export default function TeamPage() {
                   onClick={() => setNewRole(role)}
                   className={cn(
                     "w-full flex items-center justify-between rounded-lg border p-3 text-left text-xs transition-colors",
-                    newRole === role ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.04]" : "border-border/50 hover:border-border"
+                    newRole === role ? "border-brand/40 bg-brand/[0.04]" : "border-border/50 hover:border-border"
                   )}
                 >
                   <div>
@@ -394,7 +394,7 @@ export default function TeamPage() {
                        "Read-only access to dashboards and logs"}
                     </p>
                   </div>
-                  {newRole === role && <span className="size-2 rounded-full bg-[#f5f1e8] shrink-0" />}
+                  {newRole === role && <span className="size-2 rounded-full bg-brand shrink-0" />}
                 </button>
               ))}
             </div>
@@ -402,7 +402,7 @@ export default function TeamPage() {
               <Button variant="outline" size="sm" onClick={() => setEditRoleTarget(null)}>Cancel</Button>
               <Button
                 size="sm"
-                className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+                className="bg-brand hover:bg-brand/90 text-primary-foreground"
                 disabled={newRole === editRoleTarget.role}
                 onClick={async () => {
                   try {

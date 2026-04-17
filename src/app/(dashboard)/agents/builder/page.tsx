@@ -290,16 +290,16 @@ export default function AgentBuilderPage() {
                     className={cn(
                       "relative flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all",
                       modelStrategy === opt.id
-                        ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.06]"
+                        ? "border-brand/40 bg-brand/[0.06]"
                         : "border-border hover:border-border/80 hover:bg-muted/30"
                     )}
                   >
                     {"recommended" in opt && opt.recommended && (
-                      <span className="absolute top-2.5 right-2.5 text-[9px] font-medium text-[#f5f1e8] bg-[#f5f1e8]/10 rounded-full px-2 py-0.5">
+                      <span className="absolute top-2.5 right-2.5 text-[9px] font-medium text-brand bg-brand/10 rounded-full px-2 py-0.5">
                         Recommended
                       </span>
                     )}
-                    <Icon className={cn("size-5", modelStrategy === opt.id ? "text-[#f5f1e8]" : "text-muted-foreground")} />
+                    <Icon className={cn("size-5", modelStrategy === opt.id ? "text-brand" : "text-muted-foreground")} />
                     <div>
                       <span className="text-sm font-medium text-foreground block">{opt.label}</span>
                       <span className="text-xs text-muted-foreground">{opt.desc}</span>
@@ -314,7 +314,7 @@ export default function AgentBuilderPage() {
                 <p className="text-xs font-medium text-foreground">Estimated distribution for this agent:</p>
                 <div className="space-y-1.5 text-xs text-muted-foreground font-mono">
                   <div className="flex justify-between"><span>~40% of runs → Tier 3 (simple tasks)</span><span className="text-green-400">lowest cost</span></div>
-                  <div className="flex justify-between"><span>~45% of runs → Tier 2 (standard tasks)</span><span className="text-[#f5f1e8]">balanced</span></div>
+                  <div className="flex justify-between"><span>~45% of runs → Tier 2 (standard tasks)</span><span className="text-brand">balanced</span></div>
                   <div className="flex justify-between"><span>~15% of runs → Tier 1 (complex tasks)</span><span className="text-purple-400">highest quality</span></div>
                 </div>
                 <p className="text-[10px] text-muted-foreground/60 mt-2">Est. savings vs always using Tier 2: ~30%</p>
@@ -332,17 +332,17 @@ export default function AgentBuilderPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setPromptMode("custom")}
-                className={cn("flex-1 rounded-lg border p-3 text-left transition-all", promptMode === "custom" ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.04]" : "border-border hover:border-border/80")}
+                className={cn("flex-1 rounded-lg border p-3 text-left transition-all", promptMode === "custom" ? "border-brand/40 bg-brand/[0.04]" : "border-border hover:border-border/80")}
               >
                 <p className="text-xs font-semibold text-foreground">Write custom prompt</p>
                 <p className="text-[10px] text-muted-foreground/60 mt-0.5">Write a system prompt directly</p>
               </button>
               <button
                 onClick={() => setPromptMode("studio")}
-                className={cn("flex-1 rounded-lg border p-3 text-left transition-all", promptMode === "studio" ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.04]" : "border-border hover:border-border/80")}
+                className={cn("flex-1 rounded-lg border p-3 text-left transition-all", promptMode === "studio" ? "border-brand/40 bg-brand/[0.04]" : "border-border hover:border-border/80")}
               >
                 <div className="flex items-center gap-1.5">
-                  <FileCode className="size-3.5 text-[#f5f1e8]" />
+                  <FileCode className="size-3.5 text-brand" />
                   <p className="text-xs font-semibold text-foreground">Use from Prompt Studio</p>
                 </div>
                 <p className="text-[10px] text-muted-foreground/60 mt-0.5">Link a versioned prompt</p>
@@ -368,7 +368,7 @@ export default function AgentBuilderPage() {
                   <div className="rounded-lg border border-border/50 p-6 text-center">
                     <FileCode className="size-6 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-xs text-muted-foreground">No prompts in Prompt Studio yet</p>
-                    <Link href="/prompts" className="text-[10px] text-[#f5f1e8] hover:underline mt-1 inline-block">Create one →</Link>
+                    <Link href="/prompts" className="text-[10px] text-brand hover:underline mt-1 inline-block">Create one →</Link>
                   </div>
                 ) : (
                   <>
@@ -387,12 +387,12 @@ export default function AgentBuilderPage() {
                       </SelectContent>
                     </Select>
                     {linkedPromptId && (
-                      <div className="rounded-lg border border-[#f5f1e8]/20 bg-[#f5f1e8]/[0.03] p-3 flex items-center justify-between">
+                      <div className="rounded-lg border border-brand/20 bg-brand/[0.03] p-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <FileCode className="size-3.5 text-[#f5f1e8]" />
+                          <FileCode className="size-3.5 text-brand" />
                           <span className="text-xs font-medium text-foreground">Using: {linkedPromptName}</span>
                         </div>
-                        <Link href="/prompts" className="text-[10px] text-[#f5f1e8] hover:underline">Edit in Prompt Studio →</Link>
+                        <Link href="/prompts" className="text-[10px] text-brand hover:underline">Edit in Prompt Studio →</Link>
                       </div>
                     )}
                   </>
@@ -418,16 +418,16 @@ export default function AgentBuilderPage() {
                     className={cn(
                       "flex items-center justify-between w-full py-3 px-4 rounded-lg border text-left transition-all",
                       isEnabled
-                        ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.06]"
+                        ? "border-brand/40 bg-brand/[0.06]"
                         : "border-border bg-muted/30 hover:border-border/80 hover:bg-muted/50"
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "size-5 rounded-md border-2 flex items-center justify-center transition-colors",
-                        isEnabled ? "border-[#f5f1e8] bg-[#f5f1e8]" : "border-[#3d3a39]"
+                        isEnabled ? "border-brand bg-brand" : "border-[#3d3a39]"
                       )}>
-                        {isEnabled && <Check className="size-3 text-black" strokeWidth={3} />}
+                        {isEnabled && <Check className="size-3 text-primary-foreground" strokeWidth={3} />}
                       </div>
                       <span className={cn("text-sm", isEnabled ? "text-foreground font-medium" : "text-foreground")}>{tool.label}</span>
                     </div>
@@ -500,14 +500,14 @@ export default function AgentBuilderPage() {
                     className={cn(
                       "flex items-start gap-3 w-full p-4 rounded-lg border text-left transition-all",
                       isSelected
-                        ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.06]"
+                        ? "border-brand/40 bg-brand/[0.06]"
                         : "border-border bg-muted/30 hover:border-border/80 hover:bg-muted/50"
                     )}
                   >
                     <div
                       className={cn(
                         "mt-0.5 size-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
-                        isSelected ? "border-[#f5f1e8] bg-[#f5f1e8]" : "border-[#3d3a39]"
+                        isSelected ? "border-brand bg-brand" : "border-[#3d3a39]"
                       )}
                     >
                       {isSelected && <div className="size-2 rounded-full bg-black" />}

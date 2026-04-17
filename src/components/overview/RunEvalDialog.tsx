@@ -76,7 +76,7 @@ export function RunEvalDialog({ open, onOpenChange }: RunEvalDialogProps) {
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FlaskConical className="size-4 text-[#f5f1e8]" />
+            <FlaskConical className="size-4 text-brand" />
             Run Eval
           </DialogTitle>
         </DialogHeader>
@@ -103,7 +103,7 @@ export function RunEvalDialog({ open, onOpenChange }: RunEvalDialogProps) {
                   className={cn(
                     "w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors",
                     selectedId === suite.id
-                      ? "border-[#f5f1e8]/40 bg-[#f5f1e8]/[0.04]"
+                      ? "border-brand/40 bg-brand/[0.04]"
                       : "border-border hover:border-border/80"
                   )}
                 >
@@ -134,7 +134,7 @@ export function RunEvalDialog({ open, onOpenChange }: RunEvalDialogProps) {
             <Button
               onClick={handleRun}
               disabled={!selectedId || isRunning}
-              className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+              className="bg-brand hover:bg-brand/90 text-primary-foreground"
             >
               {isRunning ? <><Loader2 className="size-3.5 mr-1.5 animate-spin" /> Running...</> : "Run Now"}
             </Button>

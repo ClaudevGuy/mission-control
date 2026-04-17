@@ -18,7 +18,7 @@ const SEV_STYLES: Record<IncidentSeverity, { bg: string; border: string; text: s
 const SEV_BADGE: Record<IncidentSeverity, { bg: string; text: string }> = {
   P1: { bg: "#EF4444", text: "#fff" },
   P2: { bg: "#F59E0B", text: "#000" },
-  P3: { bg: "rgba(255,255,255,0.1)", text: "#888" },
+  P3: { bg: "rgb(var(--ink-rgb) / 0.1)", text: "#888" },
 };
 
 const AVATAR_COLORS: Record<string, string> = {};
@@ -61,7 +61,7 @@ export default function IncidentsPage() {
           {tabs.map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)} className={cn("pb-2.5 text-sm font-medium transition-colors relative", tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}>
               {t.label}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -73,7 +73,7 @@ export default function IncidentsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <MetricCard label="Open Incidents" value={allIncidents.filter((i) => i.status !== "resolved").length} format="number" icon={AlertTriangle} color="#EF4444" />
             <MetricCard label="Avg Response" value={0} format="number" icon={Clock} color="#F59E0B" />
-            <MetricCard label="MTTR (month)" value={0} format="number" icon={Activity} color="#f5f1e8" />
+            <MetricCard label="MTTR (month)" value={0} format="number" icon={Activity} color="var(--primary)" />
             <MetricCard label="This Month" value={allIncidents.length} format="number" icon={TrendingDown} color="#39FF14" />
           </div>
 
@@ -126,7 +126,7 @@ export default function IncidentsPage() {
                                 <span className="font-mono" suppressHydrationWarning>{timeAgo(inc.createdAt)}</span>
                               </div>
                               {inc.severity === "P1" && inc.status === "open" && (
-                                <button className="mt-2 w-full text-[11px] font-medium text-[#f5f1e8] bg-[#f5f1e8]/10 rounded py-1.5 hover:bg-[#f5f1e8]/20 transition-colors" onClick={(e) => { e.stopPropagation(); toast.success("Incident acknowledged"); }}>
+                                <button className="mt-2 w-full text-[11px] font-medium text-brand bg-brand/10 rounded py-1.5 hover:bg-brand/20 transition-colors" onClick={(e) => { e.stopPropagation(); toast.success("Incident acknowledged"); }}>
                                   Acknowledge
                                 </button>
                               )}
@@ -172,7 +172,7 @@ export default function IncidentsPage() {
       {tab === "rules" && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <button className="flex items-center gap-1.5 text-xs font-medium text-[#f5f1e8] bg-[#f5f1e8]/10 rounded-lg px-3 py-1.5 hover:bg-[#f5f1e8]/20" onClick={() => setAlertRuleOpen(true)}>
+            <button className="flex items-center gap-1.5 text-xs font-medium text-brand bg-brand/10 rounded-lg px-3 py-1.5 hover:bg-brand/20" onClick={() => setAlertRuleOpen(true)}>
               <Plus className="size-3" /> Create Alert Rule
             </button>
           </div>
@@ -206,11 +206,11 @@ export default function IncidentsPage() {
                       </td>
                       <td className="px-4 py-2.5 text-xs text-muted-foreground font-mono">{rule.lastTriggered}</td>
                       <td className="px-4 py-2.5">
-                        <Switch checked={rule.enabled} className="data-[state=checked]:bg-[#f5f1e8]" onCheckedChange={() => toast.success(`Rule ${rule.enabled ? "paused" : "enabled"}`)} />
+                        <Switch checked={rule.enabled} className="data-[state=checked]:bg-brand" onCheckedChange={() => toast.success(`Rule ${rule.enabled ? "paused" : "enabled"}`)} />
                       </td>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2">
-                          <button className="text-muted-foreground hover:text-[#f5f1e8]"><Pencil className="size-3" /></button>
+                          <button className="text-muted-foreground hover:text-brand"><Pencil className="size-3" /></button>
                           <button className="text-muted-foreground hover:text-red-400"><Trash2 className="size-3" /></button>
                         </div>
                       </td>
@@ -242,12 +242,12 @@ export default function IncidentsPage() {
                   const end = new Date(slot.endDate);
                   const isCurrent = now >= start && now <= end;
                   return (
-                    <div key={slot.id} className={cn("flex items-center gap-3 rounded-lg px-4 py-3", isCurrent ? "bg-[#f5f1e8]/[0.06] border border-[#f5f1e8]/30" : "bg-muted/30")}>
+                    <div key={slot.id} className={cn("flex items-center gap-3 rounded-lg px-4 py-3", isCurrent ? "bg-brand/[0.06] border border-brand/30" : "bg-muted/30")}>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-foreground">{slot.member}</p>
                         <p className="text-[10px] text-muted-foreground font-mono">{start.toLocaleDateString()} — {end.toLocaleDateString()}</p>
                       </div>
-                      {isCurrent && <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold bg-[#f5f1e8]/20 text-[#f5f1e8]">ON-CALL NOW</span>}
+                      {isCurrent && <span className="inline-flex items-center rounded px-2 py-0.5 text-[9px] font-bold bg-brand/20 text-brand">ON-CALL NOW</span>}
                     </div>
                   );
                 })}
@@ -256,7 +256,7 @@ export default function IncidentsPage() {
           )}
 
           <GlassPanel padding="lg">
-            <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2"><Shield className="size-4 text-[#f5f1e8]" /> Escalation Policy</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2"><Shield className="size-4 text-brand" /> Escalation Policy</h3>
             <div className="space-y-2">
               {[
                 { level: 1, action: "Notify assigned on-call", delay: "Immediately" },
@@ -264,7 +264,7 @@ export default function IncidentsPage() {
                 { level: 3, action: "Notify all admins", delay: "After 30 min" },
               ].map((esc) => (
                 <div key={esc.level} className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/30">
-                  <span className="font-mono text-xs text-[#f5f1e8] w-6 shrink-0">L{esc.level}</span>
+                  <span className="font-mono text-xs text-brand w-6 shrink-0">L{esc.level}</span>
                   <span className="text-xs text-foreground flex-1">{esc.action}</span>
                   <span className="text-[10px] text-muted-foreground font-mono">{esc.delay}</span>
                 </div>
@@ -372,7 +372,7 @@ export default function IncidentsPage() {
               </div>
               <div className="flex justify-end gap-2 border-t border-border px-5 py-3">
                 <button className="px-3 py-1.5 text-xs rounded-lg border border-border text-muted-foreground hover:text-foreground" onClick={() => setAlertRuleOpen(false)}>Cancel</button>
-                <button className="px-4 py-1.5 text-xs rounded-lg bg-[#f5f1e8] text-black font-medium hover:bg-[#f5f1e8]/90" onClick={() => { setAlertRuleOpen(false); toast.success("Alert rule created"); }}>Create Rule</button>
+                <button className="px-4 py-1.5 text-xs rounded-lg bg-brand text-primary-foreground font-medium hover:bg-brand/90" onClick={() => { setAlertRuleOpen(false); toast.success("Alert rule created"); }}>Create Rule</button>
               </div>
             </div>
           </div>

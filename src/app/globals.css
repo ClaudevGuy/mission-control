@@ -13,14 +13,16 @@
 
   /* ═══ DARK THEME (default) — Mothership brand: monochrome cream primary, semantic palette ═══ */
   :root {
-    --background: #050507;
+    --background: #0B0B11;              /* Charcoal, not pitch — room for depth */
     --foreground: #f2f2f2;
-    --card: #0E0E13;
+    --card: #13131A;                    /* Slightly elevated from background */
     --card-foreground: #f2f2f2;
-    --popover: #0E0E13;
+    --popover: #13131A;
     --popover-foreground: #f2f2f2;
     --primary: #f5f1e8;                 /* Warm cream — architectural brand primary */
     --primary-foreground: #0a0908;      /* Dark ink — inverts cream buttons */
+    --brand-rgb: 245 241 232;           /* Cream (dark mode): matches --primary, opacity-ready */
+    --ink-rgb: 255 255 255;             /* Text/accent neutral (dark mode = white, opacity-ready) */
     --secondary: #1A1A24;
     --secondary-foreground: #f2f2f2;
     --muted: #16161F;
@@ -58,22 +60,22 @@
     --chart-5: #EC4899;
 
     /* Theme-specific */
-    --bg-primary: #050507;
-    --bg-secondary: #0D0D14;
-    --bg-card: #0E0E13;
+    --bg-primary: #0B0B11;
+    --bg-secondary: #11111A;
+    --bg-card: #13131A;
     --bg-hover: rgba(255, 255, 255, 0.03);
     --border-subtle: rgba(61, 58, 57, 0.6);
     --border-strong: rgba(61, 58, 57, 1);
     --text-primary: #f2f2f2;
     --text-secondary: #b8b3b0;
     --text-muted: #8b949e;
-    --glass-bg: rgba(5, 5, 7, 0.85);
+    --glass-bg: rgba(19, 19, 26, 0.75);
     --glass-border: #3d3a39;
     --glass-hover-border: rgba(61, 58, 57, 0.8);
     --card-shadow: 0 0 14px rgba(245, 241, 232, 0.035), 0 2px 6px rgba(0, 0, 0, 0.35);
     --card-shadow-hover: 0 0 22px rgba(245, 241, 232, 0.06), 0 3px 10px rgba(0, 0, 0, 0.4);
-    --sidebar-bg: linear-gradient(180deg, #0A0A10 0%, #050507 100%);
-    --topbar-bg: rgba(5, 5, 7, 0.85);
+    --sidebar-bg: linear-gradient(180deg, #0F0F16 0%, #0B0B11 100%);
+    --topbar-bg: rgba(11, 11, 17, 0.85);
     --dot-color: rgba(255, 255, 255, 0.08);
     --ambient-top: rgba(245, 241, 232, 0.035);
     --ambient-bottom-right: rgba(99, 102, 241, 0.03);
@@ -81,10 +83,10 @@
     --scrollbar-hover: rgba(61, 58, 57, 1);
 
     /* React Flow canvas */
-    --reactflow-bg: #050507;
+    --reactflow-bg: #0B0B11;
     --reactflow-dot: rgba(255, 255, 255, 0.10);
-    --reactflow-minimap-bg: #0D0D14;
-    --reactflow-controls-bg: #0D0D14;
+    --reactflow-minimap-bg: #13131A;
+    --reactflow-controls-bg: #13131A;
     --reactflow-controls-border: #3d3a39;
     --reactflow-controls-text: #8b949e;
   }
@@ -99,6 +101,8 @@
     --popover-foreground: #1A1A2E;
     --primary: #1A1A2E;                 /* Dark ink — inverted monochrome primary */
     --primary-foreground: #FFFFFF;
+    --brand-rgb: 26 26 46;              /* Dark ink (light mode): mirrors --primary */
+    --ink-rgb: 26 26 46;                /* Text/accent neutral (light mode = dark ink) */
     --secondary: #F0F0F5;
     --secondary-foreground: #1A1A2E;
     --muted: #EBEBF0;
@@ -279,6 +283,15 @@
 }
 .animate-segment-shimmer {
   animation: segment-shimmer 2.2s ease-in-out infinite;
+}
+
+/* Tutorial progress-bar — sliding highlight */
+@keyframes progress-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+.animate-progress-shimmer {
+  animation: progress-shimmer 2.8s ease-in-out infinite;
 }
 
 @keyframes fade-in-up {

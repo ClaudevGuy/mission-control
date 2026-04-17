@@ -150,7 +150,7 @@ export function ProjectSwitcher({ collapsed }: { collapsed: boolean }) {
                     )}
                   </div>
                   {isActive && (
-                    <Check className="size-3 shrink-0 text-[#f5f1e8]" />
+                    <Check className="size-3 shrink-0 text-brand" />
                   )}
                   {project.id !== "default" && (
                     <span
@@ -187,7 +187,7 @@ export function ProjectSwitcher({ collapsed }: { collapsed: boolean }) {
                 "hover:bg-white/[0.03]"
               )}
             >
-              <div className="flex size-[22px] items-center justify-center rounded-md border border-dashed border-border/40 group-hover/add:border-[#f5f1e8]/30 transition-colors shrink-0">
+              <div className="flex size-[22px] items-center justify-center rounded-md border border-dashed border-border/40 group-hover/add:border-brand/30 transition-colors shrink-0">
                 <Plus className="size-2.5" />
               </div>
               <span className="text-xs">Add project</span>

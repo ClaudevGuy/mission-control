@@ -50,7 +50,7 @@ const STATUS_COLOR: Record<string, string> = {
   completed: "text-green-400 bg-green-400/15 border-green-400/30",
   success: "text-green-400 bg-green-400/15 border-green-400/30",
   failed: "text-red-400 bg-red-400/15 border-red-400/30",
-  running: "text-[#f5f1e8] bg-[#f5f1e8]/15 border-[#f5f1e8]/30",
+  running: "text-brand bg-brand/15 border-brand/30",
   pending: "text-muted-foreground bg-muted/30 border-border",
   skipped: "text-muted-foreground bg-muted/30 border-border",
 };
@@ -113,7 +113,7 @@ export default function WorkflowRunDetailPage() {
       <div className="flex flex-col items-center gap-3 py-24 text-center">
         <AlertTriangle className="size-8 text-muted-foreground/30" />
         <p className="text-sm text-muted-foreground">{error || "Run not found"}</p>
-        <Link href="/workflows" className="text-xs text-[#f5f1e8] hover:underline">Back to Workflows</Link>
+        <Link href="/workflows" className="text-xs text-brand hover:underline">Back to Workflows</Link>
       </div>
     );
   }
@@ -142,8 +142,8 @@ export default function WorkflowRunDetailPage() {
               size="sm"
             />
             {isRunning && (
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-[#f5f1e8]">
-                <span className="size-1.5 rounded-full bg-[#f5f1e8] animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-medium text-brand">
+                <span className="size-1.5 rounded-full bg-brand animate-pulse" />
                 Live
               </span>
             )}
@@ -220,7 +220,7 @@ export default function WorkflowRunDetailPage() {
                     <div className="flex items-center pl-[18px]">
                       <div className={cn(
                         "w-px h-4",
-                        stepStatus === "pending" ? "bg-border" : "bg-[#f5f1e8]/30"
+                        stepStatus === "pending" ? "bg-border" : "bg-brand/30"
                       )} />
                     </div>
                   )}
@@ -229,7 +229,7 @@ export default function WorkflowRunDetailPage() {
                   <div
                     className={cn(
                       "flex items-start gap-3 rounded-lg border px-4 py-3 transition-colors cursor-pointer",
-                      isActive ? "border-[#f5f1e8]/30 bg-[#f5f1e8]/[0.03] animate-pulse" : "border-border hover:bg-muted/20"
+                      isActive ? "border-brand/30 bg-brand/[0.03] animate-pulse" : "border-border hover:bg-muted/20"
                     )}
                     onClick={() => toggleStep(i)}
                   >

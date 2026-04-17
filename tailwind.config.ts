@@ -22,6 +22,7 @@ const config: Config = {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        brand: "rgb(var(--brand-rgb) / <alpha-value>)",
         cyan: "#00D4FF",
         green: "#39FF14",
         amber: "#F59E0B",

@@ -109,7 +109,7 @@ export default function CostsPage() {
               className={cn("pb-2.5 text-sm font-medium transition-colors relative", tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}
             >
               {t.label}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -120,7 +120,7 @@ export default function CostsPage() {
         <div className="space-y-6">
           {/* Top stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <MetricCard label="This Month" value={thisMonth} format="currency" trend={((thisMonth - lastMonth) / lastMonth) * 100} icon={DollarSign} color="#f5f1e8" />
+            <MetricCard label="This Month" value={thisMonth} format="currency" trend={((thisMonth - lastMonth) / lastMonth) * 100} icon={DollarSign} color="var(--primary)" />
             <MetricCard label="Last Month" value={lastMonth} format="currency" icon={TrendingUp} color="#A855F7" />
             <GlassPanel padding="md">
               <div className="flex items-center gap-1.5 mb-2">
@@ -142,24 +142,24 @@ export default function CostsPage() {
 
           {/* Forecast — trailing 7-day projection */}
           <GlassPanel padding="md" className={cn(
-            willExceedBudget ? "border-red-500/30 bg-red-500/[0.04]" : "border-[#f5f1e8]/20 bg-[#f5f1e8]/[0.03]"
+            willExceedBudget ? "border-red-500/30 bg-red-500/[0.04]" : "border-brand/20 bg-brand/[0.03]"
           )}>
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3 min-w-0">
                 <div className={cn(
                   "flex size-10 shrink-0 items-center justify-center rounded-lg",
-                  willExceedBudget ? "bg-red-500/10" : "bg-[#f5f1e8]/10"
+                  willExceedBudget ? "bg-red-500/10" : "bg-brand/10"
                 )}>
                   {willExceedBudget ? (
                     <AlertTriangle className="size-5 text-red-400" />
                   ) : (
-                    <CheckCircle2 className="size-5 text-[#f5f1e8]" />
+                    <CheckCircle2 className="size-5 text-brand" />
                   )}
                 </div>
                 <div className="space-y-1 min-w-0">
                   <p className={cn(
                     "text-sm font-semibold",
-                    willExceedBudget ? "text-red-400" : "text-[#f5f1e8]"
+                    willExceedBudget ? "text-red-400" : "text-brand"
                   )}>
                     {hasTrailingWindow
                       ? <>At this pace: <span className="font-mono">{formatCurrency(projected)}</span> this month</>
@@ -172,7 +172,7 @@ export default function CostsPage() {
                       {trendPct !== 0 && prev7.length > 0 && (
                         <span className={cn(
                           "ml-2 font-mono",
-                          trendPct > 10 ? "text-amber-400" : trendPct < -10 ? "text-[#f5f1e8]" : "text-muted-foreground"
+                          trendPct > 10 ? "text-amber-400" : trendPct < -10 ? "text-brand" : "text-muted-foreground"
                         )}>
                           {trendPct > 0 ? "↑" : "↓"} {Math.abs(trendPct)}% vs prior week
                         </span>
@@ -187,7 +187,7 @@ export default function CostsPage() {
                         </span>
                       ) : (
                         <span className="text-muted-foreground">
-                          <span className="font-mono text-[#f5f1e8]">{formatCurrency(underBudget)}</span> under budget ({projectedBudgetPct}% of {formatCurrency(monthlyBudget)})
+                          <span className="font-mono text-brand">{formatCurrency(underBudget)}</span> under budget ({projectedBudgetPct}% of {formatCurrency(monthlyBudget)})
                         </span>
                       )}
                     </p>
@@ -204,7 +204,7 @@ export default function CostsPage() {
                     <div
                       className={cn(
                         "h-full rounded-full transition-all",
-                        willExceedBudget ? "bg-red-500" : projectedBudgetPct > 85 ? "bg-amber-500" : "bg-[#f5f1e8]"
+                        willExceedBudget ? "bg-red-500" : projectedBudgetPct > 85 ? "bg-amber-500" : "bg-brand"
                       )}
                       style={{ width: `${Math.min(projectedBudgetPct, 100)}%` }}
                     />
@@ -224,7 +224,7 @@ export default function CostsPage() {
                   <p className="text-xs text-muted-foreground mt-0.5">Last 30 days — dashed line = daily budget ({formatCurrency(DAILY_BUDGET)}/day)</p>
                 </div>
               </div>
-              <AreaChartWidget data={DAILY_COSTS} color="#f5f1e8" height={240} formatValue={(v) => formatCurrency(v)} />
+              <AreaChartWidget data={DAILY_COSTS} color="var(--primary)" height={240} formatValue={(v) => formatCurrency(v)} />
             </GlassPanel>
 
             {/* Donut + legend */}
@@ -299,7 +299,7 @@ export default function CostsPage() {
                   </div>
                   <div className="rounded-lg border border-border p-3">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Actual Cost</p>
-                    <p className="text-lg font-bold text-[#f5f1e8] mt-1">{formatCurrency(savings.actualCost)}</p>
+                    <p className="text-lg font-bold text-brand mt-1">{formatCurrency(savings.actualCost)}</p>
                   </div>
                   <div className="rounded-lg border border-border p-3">
                     <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Savings</p>
@@ -314,7 +314,7 @@ export default function CostsPage() {
                       <div className="bg-purple-500/70 transition-all" style={{ width: `${savings.tierDistribution.tier1.percent}%` }} title={`Tier 1: ${savings.tierDistribution.tier1.percent}%`} />
                     )}
                     {savings.tierDistribution.tier2.percent > 0 && (
-                      <div className="bg-[#f5f1e8]/70 transition-all" style={{ width: `${savings.tierDistribution.tier2.percent}%` }} title={`Tier 2: ${savings.tierDistribution.tier2.percent}%`} />
+                      <div className="bg-brand/70 transition-all" style={{ width: `${savings.tierDistribution.tier2.percent}%` }} title={`Tier 2: ${savings.tierDistribution.tier2.percent}%`} />
                     )}
                     {savings.tierDistribution.tier3.percent > 0 && (
                       <div className="bg-green-500/70 transition-all" style={{ width: `${savings.tierDistribution.tier3.percent}%` }} title={`Tier 3: ${savings.tierDistribution.tier3.percent}%`} />
@@ -322,7 +322,7 @@ export default function CostsPage() {
                   </div>
                   <div className="flex justify-between mt-1.5 text-[10px] text-muted-foreground">
                     <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-purple-500/70" />T1: {savings.tierDistribution.tier1.percent}%</span>
-                    <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-[#f5f1e8]/70" />T2: {savings.tierDistribution.tier2.percent}%</span>
+                    <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-brand/70" />T2: {savings.tierDistribution.tier2.percent}%</span>
                     <span className="flex items-center gap-1"><span className="size-2 rounded-full bg-green-500/70" />T3: {savings.tierDistribution.tier3.percent}%</span>
                     {savings.upgradeEvents > 0 && <span className="text-amber-400">{savings.upgradeEvents} upgrade{savings.upgradeEvents !== 1 ? "s" : ""}</span>}
                   </div>
@@ -431,7 +431,7 @@ export default function CostsPage() {
                 <h3 className="text-sm font-semibold text-foreground mb-3">Alert Threshold</h3>
                 <p className="text-xs text-muted-foreground mb-3">Notify when total spend reaches this % of budget</p>
                 <div className="flex items-center gap-4">
-                  <input type="range" min={50} max={100} value={budgetAlert} onChange={(e) => setBudgetAlert(Number(e.target.value))} className="flex-1 accent-[#f5f1e8]" />
+                  <input type="range" min={50} max={100} value={budgetAlert} onChange={(e) => setBudgetAlert(Number(e.target.value))} className="flex-1 accent-brand" />
                   <span className="font-mono text-sm text-foreground w-12 text-right">{budgetAlert}%</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-2">
@@ -460,7 +460,7 @@ export default function CostsPage() {
                     Set a monthly budget to track spending limits and get alerts before you overspend
                   </p>
                 </div>
-                <Button onClick={() => toast.success("Budget configuration coming soon")} className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black mt-2">
+                <Button onClick={() => toast.success("Budget configuration coming soon")} className="bg-brand hover:bg-brand/90 text-primary-foreground mt-2">
                   <Target className="size-4 mr-1.5" /> Set Monthly Budget
                 </Button>
               </div>

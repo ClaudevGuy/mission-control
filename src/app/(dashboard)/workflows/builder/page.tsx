@@ -337,7 +337,7 @@ function WorkflowBuilderInner() {
           <div className="relative group">
             <Button
               size="sm"
-              className="bg-[#f5f1e8] text-black hover:bg-[#f5f1e8]/90 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="bg-brand text-primary-foreground hover:bg-brand/90 disabled:opacity-40 disabled:cursor-not-allowed"
               disabled={!canActivate}
               onClick={handleActivate}
             >
@@ -375,7 +375,7 @@ function WorkflowBuilderInner() {
                 <p className="text-[10px] text-muted-foreground/40">Create an agent first to use in workflows</p>
                 <Link
                   href="/agents"
-                  className="inline-flex items-center gap-1 text-[11px] text-[#f5f1e8] hover:underline mt-1"
+                  className="inline-flex items-center gap-1 text-[11px] text-brand hover:underline mt-1"
                 >
                   <ArrowLeft className="size-3 rotate-180" />
                   Go to Agents
@@ -406,7 +406,7 @@ function WorkflowBuilderInner() {
                         className="flex items-center gap-2 w-full rounded-lg px-2 py-1.5 text-left hover:bg-muted/40 transition-colors group"
                       >
                         <GripVertical className="size-3 text-muted-foreground/20 group-hover:text-muted-foreground/50 shrink-0" />
-                        <Bot className="size-3.5 text-[#f5f1e8]/50 shrink-0" />
+                        <Bot className="size-3.5 text-brand/50 shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="text-xs font-medium text-foreground truncate">{agent.name}</p>
                           <div className="flex items-center gap-1">
@@ -414,7 +414,7 @@ function WorkflowBuilderInner() {
                             <span className="text-[9px] text-muted-foreground">{agent.model}</span>
                           </div>
                         </div>
-                        <Plus className="size-3 text-muted-foreground/20 group-hover:text-[#f5f1e8] shrink-0 transition-colors" />
+                        <Plus className="size-3 text-muted-foreground/20 group-hover:text-brand shrink-0 transition-colors" />
                       </button>
                     ))}
                   </div>
@@ -467,7 +467,7 @@ function WorkflowBuilderInner() {
             width: "100%",
             height: "100%",
             backgroundColor: isDark ? "#050507" : "#F5F5F8",
-            backgroundImage: `radial-gradient(circle, ${isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.07)"} 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(circle, ${isDark ? "rgb(var(--ink-rgb) / 0.10)" : "rgba(0,0,0,0.07)"} 1px, transparent 1px)`,
             backgroundSize: "24px 24px",
           }}
         >
@@ -492,7 +492,7 @@ function WorkflowBuilderInner() {
               showFitView={false}
               style={{
                 backgroundColor: isDark ? "#0D0D14" : "#FFFFFF",
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                border: `1px solid ${isDark ? "rgb(var(--ink-rgb) / 0.1)" : "rgba(0,0,0,0.1)"}`,
                 borderRadius: "8px",
                 boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.4)" : "0 2px 8px rgba(0,0,0,0.08)",
               }}
@@ -502,14 +502,14 @@ function WorkflowBuilderInner() {
             <MiniMap
               style={{
                 backgroundColor: isDark ? "#050507" : "#FFFFFF",
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.1)"}`,
+                border: `1px solid ${isDark ? "rgb(var(--ink-rgb) / 0.08)" : "rgba(0,0,0,0.1)"}`,
                 borderRadius: "8px",
                 boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.4)" : "0 2px 8px rgba(0,0,0,0.08)",
               }}
               nodeColor={(n) =>
                 n.type === "trigger" ? "#A855F7" :
                 n.type === "end" ? "#39FF14" :
-                "#f5f1e8"
+                "var(--primary)"
               }
               maskColor={isDark ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.08)"}
             />
@@ -521,7 +521,7 @@ function WorkflowBuilderInner() {
                 className="flex items-center justify-center size-7 rounded-md transition-colors"
                 style={{
                   backgroundColor: isDark ? "#0D0D14" : "#FFFFFF",
-                  border: `1px solid ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`,
+                  border: `1px solid ${isDark ? "rgb(var(--ink-rgb) / 0.1)" : "rgba(0,0,0,0.1)"}`,
                   color: isDark ? "#888" : "#555",
                   boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.4)" : "0 2px 8px rgba(0,0,0,0.08)",
                 }}
@@ -545,7 +545,7 @@ function WorkflowBuilderInner() {
                       </div>
                       <Link
                         href="/agents"
-                        className="inline-flex items-center gap-1.5 text-xs text-[#f5f1e8] hover:underline"
+                        className="inline-flex items-center gap-1.5 text-xs text-brand hover:underline"
                       >
                         Go to Agents
                         <ArrowLeft className="size-3 rotate-180" />

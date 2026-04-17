@@ -134,7 +134,7 @@ export default function ProfilePage() {
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={avatar} alt="Profile" className="size-20 rounded-full object-cover" />
             ) : (
-              <div className="size-20 rounded-full bg-[#f5f1e8]/15 flex items-center justify-center text-2xl font-bold text-[#f5f1e8]">
+              <div className="size-20 rounded-full bg-brand/15 flex items-center justify-center text-2xl font-bold text-brand">
                 {initials}
               </div>
             )}
@@ -148,7 +148,7 @@ export default function ProfilePage() {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1">
               <h2 className="text-xl font-semibold text-foreground">{name || "Set your name"}</h2>
-              <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-medium" style={{ background: "rgba(245, 241, 232,0.12)", border: "1px solid rgba(245, 241, 232,0.3)", color: "#f5f1e8" }}>
+              <span className="inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-medium" style={{ background: "rgb(var(--brand-rgb) / 0.12)", border: "1px solid rgb(var(--brand-rgb) / 0.3)", color: "var(--primary)" }}>
                 Admin
               </span>
             </div>
@@ -163,15 +163,15 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Full Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-[#f5f1e8]/50" />
+            <input value={name} onChange={(e) => setName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-brand/50" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Display Name</label>
-            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-[#f5f1e8]/50" />
+            <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-brand/50" />
           </div>
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Job Title</label>
-            <input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. CTO, Engineer, Designer" className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-[#f5f1e8]/50" />
+            <input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="e.g. CTO, Engineer, Designer" className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground/30 outline-none focus:border-brand/50" />
           </div>
           <div className="md:col-span-2">
             <label className="text-xs text-muted-foreground block mb-1">Timezone</label>
@@ -187,7 +187,7 @@ export default function ProfilePage() {
             </select>
           </div>
         </div>
-        <Button className="mt-4 bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={handleSave} disabled={saving}>
+        <Button className="mt-4 bg-brand hover:bg-brand/90 text-primary-foreground" onClick={handleSave} disabled={saving}>
           {saving ? <><Loader2 className="size-3.5 mr-1.5 animate-spin" />Saving...</> : "Save Changes"}
         </Button>
       </GlassPanel>
@@ -227,7 +227,7 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-        <Button className="mt-4 bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={handleSave} disabled={saving}>
+        <Button className="mt-4 bg-brand hover:bg-brand/90 text-primary-foreground" onClick={handleSave} disabled={saving}>
           {saving ? <><Loader2 className="size-3.5 mr-1.5 animate-spin" />Saving...</> : "Save Preferences"}
         </Button>
       </GlassPanel>

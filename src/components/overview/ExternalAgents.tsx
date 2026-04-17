@@ -25,7 +25,7 @@ interface ExternalAgent {
 const SOURCE_COLORS: Record<string, string> = {
   paperclip: "#F59E0B",
   crewai: "#A855F7",
-  langgraph: "#f5f1e8",
+  langgraph: "var(--primary)",
   autogen: "#60A5FA",
   custom: "#8b949e",
 };
@@ -79,7 +79,7 @@ export function ExternalAgentsWidget() {
         <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
           <Globe className="size-3" /> External Agents
         </p>
-        <Link href="/agents?tab=external" className="text-[10px] text-[#f5f1e8] hover:underline flex items-center gap-1">
+        <Link href="/agents?tab=external" className="text-[10px] text-brand hover:underline flex items-center gap-1">
           View all <ExternalLink className="size-2.5" />
         </Link>
       </div>
@@ -115,7 +115,7 @@ export function ExternalAgentsWidget() {
                 <span className="font-mono">{agent.totalRuns} runs</span>
                 {agent.totalCost > 0 && <span className="font-mono">{formatCurrency(agent.totalCost)}</span>}
                 {agent.recentEvents24h > 0 && (
-                  <span className="flex items-center gap-0.5 text-[#f5f1e8]">
+                  <span className="flex items-center gap-0.5 text-brand">
                     <Zap className="size-2.5" /> {agent.recentEvents24h} today
                   </span>
                 )}

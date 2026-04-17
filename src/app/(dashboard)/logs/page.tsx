@@ -21,8 +21,8 @@ import { toast } from "sonner";
 import type { LogLevel } from "@/types/common";
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string; rowBg: string }> = {
-  debug: { bg: "rgba(255,255,255,0.05)", text: "#888", rowBg: "" },
-  info: { bg: "rgba(245, 241, 232,0.1)", text: "#f5f1e8", rowBg: "" },
+  debug: { bg: "rgb(var(--ink-rgb) / 0.05)", text: "#888", rowBg: "" },
+  info: { bg: "rgb(var(--brand-rgb) / 0.1)", text: "var(--primary)", rowBg: "" },
   warn: { bg: "rgba(245,158,11,0.1)", text: "#F59E0B", rowBg: "bg-[#F59E0B]/[0.03]" },
   error: { bg: "rgba(239,68,68,0.1)", text: "#EF4444", rowBg: "bg-[#EF4444]/[0.03]" },
 };
@@ -93,7 +93,7 @@ export default function LogsPage() {
             <button key={t.id} onClick={() => setTab(t.id)} className={cn("pb-2.5 text-sm font-medium transition-colors relative", tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}>
               {t.label}
               {t.id === "errors" && <span className="ml-1.5 text-[10px] font-mono text-red-400">{errorGroups.length}</span>}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -164,7 +164,7 @@ export default function LogsPage() {
                         {log.level.toUpperCase()}
                       </span>
                       <span className="font-mono text-[11px] text-muted-foreground shrink-0 w-[72px]" suppressHydrationWarning>{formatTime(log.timestamp)}</span>
-                      <span className="text-[10px] font-mono text-[#f5f1e8]/60 shrink-0 w-[130px] truncate">{log.service}</span>
+                      <span className="text-[10px] font-mono text-brand/60 shrink-0 w-[130px] truncate">{log.service}</span>
                       <span className="text-xs text-foreground/80 flex-1 truncate">{log.message}</span>
                       <Copy className="size-3 text-transparent group-hover:text-muted-foreground/30 shrink-0 transition-colors" onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(log.message); toast.success("Copied"); }} />
                     </div>
@@ -175,7 +175,7 @@ export default function LogsPage() {
                           <pre className="text-[11px] font-mono text-muted-foreground bg-muted/30 rounded p-2">{JSON.stringify(log.metadata, null, 2)}</pre>
                         )}
                         <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
-                          {log.traceId && <span className="font-mono text-[#f5f1e8] cursor-pointer hover:underline">Trace: {log.traceId}</span>}
+                          {log.traceId && <span className="font-mono text-brand cursor-pointer hover:underline">Trace: {log.traceId}</span>}
                           {log.userId && <span>User: {log.userId}</span>}
                           {log.agentId && <span>Agent: {log.agentId}</span>}
                         </div>
@@ -187,7 +187,7 @@ export default function LogsPage() {
             </div>
             <div className="flex items-center justify-between px-4 py-2 border-t border-border text-[10px] text-muted-foreground">
               <span>{logs.length} logs shown</span>
-              <button className="text-[#f5f1e8] hover:underline" onClick={() => toast.success("Loading more logs...")}>Load more</button>
+              <button className="text-brand hover:underline" onClick={() => toast.success("Loading more logs...")}>Load more</button>
             </div>
           </GlassPanel>
         </div>
@@ -204,7 +204,7 @@ export default function LogsPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{eg.message}</p>
                     <div className="flex items-center gap-3 mt-1 text-[10px] text-muted-foreground">
-                      <span className="font-mono text-[#f5f1e8]/60">{eg.service}</span>
+                      <span className="font-mono text-brand/60">{eg.service}</span>
                       <span>First: <span className="font-mono" suppressHydrationWarning>{formatTime(eg.firstSeen)}</span></span>
                       <span>Last: <span className="font-mono" suppressHydrationWarning>{formatTime(eg.lastSeen)}</span></span>
                       <span>{eg.affectedUsers} users</span>
@@ -230,10 +230,10 @@ export default function LogsPage() {
         <div className="space-y-4">
           {/* Stats bar */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <MetricCard label="Calls Today" value={totalLLMCalls} format="number" icon={Zap} color="#f5f1e8" />
+            <MetricCard label="Calls Today" value={totalLLMCalls} format="number" icon={Zap} color="var(--primary)" />
             <MetricCard label="Total Tokens" value={totalTokens} format="tokens" icon={Zap} color="#A855F7" />
             <MetricCard label="Total Cost" value={totalLLMCost} format="currency" icon={DollarSign} color="#F59E0B" />
-            <MetricCard label="Avg Latency" value={avgLatency} format="number" icon={Clock} color="#f5f1e8" />
+            <MetricCard label="Avg Latency" value={avgLatency} format="number" icon={Clock} color="var(--primary)" />
             <MetricCard label="Error Rate" value={errorGroups.length > 0 && totalLLMCalls > 0 ? (errorGroups.length / totalLLMCalls) * 100 : 0} format="percent" icon={AlertTriangle} color="#EF4444" />
           </div>
 
@@ -258,7 +258,7 @@ export default function LogsPage() {
                           <span className={cn(
                             "inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold",
                             call.selectedTier === 1 ? "bg-purple-500/15 text-purple-400" :
-                            call.selectedTier === 2 ? "bg-[#f5f1e8]/15 text-[#f5f1e8]" :
+                            call.selectedTier === 2 ? "bg-brand/15 text-brand" :
                             "bg-green-500/15 text-green-400"
                           )}>
                             T{call.selectedTier}
@@ -272,7 +272,7 @@ export default function LogsPage() {
                       <td className="px-4 py-2.5 font-mono text-xs">{call.tokensOut.toLocaleString()}</td>
                       <td className="px-4 py-2.5 font-mono text-xs"><span className={call.latency > 5000 ? "text-amber-400" : "text-muted-foreground"}>{call.latency.toLocaleString()}ms</span></td>
                       <td className="px-4 py-2.5 font-mono text-xs">{formatCurrency(call.cost)}</td>
-                      <td className="px-4 py-2.5"><button className="text-[10px] text-[#f5f1e8] hover:underline">View</button></td>
+                      <td className="px-4 py-2.5"><button className="text-[10px] text-brand hover:underline">View</button></td>
                     </tr>
                     {expandedLLM === call.id && (
                       <tr className="border-b border-border">
@@ -339,7 +339,7 @@ export default function LogsPage() {
                 return (
                   <GlassPanel key={traceId} padding="none" className={hasError ? "border-l-[3px] border-l-[#EF4444]" : ""}>
                     <div className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors" onClick={() => setExpandedTrace(isExp ? null : traceId)}>
-                      <span className="font-mono text-xs text-[#f5f1e8] shrink-0">{traceId}</span>
+                      <span className="font-mono text-xs text-brand shrink-0">{traceId}</span>
                       <span className="text-xs text-foreground flex-1 truncate">{root.name}</span>
                       <span className="text-[10px] text-muted-foreground">{spans.length} spans</span>
                       <span className="font-mono text-xs text-foreground">{totalDuration}ms</span>
@@ -358,7 +358,7 @@ export default function LogsPage() {
                           </div>
                         </div>
                         {spans.map((span, i) => {
-                          const svcColors: Record<string, string> = { "api-gateway": "#f5f1e8", "auth-service": "#10A37F", "cache-service": "#F59E0B", "worker-service": "#A855F7" };
+                          const svcColors: Record<string, string> = { "api-gateway": "var(--primary)", "auth-service": "#10A37F", "cache-service": "#F59E0B", "worker-service": "#A855F7" };
                           const color = svcColors[span.service] || "#888";
                           const leftPct = totalDuration > 0 ? ((span.start || 0) / totalDuration) * 100 : 0;
                           const widthPct = totalDuration > 0 ? Math.max(((span.duration || 0) / totalDuration) * 100, 1) : 100;
@@ -464,7 +464,7 @@ function AgentRunsTab() {
 
   const statusInfo = (s: string): { label: string; color: string } => {
     const x = s.toLowerCase();
-    if (x === "run_success" || x === "success") return { label: "success", color: "#f5f1e8" };
+    if (x === "run_success" || x === "success") return { label: "success", color: "var(--primary)" };
     if (x === "run_failed" || x === "failed" || x === "error") return { label: "failed", color: "#EF4444" };
     if (x === "run_running" || x === "running") return { label: "running", color: "#F59E0B" };
     return { label: x, color: "#8b949e" };
@@ -523,7 +523,7 @@ function AgentRunsTab() {
       <GlassPanel padding="none" className="overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="size-5 rounded-full border-2 border-[#f5f1e8]/20 border-t-[#f5f1e8] animate-spin" />
+            <div className="size-5 rounded-full border-2 border-brand/20 border-t-brand animate-spin" />
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-16 text-center">
@@ -583,7 +583,7 @@ function AgentRunsTab() {
 
 function TierBadgeInline({ tier }: { tier: number }) {
   const color = tier === 1 ? "bg-purple-500/15 text-purple-400" :
-                tier === 2 ? "bg-[#f5f1e8]/15 text-[#f5f1e8]" :
+                tier === 2 ? "bg-brand/15 text-brand" :
                 "bg-green-500/15 text-green-400";
   return (
     <span className={cn("inline-flex items-center rounded-full px-1.5 py-0 text-[9px] font-bold", color)}>

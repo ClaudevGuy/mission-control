@@ -269,12 +269,12 @@ export default function PromptStudioPage() {
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
           <div className="flex items-center gap-2">
-            <FileCode className="size-4 text-[#f5f1e8]" />
+            <FileCode className="size-4 text-brand" />
             <span className="text-sm font-semibold text-foreground">Prompts</span>
           </div>
           <Button
             size="sm"
-            className="h-7 gap-1.5 bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black text-xs font-medium"
+            className="h-7 gap-1.5 bg-brand hover:bg-brand/90 text-primary-foreground text-xs font-medium"
             onClick={() => setCreateOpen(true)}
           >
             <Plus className="size-3" />
@@ -308,7 +308,7 @@ export default function PromptStudioPage() {
                 <p className="text-xs font-medium text-muted-foreground">No prompts yet</p>
                 <p className="text-[10px] text-muted-foreground/50 mt-1">Create your first prompt to start testing and versioning</p>
               </div>
-              <Button size="sm" className="h-7 text-xs bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={() => setCreateOpen(true)}>
+              <Button size="sm" className="h-7 text-xs bg-brand hover:bg-brand/90 text-primary-foreground" onClick={() => setCreateOpen(true)}>
                 <Plus className="size-3 mr-1" /> Create Prompt
               </Button>
             </div>
@@ -320,7 +320,7 @@ export default function PromptStudioPage() {
                 className={cn(
                   "w-full flex items-start gap-3 px-4 py-3 border-b border-border/20 text-left transition-colors",
                   selectedId === p.id
-                    ? "bg-[#f5f1e8]/[0.06] border-l-2 border-l-[#f5f1e8]"
+                    ? "bg-brand/[0.06] border-l-2 border-l-brand"
                     : "hover:bg-muted/20 border-l-2 border-l-transparent"
                 )}
               >
@@ -333,8 +333,8 @@ export default function PromptStudioPage() {
                     <span className="text-[10px] font-mono text-muted-foreground/50">v{p.version}</span>
                     {p.activeVersion && (
                       <span className="flex items-center gap-0.5">
-                        <span className="size-1.5 rounded-full bg-[#f5f1e8]" />
-                        <span className="text-[10px] text-[#f5f1e8]/70">Active</span>
+                        <span className="size-1.5 rounded-full bg-brand" />
+                        <span className="text-[10px] text-brand/70">Active</span>
                       </span>
                     )}
                     <span className="text-[10px] text-muted-foreground/30" suppressHydrationWarning>
@@ -368,7 +368,7 @@ export default function PromptStudioPage() {
                   className={cn(
                     "px-4 py-2.5 text-xs font-medium capitalize transition-colors border-b-2 -mb-px",
                     activeTab === tab
-                      ? "text-[#f5f1e8] border-[#f5f1e8]"
+                      ? "text-brand border-brand"
                       : "text-muted-foreground border-transparent hover:text-foreground"
                   )}
                 >
@@ -446,7 +446,7 @@ export default function PromptStudioPage() {
             />
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setCreateOpen(false)}>Cancel</Button>
-              <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={handleCreate}>Create</Button>
+              <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground" onClick={handleCreate}>Create</Button>
             </div>
           </div>
         </div>
@@ -492,7 +492,7 @@ function EditorTab({
             autoFocus
           />
         ) : (
-          <button onClick={() => setEditingName(true)} className="text-sm font-semibold text-foreground hover:text-[#f5f1e8] transition-colors">
+          <button onClick={() => setEditingName(true)} className="text-sm font-semibold text-foreground hover:text-brand transition-colors">
             {name}
           </button>
         )}
@@ -505,11 +505,11 @@ function EditorTab({
             </Button>
           )}
           {currentVersion.isActive && (
-            <span className="text-[10px] text-[#f5f1e8] font-medium bg-[#f5f1e8]/10 px-2 py-0.5 rounded">ACTIVE</span>
+            <span className="text-[10px] text-brand font-medium bg-brand/10 px-2 py-0.5 rounded">ACTIVE</span>
           )}
           <Button
             size="sm"
-            className="h-7 text-xs bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black gap-1"
+            className="h-7 text-xs bg-brand hover:bg-brand/90 text-primary-foreground gap-1"
             onClick={onSave}
             disabled={saving}
           >
@@ -606,7 +606,7 @@ function PlaygroundTab({
             step="0.1"
             value={temperature}
             onChange={(e) => setTemperature(parseFloat(e.target.value))}
-            className="w-full h-1.5 accent-[#f5f1e8]"
+            className="w-full h-1.5 accent-brand"
           />
         </div>
 
@@ -628,7 +628,7 @@ function PlaygroundTab({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Enter a test message..."
-            className="flex-1 min-h-[120px] resize-none rounded-md border border-border/50 bg-muted/20 p-3 text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-[#f5f1e8]/30"
+            className="flex-1 min-h-[120px] resize-none rounded-md border border-border/50 bg-muted/20 p-3 text-xs text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-brand/30"
           />
         </div>
 
@@ -638,7 +638,7 @@ function PlaygroundTab({
             <Square className="size-3" /> Stop
           </Button>
         ) : (
-          <Button className="h-9 w-full bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black text-xs gap-1.5" onClick={onRun}>
+          <Button className="h-9 w-full bg-brand hover:bg-brand/90 text-primary-foreground text-xs gap-1.5" onClick={onRun}>
             <Play className="size-3" /> Run Test
           </Button>
         )}
@@ -649,8 +649,8 @@ function PlaygroundTab({
         {/* Terminal header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#3d3a39]/30 shrink-0">
           <div className="flex items-center gap-2">
-            <Sparkles className="size-3 text-[#f5f1e8]/50" />
-            <span className="text-[10px] font-medium text-[#f5f1e8]/50 uppercase tracking-wider">Output</span>
+            <Sparkles className="size-3 text-brand/50" />
+            <span className="text-[10px] font-medium text-brand/50 uppercase tracking-wider">Output</span>
           </div>
           {output && (
             <button
@@ -670,13 +670,13 @@ function PlaygroundTab({
           {output || (
             <span className="text-muted-foreground/20">Run a test to see output here...</span>
           )}
-          {isStreaming && <span className="inline-block w-1.5 h-4 bg-[#f5f1e8] animate-pulse ml-0.5 align-text-bottom" />}
+          {isStreaming && <span className="inline-block w-1.5 h-4 bg-brand animate-pulse ml-0.5 align-text-bottom" />}
         </pre>
 
         {/* Stats bar */}
         {stats && (
           <div className="flex items-center gap-4 px-4 py-2 border-t border-[#3d3a39]/30 text-[10px] font-mono text-muted-foreground/50 shrink-0">
-            <span className="text-[#f5f1e8]">Completed</span>
+            <span className="text-brand">Completed</span>
             <span>{stats.tokensIn} in / {stats.tokensOut} out</span>
             <span>${stats.cost.toFixed(4)}</span>
             <span>{stats.duration}ms</span>
@@ -713,7 +713,7 @@ function VersionsTab({
               key={v.id}
               className={cn(
                 "flex items-start gap-4 px-5 py-4 border-b border-border/20",
-                v.isActive && "bg-[#f5f1e8]/[0.04] border-l-2 border-l-[#f5f1e8]",
+                v.isActive && "bg-brand/[0.04] border-l-2 border-l-brand",
                 !v.isActive && "border-l-2 border-l-transparent"
               )}
             >
@@ -723,7 +723,7 @@ function VersionsTab({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   {v.isActive && (
-                    <span className="text-[9px] font-bold text-[#f5f1e8] bg-[#f5f1e8]/10 px-1.5 py-0.5 rounded uppercase">Active</span>
+                    <span className="text-[9px] font-bold text-brand bg-brand/10 px-1.5 py-0.5 rounded uppercase">Active</span>
                   )}
                   <span className="text-[10px] text-muted-foreground/40" suppressHydrationWarning>{formatRelativeTime(v.createdAt)}</span>
                   {v.createdBy && <span className="text-[10px] text-muted-foreground/30">by {v.createdBy}</span>}
@@ -736,7 +736,7 @@ function VersionsTab({
                   {prevVersion && (
                     <button
                       onClick={() => setDiffPair([prevVersion, v])}
-                      className="text-[10px] text-muted-foreground/50 hover:text-[#f5f1e8] transition-colors"
+                      className="text-[10px] text-muted-foreground/50 hover:text-brand transition-colors"
                     >
                       View diff
                     </button>
@@ -744,7 +744,7 @@ function VersionsTab({
                   {!v.isActive && (
                     <button
                       onClick={() => onActivate(v.id)}
-                      className="text-[10px] text-muted-foreground/50 hover:text-[#f5f1e8] transition-colors"
+                      className="text-[10px] text-muted-foreground/50 hover:text-brand transition-colors"
                     >
                       Activate
                     </button>

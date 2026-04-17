@@ -40,8 +40,8 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
           <div className="relative flex size-12 items-center justify-center">
-            <div className="absolute inset-0 rounded-xl bg-[#f5f1e8]/[0.08]" />
-            <Zap className="relative z-10 size-6 text-[#f5f1e8]" strokeWidth={2.5} fill="rgba(245, 241, 232,0.15)" />
+            <div className="absolute inset-0 rounded-xl bg-brand/[0.08]" />
+            <Zap className="relative z-10 size-6 text-brand" strokeWidth={2.5} fill="rgb(var(--brand-rgb) / 0.15)" />
           </div>
           <h1 className="font-heading text-xl font-bold uppercase tracking-[0.12em] text-foreground">
             MOTHERSHIP
@@ -65,7 +65,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@company.com"
-              className="h-10 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#f5f1e8]/50 transition-colors"
+              className="h-10 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-brand/50 transition-colors"
             />
           </div>
 
@@ -77,14 +77,14 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="h-10 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-[#f5f1e8]/50 transition-colors"
+              className="h-10 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-brand/50 transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="h-10 w-full rounded-lg bg-[#f5f1e8] text-sm font-medium text-primary-foreground hover:bg-[#f5f1e8]/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="h-10 w-full rounded-lg bg-brand text-sm font-medium text-primary-foreground hover:bg-brand/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : null}
             {loading ? "Signing in..." : "Sign In"}
@@ -93,7 +93,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-[#f5f1e8] hover:underline">
+          <Link href="/register" className="text-brand hover:underline">
             Create one
           </Link>
         </p>

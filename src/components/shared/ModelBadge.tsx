@@ -35,15 +35,15 @@ const MODEL_STYLES: Record<string, ModelStyle> = {
     text: "#A855F7",
   },
   grok: {
-    bg: "rgba(255,255,255,0.08)",
-    border: "rgba(255,255,255,0.18)",
+    bg: "rgb(var(--ink-rgb) / 0.08)",
+    border: "rgb(var(--ink-rgb) / 0.18)",
     text: "#ffffff",
   },
 };
 
 const DEFAULT_STYLE: ModelStyle = {
-  bg: "rgba(255,255,255,0.05)",
-  border: "rgba(255,255,255,0.15)",
+  bg: "rgb(var(--ink-rgb) / 0.05)",
+  border: "rgb(var(--ink-rgb) / 0.15)",
   text: "#aaaaaa",
 };
 

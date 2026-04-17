@@ -73,7 +73,7 @@ export function EmptyState({
     ctaHref ? (
       <Link
         href={ctaHref}
-        className="inline-flex items-center gap-2 rounded-md bg-[#f5f1e8] px-4 py-2.5 text-xs font-semibold text-[#0a0908] shadow-[0_2px_10px_rgba(245,241,232,0.12)] transition-transform hover:-translate-y-px"
+        className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-[0_2px_10px_rgba(245,241,232,0.12)] transition-transform hover:-translate-y-px"
       >
         {primaryLabel}
         <ArrowRight className="size-3.5" />
@@ -81,7 +81,7 @@ export function EmptyState({
     ) : (
       <button
         onClick={primaryAction}
-        className="inline-flex items-center gap-2 rounded-md bg-[#f5f1e8] px-4 py-2.5 text-xs font-semibold text-[#0a0908] shadow-[0_2px_10px_rgba(245,241,232,0.12)] transition-transform hover:-translate-y-px"
+        className="inline-flex items-center gap-2 rounded-md bg-brand px-4 py-2.5 text-xs font-semibold text-primary-foreground shadow-[0_2px_10px_rgba(245,241,232,0.12)] transition-transform hover:-translate-y-px"
       >
         {primaryLabel}
         <ArrowRight className="size-3.5" />
@@ -93,14 +93,14 @@ export function EmptyState({
     secondaryHref ? (
       <Link
         href={secondaryHref}
-        className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-[#f5f1e8]/50 hover:bg-[#f5f1e8]/[0.03]"
+        className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-brand/50 hover:bg-brand/[0.03]"
       >
         {secondaryLabel}
       </Link>
     ) : (
       <button
         onClick={onSecondary}
-        className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-[#f5f1e8]/50 hover:bg-[#f5f1e8]/[0.03]"
+        className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2.5 text-xs font-medium text-foreground transition-colors hover:border-brand/50 hover:bg-brand/[0.03]"
       >
         {secondaryLabel}
       </button>
@@ -111,12 +111,12 @@ export function EmptyState({
     <div
       className={cn(
         "relative",
-        framed && "overflow-hidden rounded-lg border border-border/60 bg-[#f5f1e8]/[0.015]",
+        framed && "overflow-hidden rounded-lg border border-border/60 bg-brand/[0.015]",
         className,
       )}
     >
       {framed && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#f5f1e8]/25 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/25 to-transparent" />
       )}
 
       <div className="flex flex-col items-center px-6 py-14 text-center sm:py-16">
@@ -124,10 +124,10 @@ export function EmptyState({
         <div className="mb-6 flex items-center gap-5">
           <span className="h-px w-10 bg-border" />
           {Icon ? (
-            <Icon className="size-5 text-[#f5f1e8]/80" strokeWidth={1.5} />
+            <Icon className="size-5 text-brand/80" strokeWidth={1.5} />
           ) : (
             <span
-              className="font-heading italic text-[#f5f1e8]/80"
+              className="font-heading italic text-brand/80"
               style={{
                 fontSize: 22,
                 lineHeight: 1,
@@ -175,7 +175,7 @@ export function EmptyState({
       </div>
 
       {framed && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#f5f1e8]/25 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand/25 to-transparent" />
       )}
     </div>
   );

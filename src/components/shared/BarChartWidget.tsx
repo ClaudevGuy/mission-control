@@ -43,7 +43,7 @@ function ChartTooltip({
 
 export function BarChartWidget({
   data,
-  color = "#f5f1e8",
+  color = "var(--primary)",
   height = 200,
   formatValue = formatNumber,
 }: BarChartWidgetProps) {
@@ -52,24 +52,24 @@ export function BarChartWidget({
       <BarChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="rgba(255,255,255,0.04)"
+          stroke="rgb(var(--ink-rgb) / 0.04)"
           vertical={false}
         />
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}
+          tick={{ fontSize: 11, fill: "rgb(var(--ink-rgb) / 0.4)", fontFamily: "monospace" }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}
+          tick={{ fontSize: 11, fill: "rgb(var(--ink-rgb) / 0.4)", fontFamily: "monospace" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => formatValue(v)}
         />
         <Tooltip
           content={<ChartTooltip formatValue={formatValue} />}
-          cursor={{ fill: "rgba(255,255,255,0.03)" }}
+          cursor={{ fill: "rgb(var(--ink-rgb) / 0.03)" }}
         />
         <Bar
           dataKey="value"

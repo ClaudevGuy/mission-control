@@ -233,7 +233,7 @@ export function Topbar() {
               }
             >
               <Avatar className="size-7">
-                <AvatarFallback className="bg-[#f5f1e8]/10 text-xs font-medium text-[#f5f1e8]">
+                <AvatarFallback className="bg-brand/10 text-xs font-medium text-brand">
                   MC
                 </AvatarFallback>
               </Avatar>
@@ -329,7 +329,7 @@ export function Topbar() {
                     className={cn(
                       "group relative flex gap-3 px-5 py-3.5 border-b border-border/20 last:border-0 transition-colors",
                       n.actionUrl ? "cursor-pointer hover:bg-muted/20" : "cursor-default",
-                      !n.read && "bg-[#f5f1e8]/[0.04]"
+                      !n.read && "bg-brand/[0.04]"
                     )}
                   >
                     {/* Type icon */}
@@ -344,7 +344,7 @@ export function Topbar() {
                           {n.title}
                         </p>
                         {!n.read && (
-                          <span className="mt-1 size-1.5 shrink-0 rounded-full bg-[#f5f1e8]" />
+                          <span className="mt-1 size-1.5 shrink-0 rounded-full bg-brand" />
                         )}
                       </div>
                       <p className="mt-0.5 text-[11px] text-muted-foreground/60 line-clamp-1">{n.message}</p>

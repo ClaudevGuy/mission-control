@@ -25,7 +25,7 @@ const typeIcons: Record<string, React.ReactNode> = {
   cdn: <Wifi className="size-4 text-blue-400" />,
 };
 
-const gaugeColors = ["#f5f1e8", "#A855F7", "#F59E0B", "#22C55E"];
+const gaugeColors = ["var(--primary)", "#A855F7", "#F59E0B", "#22C55E"];
 const gaugeDetails: { actual: string; spark: number[] }[] = [];
 
 const AUTOSCALE_EVENTS: { service: string; direction: "up" | "down"; from: number; to: number; reason: string; ago: string }[] = [];
@@ -124,7 +124,7 @@ export default function InfrastructurePage() {
                   <span className="text-[10px] text-muted-foreground">1h latency</span>
                   <SparklineChart
                     data={latencySpark}
-                    color={svc.latency > 200 ? "#F59E0B" : "#f5f1e8"}
+                    color={svc.latency > 200 ? "#F59E0B" : "var(--primary)"}
                     width={80}
                     height={20}
                   />
@@ -185,7 +185,7 @@ export default function InfrastructurePage() {
       {/* ── Auto-scaling Events ── */}
       <div>
         <h2 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-          <Activity className="size-4 text-[#f5f1e8]" />
+          <Activity className="size-4 text-brand" />
           Auto-scaling Events
         </h2>
         <GlassPanel padding="lg">

@@ -48,7 +48,7 @@ export function GaugeWidget({
         <path
           d={trackPath}
           fill="none"
-          stroke="rgba(255,255,255,0.08)"
+          stroke="rgb(var(--ink-rgb) / 0.08)"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
         />

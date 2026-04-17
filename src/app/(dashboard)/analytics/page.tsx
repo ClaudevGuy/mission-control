@@ -82,7 +82,7 @@ export default function AnalyticsPage() {
               )}
             >
               {t.label}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -92,7 +92,7 @@ export default function AnalyticsPage() {
       {tab === "users" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="DAU" value={hasUserData ? overview.dau.toLocaleString() : "0"} icon={Users} color="#f5f1e8" />
+            <StatCard label="DAU" value={hasUserData ? overview.dau.toLocaleString() : "0"} icon={Users} color="var(--primary)" />
             <StatCard label="WAU" value={hasUserData ? overview.wau.toLocaleString() : "0"} icon={Users} color="#A855F7" />
             <StatCard label="MAU" value={hasUserData ? overview.mau.toLocaleString() : "0"} icon={Users} color="#F59E0B" />
             <StatCard label="Avg Session" value={overview.avgSession > 0 ? `${overview.avgSession}m` : "—"} icon={Clock} color="#39FF14" />
@@ -150,7 +150,7 @@ export default function AnalyticsPage() {
       {tab === "engagement" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Pages / Session" value={overview.pagesPerSession > 0 ? overview.pagesPerSession.toFixed(1) : "—"} icon={MousePointer} color="#f5f1e8" />
+            <StatCard label="Pages / Session" value={overview.pagesPerSession > 0 ? overview.pagesPerSession.toFixed(1) : "—"} icon={MousePointer} color="var(--primary)" />
             <StatCard label="Bounce Rate" value={overview.bounceRate > 0 ? `${overview.bounceRate}%` : "—"} icon={Activity} color="#EF4444" />
             <StatCard label="Avg Session" value={overview.avgSession > 0 ? `${overview.avgSession}m` : "—"} icon={Clock} color="#A855F7" />
             <StatCard label="Features Used" value={features.length > 0 ? features.length.toString() : "0"} icon={BarChart3} color="#F59E0B" />
@@ -168,7 +168,7 @@ export default function AnalyticsPage() {
                     <div key={i} className="flex items-center gap-3">
                       <span className="w-32 text-xs text-muted-foreground truncate">{f.feature}</span>
                       <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                        <div className="h-full rounded-full bg-[#f5f1e8]" style={{ width: `${pct}%` }} />
+                        <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="w-12 text-right text-xs font-mono text-muted-foreground">{(f.usage || 0).toLocaleString()}</span>
                     </div>
@@ -192,7 +192,7 @@ export default function AnalyticsPage() {
                     <div key={i} className="flex items-center gap-3">
                       <span className="w-28 text-xs text-muted-foreground truncate">{step.stage}</span>
                       <div className="flex-1 h-3 rounded-full bg-muted overflow-hidden">
-                        <div className="h-full rounded-full bg-gradient-to-r from-[#f5f1e8] to-[#A855F7]" style={{ width: `${pct}%` }} />
+                        <div className="h-full rounded-full bg-gradient-to-r from-brand to-[#A855F7]" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="w-16 text-right text-xs font-mono text-muted-foreground">{step.count.toLocaleString()}</span>
                       <span className="w-10 text-right text-xs font-mono text-muted-foreground/50">{pct.toFixed(0)}%</span>
@@ -212,7 +212,7 @@ export default function AnalyticsPage() {
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <StatCard label="Metrics Tracked" value={growth.length > 0 ? growth.length.toString() : "0"} icon={TrendingUp} color="#39FF14" />
-            <StatCard label="DAU" value={overview.dau > 0 ? overview.dau.toLocaleString() : "0"} icon={Users} color="#f5f1e8" />
+            <StatCard label="DAU" value={overview.dau > 0 ? overview.dau.toLocaleString() : "0"} icon={Users} color="var(--primary)" />
             <StatCard label="WAU" value={overview.wau > 0 ? overview.wau.toLocaleString() : "0"} icon={Users} color="#A855F7" />
             <StatCard label="MAU" value={overview.mau > 0 ? overview.mau.toLocaleString() : "0"} icon={Users} color="#F59E0B" />
           </div>
@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
       {tab === "agents" && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard label="Total Agents" value={agents.length.toString()} icon={Bot} color="#f5f1e8" />
+            <StatCard label="Total Agents" value={agents.length.toString()} icon={Bot} color="var(--primary)" />
             <StatCard label="Active" value={agents.filter((a) => a.status === "running").length.toString()} icon={Bot} color="#39FF14" />
             <StatCard label="Total Runs" value={agents.reduce((s, a) => s + a.tasksCompleted, 0).toLocaleString()} icon={Activity} color="#A855F7" />
             <StatCard label="Total Cost" value={`$${agents.reduce((s, a) => s + a.totalCost, 0).toFixed(2)}`} icon={BarChart3} color="#F59E0B" />
@@ -304,7 +304,7 @@ export default function AnalyticsPage() {
                   <div key={i} className="flex items-center gap-3">
                     <span className="w-20 text-xs text-muted-foreground">{d.date ? new Date(d.date).toLocaleDateString("en-US", { weekday: "short" }) : ""}</span>
                     <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full bg-[#f5f1e8]" style={{ width: `${Math.min((d.value / Math.max(...dailyCosts.slice(-7).map((x) => x.value), 1)) * 100, 100)}%` }} />
+                      <div className="h-full rounded-full bg-brand" style={{ width: `${Math.min((d.value / Math.max(...dailyCosts.slice(-7).map((x) => x.value), 1)) * 100, 100)}%` }} />
                     </div>
                     <span className="w-16 text-right text-xs font-mono text-muted-foreground">${d.value.toFixed(2)}</span>
                   </div>
@@ -383,7 +383,7 @@ export default function AnalyticsPage() {
                           return (
                             <div
                               key={i}
-                              className={cn("flex-1 rounded-sm transition-colors", isLast ? (val < avgScore - 10 ? "bg-red-400" : "bg-[#f5f1e8]") : "bg-muted-foreground/15")}
+                              className={cn("flex-1 rounded-sm transition-colors", isLast ? (val < avgScore - 10 ? "bg-red-400" : "bg-brand") : "bg-muted-foreground/15")}
                               style={{ height: `${height}px` }}
                             />
                           );
@@ -405,7 +405,7 @@ export default function AnalyticsPage() {
               {/* Drift explanation */}
               <GlassPanel padding="lg">
                 <div className="flex items-start gap-3">
-                  <HeartPulse className="size-4 text-[#f5f1e8] shrink-0 mt-0.5" />
+                  <HeartPulse className="size-4 text-brand shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-xs font-semibold text-foreground">How health scores work</h4>
                     <p className="text-[10px] text-muted-foreground/60 mt-1 leading-relaxed">

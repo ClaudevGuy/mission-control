@@ -79,7 +79,7 @@ function DeployModal({ open, onClose }: { open: boolean; onClose: () => void }) 
         <div className="w-full max-w-md rounded-lg border border-border bg-card shadow-2xl">
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div className="flex items-center gap-2">
-              <Rocket className="size-4 text-[#f5f1e8]" />
+              <Rocket className="size-4 text-brand" />
               <h2 className="text-sm font-semibold text-foreground">New Deployment</h2>
             </div>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
@@ -104,7 +104,7 @@ function DeployModal({ open, onClose }: { open: boolean; onClose: () => void }) 
                     className={cn(
                       "rounded-md px-2 py-1.5 text-xs font-medium capitalize transition-all",
                       environment === env
-                        ? "bg-[#f5f1e8]/10 text-[#f5f1e8] border border-[#f5f1e8]/30"
+                        ? "bg-brand/10 text-brand border border-brand/30"
                         : "bg-muted/30 text-muted-foreground border border-border hover:border-border/80"
                     )}
                   >
@@ -116,7 +116,7 @@ function DeployModal({ open, onClose }: { open: boolean; onClose: () => void }) 
           </div>
           <div className="flex justify-end gap-2 border-t border-border px-5 py-3">
             <Button variant="outline" size="sm" onClick={onClose} disabled={deploying}>Cancel</Button>
-            <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={handleDeploy} disabled={deploying || !service.trim() || !version.trim()}>
+            <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground" onClick={handleDeploy} disabled={deploying || !service.trim() || !version.trim()}>
               {deploying ? <><Loader2 className="size-3.5 mr-1.5 animate-spin" />Deploying...</> : <><Rocket className="size-3.5 mr-1.5" />Deploy</>}
             </Button>
           </div>
@@ -145,12 +145,12 @@ export default function DeploymentsPage() {
   const [envCardsOpen, setEnvCardsOpen] = useState(true);
 
   const SERVICE_ICONS: Record<string, { icon: typeof Globe; color: string }> = {
-    "api-gateway": { icon: Globe, color: "#f5f1e8" },
+    "api-gateway": { icon: Globe, color: "var(--primary)" },
     "web-app": { icon: Layers, color: "#A855F7" },
     "worker-service": { icon: Cog, color: "#F59E0B" },
     "analytics-service": { icon: BarChart3, color: "#39FF14" },
     "notification-service": { icon: Radio, color: "#EC4899" },
-    "ml-pipeline": { icon: Database, color: "#f5f1e8" },
+    "ml-pipeline": { icon: Database, color: "var(--primary)" },
     "cache-service": { icon: Database, color: "#F59E0B" },
     "search-service": { icon: Search, color: "#4285F4" },
     "auth-service": { icon: Shield, color: "#10A37F" },
@@ -188,7 +188,7 @@ export default function DeploymentsPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Deployments" description="Track deployment pipelines, rollouts, and release history">
-        <Button size="default" onClick={() => setDeployOpen(true)} className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black">
+        <Button size="default" onClick={() => setDeployOpen(true)} className="bg-brand hover:bg-brand/90 text-primary-foreground">
           <Rocket className="size-4 mr-2" /> Deploy
         </Button>
       </PageHeader>
@@ -203,7 +203,7 @@ export default function DeploymentsPage() {
               className={cn("pb-2.5 text-sm font-medium transition-colors relative", tab === t.id ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}
             >
               {t.label}
-              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -223,7 +223,7 @@ export default function DeploymentsPage() {
                   Deploy your first service to see the pipeline matrix
                 </p>
               </div>
-              <Button onClick={() => setDeployOpen(true)} className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black mt-2">
+              <Button onClick={() => setDeployOpen(true)} className="bg-brand hover:bg-brand/90 text-primary-foreground mt-2">
                 <Rocket className="size-4 mr-1.5" /> Create First Deployment
               </Button>
             </div>
@@ -254,7 +254,7 @@ export default function DeploymentsPage() {
                             <tr className={cn("border-b border-border/50 transition-colors cursor-pointer h-[80px]", isExpanded ? "bg-muted/30" : "hover:bg-muted/20")} onClick={() => setExpandedRow(isExpanded ? null : service)}>
                               <td className="px-4 sticky left-0 bg-card/95 backdrop-blur-sm z-10 min-w-[200px] w-[200px]">
                                 <div className="flex items-center gap-2.5">
-                                  {isExpanded ? <ChevronDown className="size-3 text-[#f5f1e8] shrink-0" /> : <ChevronRight className="size-3 text-muted-foreground/50 shrink-0" />}
+                                  {isExpanded ? <ChevronDown className="size-3 text-brand shrink-0" /> : <ChevronRight className="size-3 text-muted-foreground/50 shrink-0" />}
                                   {(() => { const svcInfo = SERVICE_ICONS[service]; const SvcIcon = svcInfo?.icon || Globe; const svcColor = svcInfo?.color || "#666"; return <SvcIcon className="size-3.5 shrink-0" style={{ color: svcColor }} />; })()}
                                   <span className="font-mono text-[13px] font-medium text-foreground truncate whitespace-nowrap">{service}</span>
                                 </div>
@@ -267,7 +267,7 @@ export default function DeploymentsPage() {
                                     <div className={cn("group/cell relative rounded-lg px-2.5 py-2 transition-all bg-muted/30 hover:bg-muted/40", d.status === "failed" && "border-l-[3px] border-l-[#EF4444]")}>
                                       <div className="flex items-center gap-2 mb-0.5">
                                         <StatusBadge status={d.status} size="sm" />
-                                        <span className="font-mono text-[11px] text-[#f5f1e8]">{d.version}</span>
+                                        <span className="font-mono text-[11px] text-brand">{d.version}</span>
                                       </div>
                                       <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>{formatRelativeTime(d.timestamp)}</span>
                                       {(d.status === "success" || d.status === "failed") && (
@@ -284,9 +284,9 @@ export default function DeploymentsPage() {
                               <tr className="border-b border-border/50 bg-muted/20">
                                 <td colSpan={5} className="px-4 py-3">
                                   <div className="flex items-start gap-8 pl-5 text-xs">
-                                    <div><span className="text-muted-foreground">Triggered by</span><p className="flex items-center gap-1 mt-0.5 text-foreground">{anyDeploy.isAgent ? <Bot className="size-3 text-[#f5f1e8]" /> : <User className="size-3" />}{anyDeploy.triggeredBy}</p></div>
+                                    <div><span className="text-muted-foreground">Triggered by</span><p className="flex items-center gap-1 mt-0.5 text-foreground">{anyDeploy.isAgent ? <Bot className="size-3 text-brand" /> : <User className="size-3" />}{anyDeploy.triggeredBy}</p></div>
                                     <div><span className="text-muted-foreground">Duration</span><p className="font-mono text-foreground mt-0.5">{anyDeploy.duration > 0 ? formatDuration(anyDeploy.duration * 1000) : "Instant"}</p></div>
-                                    <div><span className="text-muted-foreground">Commit</span><p className="font-mono text-[#f5f1e8] mt-0.5">{anyDeploy.commitHash || "—"}</p></div>
+                                    <div><span className="text-muted-foreground">Commit</span><p className="font-mono text-brand mt-0.5">{anyDeploy.commitHash || "—"}</p></div>
                                     <div className="flex-1"><span className="text-muted-foreground">Changelog</span><p className="text-foreground mt-0.5">{anyDeploy.changelog || "—"}</p></div>
                                   </div>
                                 </td>
@@ -366,13 +366,13 @@ export default function DeploymentsPage() {
                   {deployments.map((d) => (
                     <tr key={d.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                       <td className="px-4 py-2.5 font-medium text-foreground">{d.service}</td>
-                      <td className="px-4 py-2.5 font-mono text-xs text-[#f5f1e8]">{d.version}</td>
+                      <td className="px-4 py-2.5 font-mono text-xs text-brand">{d.version}</td>
                       <td className="px-4 py-2.5 text-xs text-muted-foreground capitalize">{d.environment}</td>
                       <td className="px-4 py-2.5"><StatusBadge status={d.status} size="sm" /></td>
                       <td className="px-4 py-2.5 font-mono text-xs text-muted-foreground">{d.duration > 0 ? formatDuration(d.duration * 1000) : "—"}</td>
                       <td className="px-4 py-2.5">
                         <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          {d.isAgent ? <Bot className="size-3 text-[#f5f1e8]" /> : <User className="size-3" />}
+                          {d.isAgent ? <Bot className="size-3 text-brand" /> : <User className="size-3" />}
                           {d.triggeredBy}
                         </span>
                       </td>
@@ -419,7 +419,7 @@ export default function DeploymentsPage() {
                       <td className="px-4 py-2.5 text-xs text-muted-foreground max-w-[240px] truncate">{ff.description}</td>
                       {(["development", "staging", "production"] as Environment[]).map((env) => (
                         <td key={env} className="px-4 py-2.5">
-                          <Switch checked={ff.environments[env]} onCheckedChange={() => toggleFeatureFlag(ff.id, env)} className="data-[state=checked]:bg-[#f5f1e8]" />
+                          <Switch checked={ff.environments[env]} onCheckedChange={() => toggleFeatureFlag(ff.id, env)} className="data-[state=checked]:bg-brand" />
                         </td>
                       ))}
                       <td className="px-4 py-2.5 font-mono text-[10px] text-muted-foreground">—</td>

@@ -65,7 +65,7 @@ export function ChartCard({
       <div className="relative">{children}</div>
 
       <div className="pointer-events-none absolute inset-0 rounded-xl opacity-30" style={{
-        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(245, 241, 232,0.03) 2px, rgba(245, 241, 232,0.03) 4px)'
+        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgb(var(--brand-rgb) / 0.03) 2px, rgb(var(--brand-rgb) / 0.03) 4px)'
       }} />
     </GlassPanel>
   );

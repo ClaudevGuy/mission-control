@@ -88,7 +88,7 @@ export function CreateApiKeyModal({ open, onOpenChange, onKeyCreated }: Props) {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div className="flex items-center gap-2">
-              <Key className="size-4 text-[#f5f1e8]" />
+              <Key className="size-4 text-brand" />
               <h2 className="text-sm font-semibold text-foreground">
                 {createdKey ? "API Key Created" : "Create API Key"}
               </h2>
@@ -116,7 +116,7 @@ export function CreateApiKeyModal({ open, onOpenChange, onKeyCreated }: Props) {
               </div>
 
               <div className="flex gap-2">
-                <Button className="flex-1 bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={handleCopy}>
+                <Button className="flex-1 bg-brand hover:bg-brand/90 text-primary-foreground" onClick={handleCopy}>
                   <Copy className="size-3.5 mr-1.5" /> Copy Key
                 </Button>
                 <Button variant="outline" onClick={handleDone}>Done</Button>
@@ -181,7 +181,7 @@ export function CreateApiKeyModal({ open, onOpenChange, onKeyCreated }: Props) {
                 <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} disabled={loading}>Cancel</Button>
                 <Button
                   size="sm"
-                  className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+                  className="bg-brand hover:bg-brand/90 text-primary-foreground"
                   onClick={handleCreate}
                   disabled={!name.trim() || scopes.length === 0 || loading}
                 >

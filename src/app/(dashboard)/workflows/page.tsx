@@ -73,7 +73,7 @@ function RunWorkflowPanel({ workflow, onClose }: { workflow: Workflow; onClose: 
       <div className="w-full max-w-xl rounded-xl border border-border bg-card shadow-2xl">
         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
           <div className="flex items-center gap-2">
-            <Play className="size-4 text-[#f5f1e8]" />
+            <Play className="size-4 text-brand" />
             <span className="text-sm font-semibold">Run: {workflow.name}</span>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-lg leading-none">&times;</button>
@@ -83,7 +83,7 @@ function RunWorkflowPanel({ workflow, onClose }: { workflow: Workflow; onClose: 
           <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-muted/20 p-3">
             {workflow.steps.map((step, i) => (
               <React.Fragment key={step.id}>
-                <span className="rounded bg-[#f5f1e8]/10 border border-[#f5f1e8]/20 px-2 py-0.5 text-xs font-medium text-[#f5f1e8]">
+                <span className="rounded bg-brand/10 border border-brand/20 px-2 py-0.5 text-xs font-medium text-brand">
                   {step.agentName}
                 </span>
                 {i < workflow.steps.length - 1 && (
@@ -96,7 +96,7 @@ function RunWorkflowPanel({ workflow, onClose }: { workflow: Workflow; onClose: 
           <div>
             <p className="text-xs text-muted-foreground mb-1.5">Initial input</p>
             <textarea
-              className="w-full rounded-lg border border-border bg-muted/20 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-[#f5f1e8]/50 resize-none"
+              className="w-full rounded-lg border border-border bg-muted/20 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-brand/50 resize-none"
               rows={3}
               placeholder="Enter the initial prompt for the pipeline..."
               value={input}
@@ -108,7 +108,7 @@ function RunWorkflowPanel({ workflow, onClose }: { workflow: Workflow; onClose: 
             <div className="space-y-2">
               {results.map((r, i) => (
                 <div key={i} className="rounded-lg border border-border bg-muted/20 p-3">
-                  <p className="text-[10px] font-semibold text-[#f5f1e8] mb-1">Step {i + 1}: {r.agentName}</p>
+                  <p className="text-[10px] font-semibold text-brand mb-1">Step {i + 1}: {r.agentName}</p>
                   <p className="text-xs text-foreground/80 whitespace-pre-wrap max-h-24 overflow-y-auto">{r.output}</p>
                 </div>
               ))}
@@ -121,7 +121,7 @@ function RunWorkflowPanel({ workflow, onClose }: { workflow: Workflow; onClose: 
           <Button
             onClick={handleRun}
             disabled={!input.trim() || isRunning}
-            className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+            className="bg-brand hover:bg-brand/90 text-primary-foreground"
           >
             {isRunning ? (
               <><Loader2 className="size-3.5 mr-1.5 animate-spin" />Running...</>
@@ -211,7 +211,7 @@ function WorkflowCard({
         <div className="px-3 py-2 border-t border-border/30 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
             size="sm"
-            className="flex-1 bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black h-7 text-[11px]"
+            className="flex-1 bg-brand hover:bg-brand/90 text-primary-foreground h-7 text-[11px]"
             onClick={onRun}
           >
             <Play className="size-3 mr-1" />
@@ -294,7 +294,7 @@ export default function WorkflowsPage() {
           <Button
             onClick={() => setCreateOpen(true)}
             size="sm"
-            className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+            className="bg-brand hover:bg-brand/90 text-primary-foreground"
           >
             <Plus className="size-3.5 mr-1.5" />
             New Workflow
@@ -349,12 +349,12 @@ export default function WorkflowsPage() {
           <div className="flex items-center gap-3 mt-2">
             <Button
               onClick={() => setCreateOpen(true)}
-              className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+              className="bg-brand hover:bg-brand/90 text-primary-foreground"
             >
               <Plus className="size-4 mr-1.5" />
               Create your first workflow
             </Button>
-            <Link href="/tutorial" className="text-xs text-muted-foreground hover:text-[#f5f1e8] transition-colors">
+            <Link href="/tutorial" className="text-xs text-muted-foreground hover:text-brand transition-colors">
               Learn about workflows &rarr;
             </Link>
           </div>

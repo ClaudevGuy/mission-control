@@ -109,7 +109,7 @@ export default function EvalSuiteDetailPage() {
           <h1 className="text-xl font-bold text-foreground">{suite.name}</h1>
           {agent && <div className="flex items-center gap-1.5 mt-1"><Bot className="size-3 text-muted-foreground/40" /><span className="text-xs text-muted-foreground/50">{agent.name}</span></div>}
         </div>
-        <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black gap-1.5" onClick={handleRun} disabled={running}>
+        <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground gap-1.5" onClick={handleRun} disabled={running}>
           {running ? <><Loader2 className="size-3 animate-spin" /> Running...</> : <><Play className="size-3" /> Run Now</>}
         </Button>
       </div>
@@ -120,7 +120,7 @@ export default function EvalSuiteDetailPage() {
           {(["overview", "cases", "history"] as const).map(t => (
             <button key={t} onClick={() => setTab(t)} className={cn("pb-2.5 text-sm font-medium capitalize relative transition-colors", tab === t ? "text-foreground" : "text-muted-foreground hover:text-foreground/70")}>
               {t === "cases" ? "Test Cases" : t === "history" ? "Run History" : "Overview"}
-              {tab === t && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />}
+              {tab === t && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />}
             </button>
           ))}
         </div>
@@ -197,7 +197,7 @@ export default function EvalSuiteDetailPage() {
           </div>
 
           {addOpen && (
-            <div className="rounded-lg border border-[#f5f1e8]/20 bg-[#f5f1e8]/[0.02] p-4 space-y-3">
+            <div className="rounded-lg border border-brand/20 bg-brand/[0.02] p-4 space-y-3">
               <Textarea value={newInput} onChange={(e) => setNewInput(e.target.value)} placeholder="Agent input / task..." className="text-xs min-h-[60px]" />
               <Textarea value={newExpected} onChange={(e) => setNewExpected(e.target.value)} placeholder="Expected output (optional)..." className="text-xs min-h-[40px]" />
               <div className="flex gap-2">
@@ -205,13 +205,13 @@ export default function EvalSuiteDetailPage() {
               </div>
               <div className="flex flex-wrap gap-1">
                 {newCriteria.map((c, i) => (
-                  <span key={i} className="flex items-center gap-1 rounded-full bg-[#f5f1e8]/10 px-2 py-0.5 text-[10px] text-[#f5f1e8]">
+                  <span key={i} className="flex items-center gap-1 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] text-brand">
                     {c} <button onClick={() => setNewCriteria(newCriteria.filter((_, j) => j !== i))}>×</button>
                   </span>
                 ))}
               </div>
               <div className="flex gap-2">
-                <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black text-xs" onClick={addCase}>Add Case</Button>
+                <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground text-xs" onClick={addCase}>Add Case</Button>
                 <Button size="sm" variant="ghost" className="text-xs" onClick={() => setAddOpen(false)}>Cancel</Button>
               </div>
             </div>

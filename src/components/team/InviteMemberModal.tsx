@@ -66,7 +66,7 @@ export function InviteMemberModal({ open, onOpenChange, onInviteSent }: Props) {
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div className="flex items-center gap-2">
-              <Mail className="size-4 text-[#f5f1e8]" />
+              <Mail className="size-4 text-brand" />
               <h2 className="text-sm font-semibold text-foreground">Invite Team Member</h2>
             </div>
             <button onClick={() => onOpenChange(false)} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -119,7 +119,7 @@ export function InviteMemberModal({ open, onOpenChange, onInviteSent }: Props) {
             </Button>
             <Button
               size="sm"
-              className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+              className="bg-brand hover:bg-brand/90 text-primary-foreground"
               onClick={handleSubmit}
               disabled={!email.trim() || loading}
             >

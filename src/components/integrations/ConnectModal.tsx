@@ -253,7 +253,7 @@ export function ConnectModal({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-[#f5f1e8] text-primary-foreground hover:bg-[#f5f1e8]/80"
+                className="bg-brand text-primary-foreground hover:bg-brand/80"
               >
                 {isSubmitting ? (
                   <>

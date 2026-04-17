@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 // ══════════════════════════════════════════════════════════════════════════════
 
 // Monochrome brand + strict semantic palette
-const BRAND = "#f5f1e8";      // warm cream — primary / interactive / active
+const BRAND = "var(--primary)";      // warm cream — primary / interactive / active
 const EMERALD = "#00d992";    // semantic success — savings, passing, live
 const OXBLOOD = BRAND;        // alias retained so mini-plates below keep compiling
 const STORAGE_KEY = "mothership.tutorial.completed";
@@ -100,7 +100,7 @@ function PlateQuickCreate() {
         </div>
         <div className="flex gap-2 pt-2">
           <button className="flex-1 rounded px-3 py-2 text-xs font-medium text-white/60 border border-white/10">Cancel</button>
-          <button className="flex-1 rounded px-3 py-2 text-xs font-semibold" style={{ background: BRAND, color: "#0a0908" }}>Create &amp; Run →</button>
+          <button className="flex-1 rounded px-3 py-2 text-xs font-semibold" style={{ background: BRAND, color: "var(--primary-foreground)" }}>Create &amp; Run →</button>
         </div>
       </div>
     </div>
@@ -158,9 +158,9 @@ function PlateCostChart() {
             <stop offset="100%" stopColor={EMERALD} stopOpacity="0"/>
           </linearGradient>
         </defs>
-        <line x1="0" y1="30" x2="400" y2="30" stroke="rgba(255,255,255,0.05)" strokeDasharray="2 3"/>
-        <line x1="0" y1="60" x2="400" y2="60" stroke="rgba(255,255,255,0.05)" strokeDasharray="2 3"/>
-        <line x1="0" y1="90" x2="400" y2="90" stroke="rgba(255,255,255,0.05)" strokeDasharray="2 3"/>
+        <line x1="0" y1="30" x2="400" y2="30" stroke="rgb(var(--ink-rgb) / 0.05)" strokeDasharray="2 3"/>
+        <line x1="0" y1="60" x2="400" y2="60" stroke="rgb(var(--ink-rgb) / 0.05)" strokeDasharray="2 3"/>
+        <line x1="0" y1="90" x2="400" y2="90" stroke="rgb(var(--ink-rgb) / 0.05)" strokeDasharray="2 3"/>
         <path d="M0,92 L20,88 L40,84 L60,76 L80,70 L100,60 L120,58 L140,48 L160,52 L180,40 L200,34 L220,30 L240,34 L260,26 L280,22 L300,18 L320,24 L340,18 L360,12 L380,14 L400,8 L400,110 L0,110 Z" fill="url(#area)"/>
         <path d="M0,92 L20,88 L40,84 L60,76 L80,70 L100,60 L120,58 L140,48 L160,52 L180,40 L200,34 L220,30 L240,34 L260,26 L280,22 L300,18 L320,24 L340,18 L360,12 L380,14 L400,8" fill="none" stroke={EMERALD} strokeWidth="1.5"/>
         <circle cx="400" cy="8" r="3.5" fill={EMERALD}/>
@@ -463,26 +463,48 @@ export default function TutorialPage() {
 
         {/* ── Progress bar ──────────────────────────────────────────── */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-muted-foreground">
-              Step {activeIdx + 1} of {STEPS.length}
-              {hydrated && (
-                <span className="ml-4 text-muted-foreground/60">· {completed.size} complete</span>
-              )}
+          <div className="flex items-end justify-between mb-3">
+            <div className="flex items-baseline gap-4">
+              <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-muted-foreground">
+                Step {activeIdx + 1} of {STEPS.length}
+                {hydrated && (
+                  <span className="ml-3 text-muted-foreground/60">· {completed.size} complete</span>
+                )}
+              </div>
             </div>
-            <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase" style={{ color: percent === 100 ? EMERALD : OXBLOOD }}>
-              {percent}%
+            <div
+              className="font-serif text-[22px] leading-none tracking-[-0.02em] tabular-nums"
+              style={{
+                color: percent === 100 ? EMERALD : BRAND,
+                fontVariationSettings: '"opsz" 48, "wght" 500',
+              }}
+              suppressHydrationWarning
+            >
+              {percent}
+              <span className="font-mono text-[11px] ml-0.5 opacity-70">%</span>
             </div>
           </div>
-          <div className="h-[3px] rounded-full bg-white/[0.04] overflow-hidden">
+          <div className="relative h-[5px] rounded-full bg-white/[0.04] overflow-hidden">
             <div
-              className="h-full transition-all duration-500 ease-out rounded-full"
+              className="relative h-full transition-all duration-700 ease-out rounded-full overflow-hidden"
               style={{
                 width: `${percent}%`,
-                background: percent === 100 ? EMERALD : OXBLOOD,
-                boxShadow: `0 0 8px ${percent === 100 ? EMERALD : OXBLOOD}66`,
+                background:
+                  percent === 100
+                    ? `linear-gradient(90deg, ${EMERALD}cc 0%, ${EMERALD} 100%)`
+                    : `linear-gradient(90deg, ${BRAND}aa 0%, ${BRAND} 100%)`,
+                boxShadow: `0 0 10px ${percent === 100 ? EMERALD : BRAND}66, inset 0 1px 0 ${percent === 100 ? EMERALD : BRAND}aa`,
               }}
-            />
+            >
+              {percent > 0 && percent < 100 && (
+                <span
+                  className="absolute inset-y-0 w-[30%] animate-progress-shimmer"
+                  style={{
+                    background: `linear-gradient(90deg, transparent 0%, ${BRAND}66 50%, transparent 100%)`,
+                  }}
+                />
+              )}
+            </div>
           </div>
           {/* Step rail — circles on a continuous track with connector segments */}
           <div className="relative mt-5">
@@ -526,13 +548,13 @@ export default function TutorialPage() {
                               ? EMERALD
                               : active
                               ? BRAND
-                              : "rgba(255,255,255,0.18)",
+                              : "rgb(var(--ink-rgb) / 0.18)",
                             borderWidth: done || active ? 2 : 1,
                             background: done
                               ? `${EMERALD}18`
                               : active
                               ? `${BRAND}14`
-                              : "rgba(255,255,255,0.015)",
+                              : "rgb(var(--ink-rgb) / 0.015)",
                             boxShadow: active
                               ? `0 0 0 4px ${BRAND}08, 0 2px 10px ${BRAND}20`
                               : done
@@ -546,7 +568,7 @@ export default function TutorialPage() {
                             <span
                               className="font-mono text-[11px] font-bold"
                               style={{
-                                color: active ? BRAND : "rgba(255,255,255,0.5)",
+                                color: active ? BRAND : "rgb(var(--ink-rgb) / 0.5)",
                               }}
                             >
                               {s.n}
@@ -556,7 +578,7 @@ export default function TutorialPage() {
                       </div>
                       <span
                         className={cn(
-                          "font-mono text-[9px] tracking-[0.16em] uppercase text-center leading-[1.3] max-w-[82px]",
+                          "font-mono text-[9px] tracking-[0.16em] uppercase text-center leading-[1.3] max-w-[82px] min-h-[2.1em] flex items-start justify-center",
                           active ? "text-foreground" : done ? "text-foreground/70" : "text-muted-foreground/55"
                         )}
                       >
@@ -585,13 +607,17 @@ export default function TutorialPage() {
                                 segState === "done"
                                   ? EMERALD
                                   : segState === "active"
-                                  ? `linear-gradient(90deg, ${done ? EMERALD : BRAND}cc 0%, ${BRAND}30 60%, transparent 100%)`
+                                  ? done
+                                    ? `linear-gradient(90deg, ${EMERALD}dd 0%, ${EMERALD}55 55%, ${BRAND}30 100%)`
+                                    : `linear-gradient(90deg, ${BRAND}cc 0%, ${BRAND}30 60%, transparent 100%)`
                                   : "transparent",
                               boxShadow:
                                 segState === "done"
-                                  ? `0 0 4px ${EMERALD}55`
+                                  ? `0 0 6px ${EMERALD}66, 0 0 12px ${EMERALD}30`
                                   : segState === "active"
-                                  ? `0 0 6px ${BRAND}40`
+                                  ? done
+                                    ? `0 0 8px ${EMERALD}55, 0 0 14px ${EMERALD}22`
+                                    : `0 0 6px ${BRAND}40`
                                   : "none",
                             }}
                           />
@@ -601,14 +627,22 @@ export default function TutorialPage() {
                         <span
                           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-heading italic pointer-events-none transition-colors"
                           style={{
-                            fontSize: 15,
-                            fontVariationSettings: '"opsz" 24, "SOFT" 100, "wght" 360',
+                            fontSize: 16,
+                            fontVariationSettings: '"opsz" 24, "SOFT" 100, "wght" 420',
                             color:
                               segState === "done"
                                 ? EMERALD
                                 : segState === "active"
-                                ? BRAND
-                                : "rgba(255,255,255,0.25)",
+                                ? done
+                                  ? EMERALD
+                                  : BRAND
+                                : "rgb(var(--ink-rgb) / 0.25)",
+                            textShadow:
+                              segState === "done" || (segState === "active" && done)
+                                ? `0 0 8px ${EMERALD}88, 0 0 14px ${EMERALD}44`
+                                : segState === "active"
+                                ? `0 0 8px ${BRAND}44`
+                                : "none",
                             letterSpacing: "-0.02em",
                             background: "var(--background)",
                             padding: "0 6px",
@@ -660,7 +694,7 @@ export default function TutorialPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-semibold transition-transform hover:-translate-y-px"
-                  style={{ background: BRAND, color: "#0a0908", boxShadow: `0 2px 10px ${BRAND}22` }}
+                  style={{ background: BRAND, color: "var(--primary-foreground)", boxShadow: `0 2px 10px ${BRAND}22` }}
                 >
                   {step.ctaLabel} <ArrowRight className="size-3.5" />
                 </a>
@@ -668,7 +702,7 @@ export default function TutorialPage() {
                 <Link
                   href={step.ctaHref}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md text-xs font-semibold transition-transform hover:-translate-y-px"
-                  style={{ background: BRAND, color: "#0a0908", boxShadow: `0 2px 10px ${BRAND}22` }}
+                  style={{ background: BRAND, color: "var(--primary-foreground)", boxShadow: `0 2px 10px ${BRAND}22` }}
                 >
                   {step.ctaLabel} <ArrowRight className="size-3.5" />
                 </Link>
@@ -729,7 +763,7 @@ export default function TutorialPage() {
             <button
               onClick={toggleDone}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-xs font-semibold"
-              style={{ background: isStepDone ? EMERALD : BRAND, color: "#0a0908" }}
+              style={{ background: isStepDone ? EMERALD : BRAND, color: "var(--primary-foreground)" }}
             >
               {isStepDone ? "Tutorial complete ✓" : "Finish tutorial"}
             </button>

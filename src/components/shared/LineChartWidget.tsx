@@ -68,29 +68,29 @@ export function LineChartWidget({
       <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -12 }}>
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="rgba(255,255,255,0.04)"
+          stroke="rgb(var(--ink-rgb) / 0.04)"
           vertical={false}
         />
         <XAxis
           dataKey="name"
-          tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}
+          tick={{ fontSize: 11, fill: "rgb(var(--ink-rgb) / 0.4)", fontFamily: "monospace" }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)", fontFamily: "monospace" }}
+          tick={{ fontSize: 11, fill: "rgb(var(--ink-rgb) / 0.4)", fontFamily: "monospace" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => formatValue(v)}
         />
         <Tooltip
           content={<ChartTooltip formatValue={formatValue} />}
-          cursor={{ stroke: "rgba(255,255,255,0.1)" }}
+          cursor={{ stroke: "rgb(var(--ink-rgb) / 0.1)" }}
         />
         <Legend
           iconType="circle"
           iconSize={8}
-          wrapperStyle={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}
+          wrapperStyle={{ fontSize: 12, color: "rgb(var(--ink-rgb) / 0.5)" }}
         />
         {lines.map((line) => (
           <Line

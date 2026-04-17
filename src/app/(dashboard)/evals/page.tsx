@@ -102,7 +102,7 @@ export default function EvalsPage() {
           <h1 className="text-xl font-bold text-foreground">Evals</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Automated test suites for measuring agent quality</p>
         </div>
-        <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black gap-1.5" onClick={() => setCreateOpen(true)}>
+        <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground gap-1.5" onClick={() => setCreateOpen(true)}>
           <Plus className="size-3.5" /> New Eval Suite
         </Button>
       </div>
@@ -111,7 +111,7 @@ export default function EvalsPage() {
       {suites.length > 0 && (
         <div className="grid grid-cols-4 gap-3">
           <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-[#f5f1e8]/10"><Hash className="size-3.5 text-[#f5f1e8]" /></div>
+            <div className="flex size-8 items-center justify-center rounded-lg bg-brand/10"><Hash className="size-3.5 text-brand" /></div>
             <div><p className="text-lg font-bold text-foreground">{suites.length}</p><p className="text-[10px] text-muted-foreground/50">Suites</p></div>
           </div>
           <div className="rounded-xl border border-border bg-card p-3 flex items-center gap-3">
@@ -141,7 +141,7 @@ export default function EvalsPage() {
             <p className="text-sm font-medium text-muted-foreground">No eval suites yet</p>
             <p className="text-xs text-muted-foreground/50 mt-1 max-w-[280px]">Create test suites to measure and track agent quality over time</p>
           </div>
-          <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black gap-1.5" onClick={() => setCreateOpen(true)}>
+          <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground gap-1.5" onClick={() => setCreateOpen(true)}>
             <Plus className="size-3" /> Create your first eval suite
           </Button>
         </div>
@@ -199,7 +199,7 @@ export default function EvalsPage() {
                     {suite.runs[0] && <span suppressHydrationWarning>{formatRelativeTime(suite.runs[0].startedAt)}</span>}
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => handleRun(suite.id)} disabled={isRunning} className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-[#f5f1e8] bg-[#f5f1e8]/10 hover:bg-[#f5f1e8]/20 transition-colors disabled:opacity-40">
+                    <button onClick={() => handleRun(suite.id)} disabled={isRunning} className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-brand bg-brand/10 hover:bg-brand/20 transition-colors disabled:opacity-40">
                       <Play className="size-2.5" /> Run
                     </button>
                     <button onClick={() => handleDelete(suite.id)} className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-red-400/60 hover:text-red-400 hover:bg-red-500/10 transition-colors">
@@ -320,7 +320,7 @@ function CreateEvalModal({
           </div>
           <div className="flex gap-1">
             {[0, 1, 2].map(i => (
-              <div key={i} className={cn("h-1 w-8 rounded-full", i <= wizardStep ? "bg-[#f5f1e8]" : "bg-muted/30")} />
+              <div key={i} className={cn("h-1 w-8 rounded-full", i <= wizardStep ? "bg-brand" : "bg-muted/30")} />
             ))}
           </div>
         </div>
@@ -383,9 +383,9 @@ function CreateEvalModal({
                   {/* Criteria pills */}
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {caseCriteria.map((c, i) => (
-                      <span key={i} className="flex items-center gap-1 rounded-full bg-[#f5f1e8]/10 px-2.5 py-1 text-[10px] font-medium text-[#f5f1e8]">
+                      <span key={i} className="flex items-center gap-1 rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-medium text-brand">
                         {c}
-                        <button onClick={() => setCaseCriteria(caseCriteria.filter((_, j) => j !== i))} className="text-[#f5f1e8]/50 hover:text-[#f5f1e8]">×</button>
+                        <button onClick={() => setCaseCriteria(caseCriteria.filter((_, j) => j !== i))} className="text-brand/50 hover:text-brand">×</button>
                       </span>
                     ))}
                   </div>
@@ -436,7 +436,7 @@ function CreateEvalModal({
               </div>
               <p className="text-[10px] text-muted-foreground/40">Start with {cases.length} cases. You can add more cases after creating the suite.</p>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={runAfterCreate} onChange={(e) => setRunAfterCreate(e.target.checked)} className="rounded accent-[#f5f1e8]" />
+                <input type="checkbox" checked={runAfterCreate} onChange={(e) => setRunAfterCreate(e.target.checked)} className="rounded accent-brand" />
                 <span className="text-xs text-muted-foreground">Run immediately after creating</span>
               </label>
             </div>
@@ -451,14 +451,14 @@ function CreateEvalModal({
           {wizardStep < 2 ? (
             <Button
               size="sm"
-              className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black"
+              className="bg-brand hover:bg-brand/90 text-primary-foreground"
               disabled={wizardStep === 0 ? (!suiteName.trim() || !agentId) : cases.length === 0}
               onClick={() => setWizardStep(wizardStep + 1)}
             >
               Next →
             </Button>
           ) : (
-            <Button size="sm" className="bg-[#f5f1e8] hover:bg-[#f5f1e8]/90 text-black" onClick={handleCreate} disabled={creating}>
+            <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground" onClick={handleCreate} disabled={creating}>
               {creating ? <><Loader2 className="size-3 mr-1 animate-spin" /> Creating...</> : "Create Suite"}
             </Button>
           )}

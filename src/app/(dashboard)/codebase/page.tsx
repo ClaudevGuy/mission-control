@@ -33,7 +33,7 @@ function FileTreeNode({ node, depth = 0 }: { node: TreeNode; depth?: number }) {
         onClick={() => isFolder && setOpen(!open)}
       >
         {isFolder ? (
-          open ? <FolderOpen className="size-3.5 text-[#f5f1e8] shrink-0" /> : <FolderClosed className="size-3.5 text-[#f5f1e8]/60 shrink-0" />
+          open ? <FolderOpen className="size-3.5 text-brand shrink-0" /> : <FolderClosed className="size-3.5 text-brand/60 shrink-0" />
         ) : (
           <FileText className="size-3.5 text-muted-foreground/60 shrink-0" />
         )}
@@ -54,7 +54,7 @@ const COMMIT_TYPE_COLORS: Record<string, { bg: string; border: string; text: str
   test: { bg: "rgba(57,255,20,0.12)", border: "rgba(57,255,20,0.3)", text: "#39FF14" },
   docs: { bg: "rgba(128,128,128,0.05)", border: "rgba(128,128,128,0.12)", text: "#888" },
   chore: { bg: "rgba(168,85,247,0.12)", border: "rgba(168,85,247,0.3)", text: "#A855F7" },
-  refactor: { bg: "rgba(245, 241, 232,0.12)", border: "rgba(245, 241, 232,0.3)", text: "#f5f1e8" },
+  refactor: { bg: "rgb(var(--brand-rgb) / 0.12)", border: "rgb(var(--brand-rgb) / 0.3)", text: "var(--primary)" },
 };
 
 function getCommitType(message: string): string {
@@ -139,7 +139,7 @@ export default function CodebasePage() {
             >
               {t.label}
               {tab === t.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#f5f1e8]" />
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand" />
               )}
             </button>
           ))}
@@ -152,7 +152,7 @@ export default function CodebasePage() {
           {/* Repo cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {repositories.map((repo) => (
-              <GlassPanel key={repo.id} hover padding="lg" className="transition-shadow hover:shadow-[0_0_12px_rgba(245, 241, 232,0.08)]">
+              <GlassPanel key={repo.id} hover padding="lg" className="transition-shadow hover:shadow-[0_0_12px_rgb(var(--brand-rgb) / 0.08)]">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="font-mono text-sm font-bold text-foreground truncate">{repo.name}</h3>
@@ -169,7 +169,7 @@ export default function CodebasePage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] text-muted-foreground font-mono" suppressHydrationWarning>{formatRelativeTime(repo.lastCommit)}</span>
-                    <SparklineChart data={[3,5,2,7,4,6,8]} color="#f5f1e8" width={40} height={16} />
+                    <SparklineChart data={[3,5,2,7,4,6,8]} color="var(--primary)" width={40} height={16} />
                   </div>
                   <div className="flex items-center gap-2 pt-1 border-t border-border/50">
                     <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
@@ -229,7 +229,7 @@ export default function CodebasePage() {
                 <div className="space-y-1.5">
                   <p className="text-xs text-amber-400/80">⚠ BugHunter has modified 34% of core files this week</p>
                   <p className="text-xs text-green-400/80">✓ Test coverage increased 4% from last week</p>
-                  <p className="text-xs text-[#f5f1e8]/80">↑ Technical debt trending down — 3 modules refactored</p>
+                  <p className="text-xs text-brand/80">↑ Technical debt trending down — 3 modules refactored</p>
                 </div>
               </div>
             </GlassPanel>
@@ -244,7 +244,7 @@ export default function CodebasePage() {
                 const typeColor = COMMIT_TYPE_COLORS[commitType] || COMMIT_TYPE_COLORS.feat;
                 return (
                   <div key={c.id} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-muted/30 transition-colors">
-                    <span className="font-mono text-xs text-[#f5f1e8] shrink-0 w-16">{c.hash}</span>
+                    <span className="font-mono text-xs text-brand shrink-0 w-16">{c.hash}</span>
                     <span
                       className="shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium"
                       style={{ background: typeColor.bg, border: `1px solid ${typeColor.border}`, color: typeColor.text }}
@@ -253,7 +253,7 @@ export default function CodebasePage() {
                     </span>
                     <span className="text-xs text-foreground truncate flex-1">{c.message}</span>
                     <div className="flex items-center gap-1 shrink-0">
-                      {c.isAgent && <Bot className="size-3 text-[#f5f1e8]" />}
+                      {c.isAgent && <Bot className="size-3 text-brand" />}
                       <div className="size-5 rounded-full bg-muted/50 flex items-center justify-center">
                         <span className="text-[8px] font-bold text-muted-foreground">{c.author.charAt(0)}</span>
                       </div>
@@ -281,7 +281,7 @@ export default function CodebasePage() {
             const typeColor = COMMIT_TYPE_COLORS[commitType] || COMMIT_TYPE_COLORS.feat;
             return (
               <div key={c.id} className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-muted/30 transition-colors border-b border-border/50 last:border-0">
-                <span className="font-mono text-xs text-[#f5f1e8] shrink-0 w-16">{c.hash}</span>
+                <span className="font-mono text-xs text-brand shrink-0 w-16">{c.hash}</span>
                 <span
                   className="shrink-0 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium"
                   style={{ background: typeColor.bg, border: `1px solid ${typeColor.border}`, color: typeColor.text }}
@@ -290,7 +290,7 @@ export default function CodebasePage() {
                 </span>
                 <span className="text-sm text-foreground truncate flex-1">{c.message}</span>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  {c.isAgent && <Bot className="size-3 text-[#f5f1e8]" />}
+                  {c.isAgent && <Bot className="size-3 text-brand" />}
                   <div className="size-6 rounded-full bg-muted/50 flex items-center justify-center">
                     <span className="text-[9px] font-bold text-muted-foreground">{c.author.charAt(0)}</span>
                   </div>
