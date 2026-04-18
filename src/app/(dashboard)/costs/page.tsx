@@ -13,7 +13,9 @@ import {
   ModelBadge,
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { DollarSign, TrendingUp, Target, Download, CheckCircle2, AlertTriangle, Sparkles, ArrowRight, X, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ModalShell } from "@/components/ui/modal-shell";
+import { DollarSign, TrendingUp, Target, Download, CheckCircle2, AlertTriangle, Sparkles, ArrowRight, X, Check, Pencil, Trash2, Loader2 } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -30,8 +32,70 @@ const INVOICES: { id: string; month: string; amount: number; status: string }[] 
 export default function CostsPage() {
   const [tab, setTab] = useState<"overview" | "agents" | "budget" | "invoices">("overview");
   const [agentRange, setAgentRange] = useState<"7d" | "30d" | "90d">("30d");
-  const [budgetAlert, setBudgetAlert] = useState(80);
-  const { agentCosts, budgets, dailyCosts, fetch: fetchCosts } = useCostsStore();
+  const { agentCosts, budgets, dailyCosts, fetch: fetchCosts, createBudget, updateBudget, deleteBudget } = useCostsStore();
+
+  // ─── Budget modal state ───
+  const [budgetModalOpen, setBudgetModalOpen] = useState(false);
+  const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
+  const [budgetForm, setBudgetForm] = useState({ category: "Monthly", limit: "", alertThreshold: 80 });
+  const [budgetSaving, setBudgetSaving] = useState(false);
+
+  const openCreateBudget = () => {
+    setEditingBudgetId(null);
+    setBudgetForm({ category: "Monthly", limit: "", alertThreshold: 80 });
+    setBudgetModalOpen(true);
+  };
+  const openEditBudget = (b: { id: string; category: string; limit: number; alertThreshold: number }) => {
+    setEditingBudgetId(b.id);
+    setBudgetForm({
+      category: b.category,
+      limit: String(b.limit),
+      alertThreshold: Math.round(b.alertThreshold * 100),
+    });
+    setBudgetModalOpen(true);
+  };
+  const saveBudget = async () => {
+    const amount = parseFloat(budgetForm.limit);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast.error("Enter a positive dollar amount");
+      return;
+    }
+    if (!budgetForm.category.trim()) {
+      toast.error("Category name is required");
+      return;
+    }
+    setBudgetSaving(true);
+    try {
+      if (editingBudgetId) {
+        await updateBudget(editingBudgetId, {
+          limit: amount,
+          alertThreshold: budgetForm.alertThreshold / 100,
+        });
+        toast.success("Budget updated");
+      } else {
+        await createBudget({
+          category: budgetForm.category.trim(),
+          limit: amount,
+          alertThreshold: budgetForm.alertThreshold / 100,
+        });
+        toast.success("Budget created");
+      }
+      setBudgetModalOpen(false);
+    } catch (e) {
+      toast.error((e as Error).message || "Save failed");
+    } finally {
+      setBudgetSaving(false);
+    }
+  };
+  const removeBudget = async (id: string, category: string) => {
+    if (!confirm(`Remove the "${category}" budget? This won't affect past spend.`)) return;
+    try {
+      await deleteBudget(id);
+      toast.success("Budget removed");
+    } catch {
+      toast.error("Failed to remove budget");
+    }
+  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchCosts(); }, []);
@@ -539,64 +603,138 @@ export default function CostsPage() {
       {/* ═══ BUDGET ═══ */}
       {tab === "budget" && (
         <div className="space-y-6">
-          {monthlyBudget > 0 ? (
+          {budgets.length > 0 ? (
             <>
-              {/* Total budget */}
+              {/* Total budget overview */}
               <GlassPanel padding="lg">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Total Monthly Budget</h3>
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground mb-1">Total Monthly Budget</h3>
+                    <p className="text-[11px] text-muted-foreground/70">
+                      Sum of all category limits · spend calculated live from LLM calls
+                    </p>
+                  </div>
+                  <Button onClick={openCreateBudget} size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground">
+                    <Target className="size-3.5 mr-1.5" /> Add Budget
+                  </Button>
+                </div>
                 <div className="flex items-center gap-4">
-                  <span className="font-mono text-3xl font-bold text-foreground">{formatCurrency(monthlyBudget)}</span>
+                  <span className="font-mono text-3xl font-bold text-foreground shrink-0">
+                    {formatCurrency(monthlyBudget)}
+                  </span>
                   <div className="flex-1">
-                    <div className="w-full h-3 rounded-full bg-muted/50">
-                      <div className="h-3 rounded-full bg-green-500 transition-all" style={{ width: `${budgetPct}%` }} />
+                    <div className="w-full h-3 rounded-full bg-muted/50 overflow-hidden">
+                      <div
+                        className={cn(
+                          "h-3 rounded-full transition-all",
+                          budgetPct > 90 ? "bg-red-500" : budgetPct > 70 ? "bg-amber-500" : "bg-emerald-500"
+                        )}
+                        style={{ width: `${Math.min(budgetPct, 100)}%` }}
+                      />
                     </div>
-                    <span className="text-xs text-muted-foreground mt-1 block">{formatCurrency(thisMonth)} spent · {budgetPct}% used · {formatCurrency(underBudget)} remaining</span>
+                    <span className="text-xs text-muted-foreground mt-1.5 block">
+                      {formatCurrency(thisMonth)} spent · {budgetPct}% used ·{" "}
+                      <span className={cn(underBudget < 0 && "text-red-400")}>
+                        {formatCurrency(Math.abs(underBudget))} {underBudget < 0 ? "over" : "remaining"}
+                      </span>
+                    </span>
                   </div>
                 </div>
               </GlassPanel>
 
-              {/* Per-category budgets */}
-              {budgets.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground">Category Budgets</h3>
-                  {budgets.map((b) => {
-                    const pct = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
-                    const color = pct > 90 ? "#EF4444" : pct > 70 ? "#F59E0B" : "#39FF14";
-                    return (
-                      <GlassPanel key={b.category} padding="md">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="text-sm font-medium text-foreground">{b.category}</h4>
-                          <span className="font-mono text-xs text-muted-foreground">{formatCurrency(b.spent)} / {formatCurrency(b.limit)}</span>
+              {/* Per-category budget rows */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground">Budgets</h3>
+                {budgets.map((b) => {
+                  const pct = b.limit > 0 ? Math.round((b.spent / b.limit) * 100) : 0;
+                  const overBudget = pct > 100;
+                  const atAlert = pct >= Math.round(b.alertThreshold * 100);
+                  return (
+                    <GlassPanel key={b.id} padding="md">
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <h4 className="text-sm font-medium text-foreground truncate">{b.category}</h4>
+                          {overBudget && (
+                            <span className="shrink-0 inline-flex items-center gap-1 rounded border border-red-500/40 bg-red-500/10 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-red-400">
+                              <AlertTriangle className="size-2.5" /> Over
+                            </span>
+                          )}
+                          {!overBudget && atAlert && (
+                            <span className="shrink-0 inline-flex items-center gap-1 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-amber-400">
+                              Alert
+                            </span>
+                          )}
                         </div>
-                        <div className="w-full h-2 rounded-full bg-muted/50">
-                          <div className="h-2 rounded-full transition-all" style={{ width: `${Math.min(pct, 100)}%`, background: color }} />
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {formatCurrency(b.spent)} / {formatCurrency(b.limit)}
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEditBudget(b)}
+                            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                            title="Edit budget"
+                          >
+                            <Pencil className="size-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => removeBudget(b.id, b.category)}
+                            className="h-6 w-6 p-0 text-muted-foreground hover:text-red-400"
+                            title="Remove budget"
+                          >
+                            <Trash2 className="size-3" />
+                          </Button>
                         </div>
-                      </GlassPanel>
-                    );
-                  })}
-                </div>
+                      </div>
+                      <div className="w-full h-2 rounded-full bg-muted/50 overflow-hidden">
+                        <div
+                          className={cn(
+                            "h-2 rounded-full transition-all",
+                            pct > 100 ? "bg-red-500" : pct > 90 ? "bg-red-500" : pct >= b.alertThreshold * 100 ? "bg-amber-500" : "bg-emerald-500"
+                          )}
+                          style={{ width: `${Math.min(pct, 100)}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between mt-1.5 text-[10px] text-muted-foreground/60">
+                        <span>{pct}% used</span>
+                        <span>Alert at {Math.round(b.alertThreshold * 100)}%</span>
+                      </div>
+                    </GlassPanel>
+                  );
+                })}
+              </div>
+
+              {/* End-of-month projection */}
+              {hasTrailingWindow && (
+                <GlassPanel padding="lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground mb-1">End-of-Month Projection</h3>
+                      <p className="text-[11px] text-muted-foreground/70">
+                        Based on trailing 7-day average spend · {daysRemaining} days remaining
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className={cn(
+                        "font-mono text-2xl font-bold",
+                        willExceedBudget ? "text-red-400" : "text-emerald-400"
+                      )}>
+                        {formatCurrency(projected)}
+                      </span>
+                      {monthlyBudget > 0 && (
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                          {willExceedBudget
+                            ? `${formatCurrency(projected - monthlyBudget)} over budget`
+                            : `${formatCurrency(monthlyBudget - projected)} under budget`}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </GlassPanel>
               )}
-
-              {/* Alert threshold */}
-              <GlassPanel padding="lg">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Alert Threshold</h3>
-                <p className="text-xs text-muted-foreground mb-3">Notify when total spend reaches this % of budget</p>
-                <div className="flex items-center gap-4">
-                  <input type="range" min={50} max={100} value={budgetAlert} onChange={(e) => setBudgetAlert(Number(e.target.value))} className="flex-1 accent-brand" />
-                  <span className="font-mono text-sm text-foreground w-12 text-right">{budgetAlert}%</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  Alert triggers at {formatCurrency(Math.round(monthlyBudget * budgetAlert / 100))} spend
-                </p>
-              </GlassPanel>
-
-              {/* Projected */}
-              <GlassPanel padding="lg">
-                <h3 className="text-sm font-semibold text-foreground mb-2">End-of-Month Projection</h3>
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-2xl font-bold text-green-400">{formatCurrency(projected)}</span>
-                </div>
-              </GlassPanel>
             </>
           ) : (
             /* Empty state — no budget configured */
@@ -611,7 +749,7 @@ export default function CostsPage() {
                     Set a monthly budget to track spending limits and get alerts before you overspend
                   </p>
                 </div>
-                <Button onClick={() => toast.success("Budget configuration coming soon")} className="bg-brand hover:bg-brand/90 text-primary-foreground mt-2">
+                <Button onClick={openCreateBudget} className="bg-brand hover:bg-brand/90 text-primary-foreground mt-2">
                   <Target className="size-4 mr-1.5" /> Set Monthly Budget
                 </Button>
               </div>
@@ -666,6 +804,120 @@ export default function CostsPage() {
           </GlassPanel>
         )
       )}
+
+      {/* ─── Budget modal ─── */}
+      <ModalShell
+        open={budgetModalOpen}
+        onClose={() => !budgetSaving && setBudgetModalOpen(false)}
+        dismissable={!budgetSaving}
+        className="w-full max-w-md"
+      >
+        <div className="rounded-xl border border-border bg-card shadow-2xl">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
+            <div className="flex items-center gap-2.5">
+              <Target className="size-4 text-brand" />
+              <h3 className="text-sm font-semibold text-foreground">
+                {editingBudgetId ? "Edit budget" : "Set monthly budget"}
+              </h3>
+            </div>
+            <button
+              onClick={() => !budgetSaving && setBudgetModalOpen(false)}
+              disabled={budgetSaving}
+              className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+            >
+              <X className="size-4" />
+            </button>
+          </div>
+
+          <div className="px-5 py-5 space-y-5">
+            {/* Category */}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                Category
+              </label>
+              <Input
+                type="text"
+                value={budgetForm.category}
+                onChange={(e) => setBudgetForm({ ...budgetForm, category: e.target.value })}
+                placeholder="e.g. Monthly, Models, Compute"
+                disabled={!!editingBudgetId || budgetSaving}
+                className="h-9 text-sm"
+              />
+              {!editingBudgetId && (
+                <p className="mt-1 text-[11px] text-muted-foreground/60">
+                  Budgets with the same category replace each other. Create multiple for per-team / per-workload tracking.
+                </p>
+              )}
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                Monthly limit (USD)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground/60">$</span>
+                <Input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={budgetForm.limit}
+                  onChange={(e) => setBudgetForm({ ...budgetForm, limit: e.target.value })}
+                  placeholder="500"
+                  disabled={budgetSaving}
+                  className="h-9 text-sm pl-7 font-mono"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {/* Alert threshold */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-medium text-muted-foreground">
+                  Alert threshold
+                </label>
+                <span className="font-mono text-xs text-foreground">{budgetForm.alertThreshold}%</span>
+              </div>
+              <input
+                type="range"
+                min={50}
+                max={100}
+                step={5}
+                value={budgetForm.alertThreshold}
+                onChange={(e) => setBudgetForm({ ...budgetForm, alertThreshold: Number(e.target.value) })}
+                disabled={budgetSaving}
+                className="w-full accent-brand disabled:opacity-50"
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground/60">
+                {budgetForm.limit && parseFloat(budgetForm.limit) > 0
+                  ? <>Warning fires at <span className="font-mono text-foreground/80">{formatCurrency(parseFloat(budgetForm.limit) * budgetForm.alertThreshold / 100)}</span> of spend</>
+                  : "Warning fires when spend reaches this % of the limit"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-4">
+            <Button
+              variant="ghost"
+              onClick={() => setBudgetModalOpen(false)}
+              disabled={budgetSaving}
+              className="text-muted-foreground"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={saveBudget}
+              disabled={budgetSaving}
+              className="bg-brand hover:bg-brand/90 text-primary-foreground min-w-[96px]"
+            >
+              {budgetSaving ? (
+                <><Loader2 className="size-3.5 mr-1.5 animate-spin" /> Saving...</>
+              ) : editingBudgetId ? "Save changes" : "Create budget"}
+            </Button>
+          </div>
+        </div>
+      </ModalShell>
     </div>
   );
 }

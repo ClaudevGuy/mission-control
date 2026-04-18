@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { apiFetch } from "@/lib/api-client";
 import type { CostBreakdown, AgentCost, Budget, Invoice } from "@/types/costs";
 import type { TimeSeriesPoint } from "@/types/common";
-import { isFresh, markFetched, markInflight } from "@/lib/store-cache";
+import { isFresh, markFetched, markInflight, invalidate } from "@/lib/store-cache";
 
 interface CostsStore {
   breakdown: CostBreakdown[];
@@ -15,7 +15,9 @@ interface CostsStore {
   dateRange: "7d" | "14d" | "30d" | "90d";
   fetch: () => Promise<void>;
   setDateRange: (range: "7d" | "14d" | "30d" | "90d") => void;
-  updateBudget: (category: string, limit: number) => void;
+  updateBudget: (id: string, patch: { limit?: number; alertThreshold?: number }) => Promise<void>;
+  createBudget: (args: { category: string; limit: number; alertThreshold?: number }) => Promise<void>;
+  deleteBudget: (id: string) => Promise<void>;
   getTotalSpend: () => number;
 }
 
@@ -69,20 +71,46 @@ export const useCostsStore = create<CostsStore>((set, get) => ({
 
   setDateRange: (range) => set({ dateRange: range }),
 
-  updateBudget: async (category, limit) => {
+  updateBudget: async (id, patch) => {
+    // Optimistic update
     set((state) => ({
-      budgets: state.budgets.map((b) =>
-        b.category === category ? { ...b, limit } : b
-      ),
+      budgets: state.budgets.map((b) => (b.id === id ? { ...b, ...patch } : b)),
     }));
     try {
       const res = await apiFetch("/api/costs/budgets", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category, limit }),
+        body: JSON.stringify({ id, ...patch }),
       });
       if (!res.ok) throw new Error("Failed to update budget");
     } catch {
+      // Re-sync with server on failure
+      invalidate("costs");
+      get().fetch();
+    }
+  },
+
+  createBudget: async ({ category, limit, alertThreshold }) => {
+    const res = await apiFetch("/api/costs/budgets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category, limit, alertThreshold }),
+    });
+    if (!res.ok) throw new Error("Failed to create budget");
+    // Re-fetch so we get live `spent` for the new budget
+    invalidate("costs");
+    await get().fetch();
+  },
+
+  deleteBudget: async (id) => {
+    set((state) => ({ budgets: state.budgets.filter((b) => b.id !== id) }));
+    try {
+      const res = await apiFetch(`/api/costs/budgets?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete budget");
+    } catch {
+      invalidate("costs");
       get().fetch();
     }
   },
