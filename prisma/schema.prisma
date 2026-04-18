@@ -286,6 +286,9 @@ model Project {
   teamInvites        TeamInvite[]
   externalAgents     ExternalAgent[]
   ingestEvents       IngestEvent[]
+  shadowRuns         ShadowRun[]
+  downshiftProposals DownshiftProposal[]
+  downshiftConfig    DownshiftConfig?
 }
 
 model ProjectMember {
@@ -1194,4 +1197,83 @@ model IngestEvent {
   @@index([projectId, source])
   @@index([projectId, timestamp])
   @@index([projectId, agentId])
+}
+
+// ============================================================================
+// AUTO-DOWNSHIFT — autonomous cheap-model promotion via shadow testing
+// ----------------------------------------------------------------------------
+// For a small % of production runs we dispatch a parallel "shadow" call to the
+// next-cheaper tier. If shadow output matches production quality over a
+// statistically meaningful sample, we surface a proposal to downshift.
+// ============================================================================
+
+model ShadowRun {
+  id                  String    @id @default(cuid())
+  projectId           String
+  agentId             String
+  parentRunId         String?   // LlmCall or AgentRun id for traceback
+  productionModel     String    // e.g. "claude-sonnet-4-6"
+  productionTier      Int
+  shadowModel         String    // e.g. "claude-haiku-4-5"
+  shadowTier          Int
+  input               String    @db.Text
+  systemPrompt        String    @db.Text
+  productionOutput    String    @db.Text
+  shadowOutput        String    @db.Text
+  productionCost      Float
+  shadowCost          Float
+  productionTokensIn  Int
+  productionTokensOut Int
+  shadowTokensIn      Int
+  shadowTokensOut     Int
+  shadowLatencyMs     Int
+  productionScore     Float?    // null until judge runs
+  shadowScore         Float?
+  judgeMethod         String?   // "eval_suite" | "llm_judge"
+  scoredAt            DateTime?
+  createdAt           DateTime  @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, agentId, shadowModel, createdAt])
+  @@index([projectId, scoredAt])
+}
+
+model DownshiftProposal {
+  id                String    @id @default(cuid())
+  projectId         String
+  agentId           String
+  fromModel         String
+  toModel           String
+  fromTier          Int
+  toTier            Int
+  sampleSize        Int
+  parityRatio       Float     // shadowMean / productionMean
+  shadowMean        Float
+  productionMean    Float
+  estMonthlySavings Float     // in USD, based on 30-day rolling spend
+  judgeMethod       String    // "eval_suite" | "llm_judge"
+  status            String    @default("pending") // pending | accepted | rejected | expired
+  decidedAt         DateTime?
+  decidedByUserId   String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, agentId, fromModel, toModel, status])
+  @@index([projectId, status])
+  @@index([projectId, agentId])
+}
+
+model DownshiftConfig {
+  id                String   @id @default(cuid())
+  projectId         String   @unique
+  enabled           Boolean  @default(false)
+  sampleRatePercent Int      @default(5)   // 1-20
+  minSampleSize     Int      @default(100) // min shadow runs before proposal
+  parityThreshold   Float    @default(0.95)
+  updatedAt         DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }

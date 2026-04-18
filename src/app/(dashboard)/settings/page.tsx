@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ModalShell } from "@/components/ui/modal-shell";
 
-const NAV_ITEMS = ["General", "Appearance", "Notifications", "Data & Privacy", "Security", "Audit Log"];
+const NAV_ITEMS = ["General", "Appearance", "Notifications", "Auto-Downshift", "Data & Privacy", "Security", "Audit Log"];
 
 const NOTIF_EVENTS: { name: string; app: boolean; email: boolean; slack: boolean }[] = [];
 
@@ -51,6 +51,39 @@ export default function SettingsPage() {
     setAutoPauseEnabled(localStorage.getItem("mc_auto_pause_enabled") === "true");
     setAutoPauseThreshold(parseFloat(localStorage.getItem("mc_auto_pause_threshold") || "10"));
   }, []);
+
+  // Auto-Downshift config (server-persisted per project)
+  const [dsConfig, setDsConfig] = useState<{ enabled: boolean; sampleRatePercent: number; minSampleSize: number; parityThreshold: number } | null>(null);
+  const [dsSaving, setDsSaving] = useState(false);
+  useEffect(() => {
+    fetch("/api/downshift/config")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (d) setDsConfig({ enabled: d.enabled, sampleRatePercent: d.sampleRatePercent, minSampleSize: d.minSampleSize, parityThreshold: d.parityThreshold }); })
+      .catch(() => {});
+  }, []);
+  async function saveDsConfig(patch: Partial<NonNullable<typeof dsConfig>>) {
+    if (!dsConfig) return;
+    const next = { ...dsConfig, ...patch };
+    setDsConfig(next);
+    setDsSaving(true);
+    try {
+      const res = await fetch("/api/downshift/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Save failed" }));
+        toast.error(err.error || "Save failed");
+      } else {
+        toast.success("Saved");
+      }
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setDsSaving(false);
+    }
+  }
   const projectName = useSettingsStore((s) => s.projectName);
   const projectDescription = useSettingsStore((s) => s.projectDescription);
   const storeSetProjectName = useSettingsStore((s) => s.setProjectName);
@@ -215,6 +248,116 @@ export default function SettingsPage() {
                   <div className="px-4 py-3"><button className="text-xs font-medium text-primary-foreground bg-brand rounded-lg px-4 py-2 hover:bg-brand/80" onClick={() => toast.success("Preferences saved")}>Save Preferences</button></div>
                 </GlassPanel>
               )}
+            </div>
+          )}
+
+          {/* ─── AUTO-DOWNSHIFT ─── */}
+          {section === "Auto-Downshift" && (
+            <div className="space-y-6">
+              <GlassPanel padding="lg">
+                <div className="flex items-start justify-between gap-6 mb-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground mb-1">Auto-Downshift</h3>
+                    <p className="text-xs text-muted-foreground/70 leading-relaxed max-w-md">
+                      Mission Control will silently test a cheaper model next to a small % of production runs. When the cheap model matches quality over enough samples, you&apos;ll get a proposal to swap it in. Nothing auto-promotes — you always approve.
+                    </p>
+                  </div>
+                  <div className="shrink-0 rounded-md border border-amber-400/20 bg-amber-400/[0.04] px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-amber-300/80">Beta</div>
+                </div>
+
+                <div className="flex items-center gap-4 pt-2 border-t border-border/50">
+                  <Switch
+                    checked={!!dsConfig?.enabled}
+                    disabled={!dsConfig || dsSaving}
+                    onCheckedChange={(v) => saveDsConfig({ enabled: v })}
+                    className="data-[state=checked]:bg-brand"
+                  />
+                  <span className="text-sm text-foreground">
+                    {dsConfig?.enabled ? "Enabled — shadow runs active" : "Disabled"}
+                  </span>
+                </div>
+              </GlassPanel>
+
+              {dsConfig && (
+                <GlassPanel padding="lg">
+                  <h3 className="text-sm font-semibold text-foreground mb-1">Tuning</h3>
+                  <p className="text-xs text-muted-foreground/60 mb-5">Controls how aggressively we sample and when a proposal is eligible.</p>
+
+                  <div className="space-y-5 max-w-lg">
+                    {/* Sample rate */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1.5">
+                        <span className="text-muted-foreground">Sample rate</span>
+                        <span className="font-mono text-foreground">{dsConfig.sampleRatePercent}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={1}
+                        max={20}
+                        step={1}
+                        value={dsConfig.sampleRatePercent}
+                        onChange={(e) => setDsConfig({ ...dsConfig, sampleRatePercent: Number(e.target.value) })}
+                        onMouseUp={(e) => saveDsConfig({ sampleRatePercent: Number((e.target as HTMLInputElement).value) })}
+                        onTouchEnd={(e) => saveDsConfig({ sampleRatePercent: Number((e.target as HTMLInputElement).value) })}
+                        disabled={!dsConfig.enabled || dsSaving}
+                        className="w-full accent-brand disabled:opacity-40"
+                      />
+                      <p className="mt-1 text-[11px] text-muted-foreground/50">% of production runs that get a parallel shadow call. Higher = faster decisions, higher shadow cost.</p>
+                    </div>
+
+                    {/* Min sample size */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1.5">
+                        <span className="text-muted-foreground">Minimum sample size</span>
+                        <span className="font-mono text-foreground">{dsConfig.minSampleSize} runs</span>
+                      </div>
+                      <Input
+                        type="number"
+                        min={10}
+                        max={10000}
+                        step={10}
+                        value={dsConfig.minSampleSize}
+                        onChange={(e) => setDsConfig({ ...dsConfig, minSampleSize: Number(e.target.value) || 100 })}
+                        onBlur={() => saveDsConfig({ minSampleSize: dsConfig.minSampleSize })}
+                        disabled={!dsConfig.enabled || dsSaving}
+                        className="h-8 w-32 text-xs"
+                      />
+                      <p className="mt-1 text-[11px] text-muted-foreground/50">Shadow runs required before a proposal can be generated. Higher = more statistical confidence, slower to surface.</p>
+                    </div>
+
+                    {/* Parity threshold */}
+                    <div>
+                      <div className="flex justify-between text-xs mb-1.5">
+                        <span className="text-muted-foreground">Parity threshold</span>
+                        <span className="font-mono text-foreground">{(dsConfig.parityThreshold * 100).toFixed(0)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0.8}
+                        max={1}
+                        step={0.01}
+                        value={dsConfig.parityThreshold}
+                        onChange={(e) => setDsConfig({ ...dsConfig, parityThreshold: Number(e.target.value) })}
+                        onMouseUp={(e) => saveDsConfig({ parityThreshold: Number((e.target as HTMLInputElement).value) })}
+                        onTouchEnd={(e) => saveDsConfig({ parityThreshold: Number((e.target as HTMLInputElement).value) })}
+                        disabled={!dsConfig.enabled || dsSaving}
+                        className="w-full accent-brand disabled:opacity-40"
+                      />
+                      <p className="mt-1 text-[11px] text-muted-foreground/50">Shadow mean score ÷ production mean score must be ≥ this to propose. Stricter = fewer false positives.</p>
+                    </div>
+                  </div>
+                </GlassPanel>
+              )}
+
+              <GlassPanel padding="lg">
+                <h3 className="text-sm font-semibold text-foreground mb-1">How it works</h3>
+                <ol className="mt-3 space-y-2.5 text-xs text-muted-foreground/80 leading-relaxed list-decimal list-inside">
+                  <li>A small % of production calls dispatch a parallel shadow call on the next-cheaper tier (Opus → Sonnet → Haiku, etc.).</li>
+                  <li>Each pair gets scored — by your eval suite if one exists for the agent, otherwise by an LLM-as-judge fallback.</li>
+                  <li>Once an agent has enough samples and parity meets the threshold, a proposal appears on the Costs page.</li>
+                  <li>You review projected savings, sample size, and parity score, then approve or reject. Rejected proposals cool down for 30 days.</li>
+                </ol>
+              </GlassPanel>
             </div>
           )}
 
