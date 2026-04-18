@@ -7,6 +7,8 @@ import { ArrowLeft, ArrowRight, Rocket, Check, Sparkles, Hand, DollarSign, Shiel
 import { apiFetch } from "@/lib/api-client";
 import { profileTask } from "@/lib/agent-profiler";
 import { detectSafetyOverrides } from "@/lib/model-selector";
+import { useAgentsStore } from "@/stores/agents-store";
+import { invalidate } from "@/lib/store-cache";
 import { toast } from "sonner";
 import { GlassPanel, PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -158,10 +160,23 @@ export default function AgentBuilderPage() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const body = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || `Failed to create agent (${res.status})`);
+        throw new Error(body.error || `Failed to create agent (${res.status})`);
+      }
+
+      // API wraps the record as { data: agent }. Seed the store optimistically
+      // and invalidate the cache so the agents-list page shows the new agent
+      // immediately after routing back — without this, the session freshness
+      // cache makes fetchAgents() a no-op and the list appears stale until
+      // the user force-refreshes.
+      const { data: agent } = body;
+      if (agent?.id) {
+        useAgentsStore.setState((s) => ({
+          agents: [{ ...agent, runs: [], evalResults: [] }, ...s.agents],
+        }));
+        invalidate("agents");
       }
 
       toast.success(`Agent "${name}" created successfully`);
