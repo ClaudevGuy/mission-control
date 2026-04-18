@@ -6,13 +6,29 @@ import { Switch } from "@/components/ui/switch";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Download, Trash2, Pause, RotateCcw, ShieldX, Bell, Shield, X, Loader2, Link2, Key, Copy } from "lucide-react";
+import { Download, Trash2, Pause, RotateCcw, ShieldX, Bell, Shield, X, Loader2, Link2, Key, Copy, SlidersHorizontal, Palette, TrendingDown, Database, History, ChevronRight } from "lucide-react";
 import { useSettingsStore } from "@/stores/settings-store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ModalShell } from "@/components/ui/modal-shell";
 
-const NAV_ITEMS = ["General", "Appearance", "Notifications", "Auto-Downshift", "Data & Privacy", "Security", "Audit Log"];
+type NavItem = {
+  id: string;
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  group: "project" | "account";
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { id: "General",       label: "General",       description: "Name, timezone",       icon: SlidersHorizontal, group: "project" },
+  { id: "Appearance",    label: "Appearance",    description: "Theme, polling",       icon: Palette,           group: "project" },
+  { id: "Notifications", label: "Notifications", description: "Alerts, auto-pause",   icon: Bell,              group: "project" },
+  { id: "Auto-Downshift",label: "Auto-Downshift",description: "Cheap-model shadows",  icon: TrendingDown,      group: "project" },
+  { id: "Data & Privacy",label: "Data & Privacy",description: "Retention, deletion", icon: Database,          group: "account" },
+  { id: "Security",      label: "Security",      description: "Sessions, 2FA",        icon: Shield,            group: "account" },
+  { id: "Audit Log",     label: "Audit Log",     description: "Activity history",     icon: History,           group: "account" },
+];
 
 const NOTIF_EVENTS: { name: string; app: boolean; email: boolean; slack: boolean }[] = [];
 
@@ -88,8 +104,7 @@ export default function SettingsPage() {
   const projectDescription = useSettingsStore((s) => s.projectDescription);
   const storeSetProjectName = useSettingsStore((s) => s.setProjectName);
   const storeSetProjectDescription = useSettingsStore((s) => s.setProjectDescription);
-  const projectLogo = useSettingsStore((s) => s.projectLogo);
-  const storeSetProjectLogo = useSettingsStore((s) => s.setProjectLogo);
+
   const fetchSettings = useSettingsStore((s) => s.fetch);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -100,29 +115,95 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <PageHeader title="Settings" description="Project configuration, appearance, and account management" />
 
-      <div className="flex gap-6">
+      <div className="flex gap-8">
         {/* Left nav */}
-        <div className="w-[200px] shrink-0 space-y-0.5">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item}
-              onClick={() => setSection(item)}
-              className={cn(
-                "w-full text-left text-sm px-3 py-2 rounded-lg transition-colors",
-                section === item
-                  ? "text-foreground bg-muted/50 font-medium"
-                  : item === "Danger Zone"
-                    ? "text-red-400/60 hover:text-red-400 hover:bg-red-400/[0.04]"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-              )}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
+        <aside className="w-[260px] shrink-0">
+          <nav className="sticky top-4 space-y-6">
+            {(["project", "account"] as const).map((group) => {
+              const items = NAV_ITEMS.filter((i) => i.group === group);
+              const groupLabel = group === "project" ? "Project" : "Account";
+              return (
+                <div key={group}>
+                  <div className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
+                    {groupLabel}
+                  </div>
+                  <div className="space-y-0.5">
+                    {items.map((item) => {
+                      const Icon = item.icon;
+                      const active = section === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => setSection(item.id)}
+                          className={cn(
+                            "group relative w-full text-left rounded-lg transition-all",
+                            "flex items-start gap-3 px-3 py-2.5",
+                            active
+                              ? "bg-muted/60 text-foreground"
+                              : "text-muted-foreground hover:bg-muted/30 hover:text-foreground"
+                          )}
+                        >
+                          {/* Active indicator bar */}
+                          {active && (
+                            <span className="absolute left-0 top-2 bottom-2 w-[2.5px] rounded-full bg-brand" />
+                          )}
+
+                          {/* Icon */}
+                          <span className={cn(
+                            "flex size-7 shrink-0 items-center justify-center rounded-md transition-colors mt-0.5",
+                            active
+                              ? "bg-brand/10 text-brand"
+                              : "bg-muted/40 text-muted-foreground/80 group-hover:bg-muted/60 group-hover:text-foreground"
+                          )}>
+                            <Icon className="size-3.5" />
+                          </span>
+
+                          {/* Label + description */}
+                          <span className="flex-1 min-w-0 pt-0.5">
+                            <span className={cn(
+                              "block text-sm leading-tight",
+                              active ? "font-semibold text-foreground" : "font-medium"
+                            )}>
+                              {item.label}
+                            </span>
+                            <span className="block text-[11px] text-muted-foreground/60 mt-0.5 leading-tight">
+                              {item.description}
+                            </span>
+                          </span>
+
+                          {/* Chevron on active */}
+                          {active && (
+                            <ChevronRight className="size-3.5 text-brand/60 shrink-0 mt-1" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </nav>
+        </aside>
 
         {/* Right content */}
-        <div className="flex-1 max-w-xl space-y-6">
+        <div className="flex-1 max-w-2xl space-y-6">
+          {/* Section header — mirrors the active nav item */}
+          {(() => {
+            const active = NAV_ITEMS.find((i) => i.id === section);
+            if (!active) return null;
+            const ActiveIcon = active.icon;
+            return (
+              <div className="flex items-center gap-3 pb-3 border-b border-border/60">
+                <div className="flex size-9 items-center justify-center rounded-lg bg-brand/10 text-brand">
+                  <ActiveIcon className="size-4" />
+                </div>
+                <div>
+                  <h2 className="text-base font-semibold text-foreground leading-tight">{active.label}</h2>
+                  <p className="text-xs text-muted-foreground/70 mt-0.5">{active.description}</p>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ─── GENERAL ─── */}
           {section === "General" && (
@@ -131,27 +212,7 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <div><label className="text-xs text-muted-foreground block mb-1">Project Name</label><input value={projectName} onChange={(e) => storeSetProjectName(e.target.value)} className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-brand/50" /></div>
                 <div><label className="text-xs text-muted-foreground block mb-1">Description</label><textarea value={projectDescription} onChange={(e) => storeSetProjectDescription(e.target.value)} rows={3} className="w-full rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-foreground outline-none resize-none focus:border-brand/50" /></div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Logo URL</label>
-                  <div className="flex items-center gap-3">
-                    {/* Preview */}
-                    <div className="relative shrink-0 size-9 rounded-lg border border-border bg-muted/30 overflow-hidden flex items-center justify-center">
-                      {projectLogo ? (
-                        /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={projectLogo} alt="Logo preview" className="size-full object-cover" />
-                      ) : (
-                        <span className="text-[10px] text-muted-foreground/40 font-mono">URL</span>
-                      )}
-                    </div>
-                    <input
-                      value={projectLogo}
-                      onChange={(e) => storeSetProjectLogo(e.target.value)}
-                      placeholder="https://example.com/logo.png"
-                      className="h-9 flex-1 rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none focus:border-brand/50 placeholder:text-muted-foreground/30"
-                    />
-                  </div>
-                  <p className="mt-1 text-[11px] text-muted-foreground/50">Appears in the sidebar. Use a square image for best results.</p>
-                </div>
+
                 <div><label className="text-xs text-muted-foreground block mb-1">Timezone</label>
                   <select className="h-9 w-full rounded-lg border border-border bg-muted/30 px-3 text-sm text-foreground outline-none"><option>America/Los_Angeles (PST)</option><option>America/New_York (EST)</option><option>Europe/London (GMT)</option><option>UTC</option></select>
                 </div>
@@ -265,16 +326,40 @@ export default function SettingsPage() {
                   <div className="shrink-0 rounded-md border border-amber-400/20 bg-amber-400/[0.04] px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-amber-300/80">Beta</div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-2 border-t border-border/50">
+                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                  {/* Left: status indicator */}
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={cn(
+                        "relative flex size-2.5 shrink-0",
+                        dsConfig?.enabled && "after:absolute after:inset-0 after:rounded-full after:animate-ping after:bg-emerald-500/60"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "relative size-2.5 rounded-full",
+                          dsConfig?.enabled
+                            ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"
+                            : "bg-red-500/90"
+                        )}
+                      />
+                    </span>
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        dsConfig?.enabled ? "text-emerald-400" : "text-red-400"
+                      )}
+                    >
+                      {dsConfig?.enabled ? "Enabled — shadow runs active" : "Disabled"}
+                    </span>
+                  </div>
+
+                  {/* Right: switch */}
                   <Switch
                     checked={!!dsConfig?.enabled}
                     disabled={!dsConfig || dsSaving}
                     onCheckedChange={(v) => saveDsConfig({ enabled: v })}
-                    className="data-[state=checked]:bg-brand"
                   />
-                  <span className="text-sm text-foreground">
-                    {dsConfig?.enabled ? "Enabled — shadow runs active" : "Disabled"}
-                  </span>
                 </div>
               </GlassPanel>
 
