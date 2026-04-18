@@ -15,6 +15,7 @@ import { selectModel, getTierConfig, type Tier, type ProviderKey } from "@/lib/m
 import { profileTask } from "@/lib/agent-profiler";
 import { createNotification } from "@/lib/create-notification";
 import { checkCostAnomaly } from "@/lib/cost-guard";
+import { maybeDispatchShadow } from "@/lib/downshift/dispatcher";
 
 const executeSchema = z.object({
   input: z.string().min(1, "Input is required"),
@@ -220,6 +221,24 @@ export const POST = withErrorHandler(
 
       // Cost anomaly auto-pause check
       checkCostAnomaly(agentId, projectId).catch(() => {});
+
+      // Auto-Downshift shadow run (non-blocking, guarded by per-project config)
+      maybeDispatchShadow({
+        projectId,
+        agentId,
+        providerKey,
+        productionModel: resolvedModelId,
+        productionTier: selectedTier,
+        input: body.input,
+        systemPrompt: resolvedSystemPrompt,
+        productionOutput: output,
+        productionTokensIn: tokensIn,
+        productionTokensOut: tokensOut,
+        productionCost: cost,
+        apiKey,
+        temperature: agent.temperature,
+        maxTokens: agent.maxTokens,
+      }).catch(() => {});
 
       return apiResponse({
         output,
