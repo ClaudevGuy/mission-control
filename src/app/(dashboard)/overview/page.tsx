@@ -15,8 +15,10 @@ import { useDeploymentsStore } from "@/stores/deployments-store";
 import { useIncidentsStore } from "@/stores/incidents-store";
 import { useCostsStore } from "@/stores/costs-store";
 import { useNotificationsStore } from "@/stores/notifications-store";
-import { TrendingDown, Plug, ArrowRight, Copy } from "lucide-react";
+import { TrendingDown, Plug, ArrowRight, Copy, Package, Terminal } from "lucide-react";
 import { toast } from "sonner";
+import { ModalShell } from "@/components/ui/modal-shell";
+import { Button } from "@/components/ui/button";
 // ─────────────────────────────────────────────────────────────
 // Using the Zustand hook directly (not via selector) so we can read agents count
 
@@ -138,6 +140,7 @@ function CodeBlock({ code }: { code: string }) {
 
 function ConnectExternalAgentsCTA() {
   const [origin, setOrigin] = useState("https://your-app.com");
+  const [sdkOpen, setSdkOpen] = useState(false);
   useEffect(() => { setOrigin(window.location.origin); }, []);
   const snippet = `import { Mothership } from '@mothership/sdk'
 
@@ -180,11 +183,107 @@ await mc.trackRun({
               <Copy className="size-3" />
             </button>
           </div>
-          <Link href="/tutorial" className="inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            type="button"
+            onClick={() => setSdkOpen(true)}
+            className="inline-flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+          >
             Full SDK documentation <ArrowRight className="size-3" />
-          </Link>
+          </button>
         </div>
       </div>
+
+      {/* ── SDK Documentation modal ── */}
+      <ModalShell open={sdkOpen} onClose={() => setSdkOpen(false)}>
+        <div className="w-full max-w-xl rounded-xl border border-border bg-card shadow-2xl">
+          <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+            <div className="flex items-center gap-2">
+              <Package className="size-4 text-brand" />
+              <span className="text-sm font-semibold">Mothership SDK</span>
+            </div>
+            <button
+              onClick={() => setSdkOpen(false)}
+              className="text-muted-foreground hover:text-foreground text-lg leading-none"
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div className="px-5 py-5 space-y-5 text-sm">
+            <p className="text-muted-foreground leading-relaxed">
+              Push run data from any agent framework into MOTHERSHIP. One client,
+              one <code className="rounded bg-muted px-1 py-0.5 text-[11px] text-foreground">trackRun()</code> call per agent execution — you get unified observability
+              across costs, latency, and outcomes.
+            </p>
+
+            {/* Install */}
+            <div>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground/60 mb-2 flex items-center gap-1.5">
+                <Terminal className="size-3" /> Install
+              </p>
+              <div className="relative">
+                <pre className="rounded-lg border border-border bg-muted/30 px-3 py-2 font-mono text-xs text-foreground overflow-x-auto">
+                  npm install @mothership/sdk
+                </pre>
+                <button
+                  onClick={() => { navigator.clipboard.writeText("npm install @mothership/sdk"); toast.success("Copied"); }}
+                  className="absolute top-1.5 right-1.5 p-1 rounded border border-border bg-card/80 text-muted-foreground hover:text-foreground"
+                  aria-label="Copy install command"
+                >
+                  <Copy className="size-3" />
+                </button>
+              </div>
+            </div>
+
+            {/* Core methods */}
+            <div>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground/60 mb-2">Core methods</p>
+              <div className="space-y-2">
+                <div className="rounded-md border border-border bg-muted/20 px-3 py-2">
+                  <code className="text-xs font-mono text-brand">new Mothership(&#123; url, apiKey, source &#125;)</code>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Initialize the client with your API key and source label.</p>
+                </div>
+                <div className="rounded-md border border-border bg-muted/20 px-3 py-2">
+                  <code className="text-xs font-mono text-brand">mc.trackRun(&#123; agent, status, cost &#125;)</code>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Report a completed agent run — logs to the dashboard in real time.</p>
+                </div>
+                <div className="rounded-md border border-border bg-muted/20 px-3 py-2">
+                  <code className="text-xs font-mono text-brand">mc.trackStep(&#123; runId, name, output &#125;)</code>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Optional — log intermediate steps for granular tracing.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Frameworks */}
+            <div>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground/60 mb-2">Works with</p>
+              <div className="flex flex-wrap gap-1.5">
+                {["CrewAI", "LangGraph", "Paperclip", "AutoGen", "Custom"].map((f) => (
+                  <span key={f} className="rounded-md border border-border bg-muted/30 px-2 py-1 text-[11px] font-medium text-foreground">
+                    {f}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-lg border border-brand/20 bg-brand/[0.04] px-3.5 py-3 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">Next step:</span> Generate an API key in Settings, then drop the snippet above into your agent code.
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-3 bg-muted/10">
+            <Button variant="outline" size="sm" onClick={() => setSdkOpen(false)}>
+              Close
+            </Button>
+            <Link href="/settings" onClick={() => setSdkOpen(false)}>
+              <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground">
+                Get API key
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </ModalShell>
     </GlassPanel>
   );
 }
