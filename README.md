@@ -101,6 +101,49 @@ Open [http://localhost:3000](http://localhost:3000). When the project is empty, 
 - **Cost Burn widget** — trailing spend total, working 7d/14d/30d/90d range selector, and a ±% trend vs the prior period
 - **Top Issues** — `HEALTHY`/`ACTIVE` pill, incident feed or a glowing emerald all-clear empty state
 
+## Security & Threat Model
+
+**MotherShip is designed to run locally on your own machine.** Its security model assumes the attack surface is limited to `localhost` — a single trusted user, on a single trusted OS, reachable only from that machine's own browser. Under that assumption, the app is safe to use and distribute.
+
+If you break that assumption, you break the model.
+
+### The hard rules
+
+- **Do not expose the server to the network.** That includes:
+  - Running `ngrok http 3003`, Cloudflare Tunnel, `localtunnel`, or similar
+  - Binding to `0.0.0.0` instead of `localhost` / `127.0.0.1`
+  - VS Code "Forward a Port" / GitHub Codespaces port-share
+  - Exposing it over Tailscale, ZeroTier, WireGuard, or corporate VPN
+  - Opening a firewall rule for port 3003
+
+  If any of the above is true, auth becomes bypassable and the registration endpoint is reachable by anyone who can route to your machine.
+
+- **Generate your own secrets.** `NEXTAUTH_SECRET` and `ENCRYPTION_KEY` must be unique to your install. Never copy them from a tutorial, a friend's `.env`, or a sample file. Two installs sharing an `ENCRYPTION_KEY` can decrypt each other's stored credentials.
+
+  ```bash
+  openssl rand -base64 32   # NEXTAUTH_SECRET
+  openssl rand -hex 32      # ENCRYPTION_KEY
+  ```
+
+- **Set `ALLOW_REGISTRATION=false` after you create your first account.** This closes the public signup endpoint. Leaving it open is only safe if the server is strictly loopback-bound and your OS user account is trusted.
+
+- **Back up `ENCRYPTION_KEY` somewhere outside the project folder.** Losing it renders every stored integration credential unrecoverable (they're AES-256-GCM sealed with auth tags). A password manager entry works.
+
+- **Treat `.env` like a password manager entry.** It's gitignored by default — keep it that way. Don't sync the project folder to Dropbox/iCloud/Drive without encryption. Don't pack it into archives you share.
+
+### What's explicitly out of scope
+
+- Multi-tenant isolation between users on the same install
+- Defense against an attacker with local OS access
+- Defense against supply-chain attacks on npm dependencies (run `npm audit` periodically)
+- Resistance to DoS — known Next.js DoS CVEs exist at the pinned version; they only matter if the server is reachable from untrusted networks, which it shouldn't be
+
+### If you leak an API key
+
+Rotate it at the provider immediately (console.anthropic.com, platform.openai.com, etc.), then remove the old integration from MotherShip and re-add with the new key.
+
+---
+
 ## Adding AI Providers
 
 To run AI agents, you need at least one AI provider API key.
