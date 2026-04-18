@@ -15,7 +15,7 @@ import { z } from "zod";
 // Returns the project's auto-downshift config. Any authenticated member can
 // read; only admins can update (see PUT below).
 
-export const GET = withErrorHandler(async (_request: NextRequest) => {
+export const GET = withErrorHandler(async () => {
   await requireAuth();
   const projectId = await getProjectId();
 

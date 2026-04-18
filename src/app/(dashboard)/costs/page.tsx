@@ -13,7 +13,7 @@ import {
   ModelBadge,
 } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { DollarSign, TrendingUp, Target, Download, CheckCircle2, AlertTriangle } from "lucide-react";
+import { DollarSign, TrendingUp, Target, Download, CheckCircle2, AlertTriangle, Sparkles, ArrowRight, X, Check } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -46,6 +46,59 @@ export default function CostsPage() {
   useEffect(() => {
     fetch("/api/costs/model-savings").then(r => r.json()).then(d => setSavings(d.data)).catch(() => {});
   }, []);
+
+  // ─── Auto-Downshift proposals ───
+  interface DownshiftProposalRow {
+    id: string;
+    agentId: string;
+    agentName: string;
+    fromModel: string;
+    toModel: string;
+    fromTier: number;
+    toTier: number;
+    sampleSize: number;
+    parityRatio: number;
+    shadowMean: number;
+    productionMean: number;
+    estMonthlySavings: number;
+    judgeMethod: string;
+    status: string;
+    createdAt: string;
+  }
+  const [dsProposals, setDsProposals] = useState<DownshiftProposalRow[]>([]);
+  const [dsActing, setDsActing] = useState<string | null>(null);
+
+  const loadProposals = async (refresh = false) => {
+    try {
+      const res = await fetch(`/api/downshift/proposals${refresh ? "?refresh=1" : ""}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setDsProposals(data.data?.proposals ?? []);
+    } catch { /* silent */ }
+  };
+  useEffect(() => { loadProposals(true); }, []);
+
+  const decideProposal = async (id: string, action: "accept" | "reject") => {
+    setDsActing(id);
+    try {
+      const res = await fetch(`/api/downshift/proposals/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Action failed" }));
+        toast.error(err.error || "Action failed");
+        return;
+      }
+      toast.success(action === "accept" ? "Downshift accepted" : "Proposal dismissed (30-day cooldown)");
+      setDsProposals((prev) => prev.filter((p) => p.id !== id));
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setDsActing(null);
+    }
+  };
 
   const totalAgentSpendRaw = agentCosts.reduce((s, a) => s + a.totalCost, 0);
   const thisMonth = totalAgentSpendRaw;
@@ -213,6 +266,104 @@ export default function CostsPage() {
               )}
             </div>
           </GlassPanel>
+
+          {/* ─── Auto-Downshift proposals ─── */}
+          {dsProposals.length > 0 && (
+            <GlassPanel padding="lg" className="border-brand/30 bg-brand/[0.04]">
+              <div className="flex items-start justify-between gap-4 mb-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand/10">
+                    <Sparkles className="size-5 text-brand" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground mb-0.5">
+                      Auto-Downshift ready — {dsProposals.length} proposal{dsProposals.length === 1 ? "" : "s"}
+                    </h3>
+                    <p className="text-[11px] text-muted-foreground/80">
+                      Shadow tests show these agents would keep quality on a cheaper model. Approve to move them, dismiss to cool off for 30 days.
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Potential savings</p>
+                  <p className="font-mono text-lg font-semibold text-brand">
+                    {formatCurrency(dsProposals.reduce((s, p) => s + p.estMonthlySavings, 0))}
+                    <span className="text-[11px] font-normal text-muted-foreground ml-1">/mo</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {dsProposals.map((p) => {
+                  const parityPct = Math.round(p.parityRatio * 100);
+                  const isActing = dsActing === p.id;
+                  return (
+                    <div
+                      key={p.id}
+                      className="flex items-center gap-4 rounded-lg border border-border/70 bg-background/40 px-4 py-3"
+                    >
+                      {/* Agent name */}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{p.agentName}</p>
+                        <p className="text-[10px] text-muted-foreground/70 mt-0.5">
+                          {p.sampleSize} scored shadow runs &middot; judge: {p.judgeMethod === "llm_judge" ? "LLM" : p.judgeMethod}
+                        </p>
+                      </div>
+
+                      {/* Model transition */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <ModelBadge model={p.fromModel} size="sm" />
+                        <ArrowRight className="size-3.5 text-muted-foreground/60" />
+                        <ModelBadge model={p.toModel} size="sm" />
+                      </div>
+
+                      {/* Parity */}
+                      <div className="text-right shrink-0 w-20">
+                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground/70">Parity</p>
+                        <p className={cn(
+                          "font-mono text-xs font-semibold",
+                          parityPct >= 100 ? "text-brand" : parityPct >= 98 ? "text-foreground" : "text-amber-400"
+                        )}>
+                          {parityPct}%
+                        </p>
+                      </div>
+
+                      {/* Savings */}
+                      <div className="text-right shrink-0 w-24">
+                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground/70">Est. savings</p>
+                        <p className="font-mono text-xs font-semibold text-brand">
+                          {formatCurrency(p.estMonthlySavings)}/mo
+                        </p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={isActing}
+                          onClick={() => decideProposal(p.id, "reject")}
+                          className="h-7 px-2 text-muted-foreground hover:text-red-400 hover:bg-red-400/[0.06]"
+                          title="Dismiss (30-day cooldown)"
+                        >
+                          <X className="size-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          disabled={isActing}
+                          onClick={() => decideProposal(p.id, "accept")}
+                          className="h-7 px-3 text-[11px] bg-brand text-primary-foreground hover:bg-brand/85"
+                        >
+                          <Check className="size-3 mr-1" />
+                          Approve
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </GlassPanel>
+          )}
 
           {/* Charts row: 2/3 + 1/3 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
