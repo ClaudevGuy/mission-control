@@ -46,7 +46,10 @@ interface TutorialStep {
   plate: React.ReactNode;
 }
 
-// ── Step 1 — The Install ─────────────────────────────────────────────────────
+// ── Step 1 — Install & configure ─────────────────────────────────────────────
+// The plate mirrors the full setup flow (not just git clone): env bootstrap,
+// secret generation, schema push, dev server. Output is stylized but hews to
+// the real command shapes so a new user pasting along sees recognizable lines.
 function PlateTerminal() {
   return (
     <div className="rounded-md border border-[#3d3a39] bg-[#0d0c0a] shadow-[6px_6px_0_rgba(0,0,0,0.4)] overflow-hidden font-mono text-[12.5px] leading-[1.7]">
@@ -56,15 +59,21 @@ function PlateTerminal() {
           <span className="size-2.5 rounded-full bg-[#e8b24d]" />
           <span className="size-2.5 rounded-full bg-[#5fbf7a]" />
         </div>
-        <span className="text-[10px] tracking-[0.22em] text-white/30 uppercase ml-auto">terminal</span>
+        <span className="text-[10px] tracking-[0.22em] text-white/30 uppercase ml-auto">terminal · illustrative</span>
       </div>
       <div className="px-5 py-4 text-[#e7e2d3] space-y-0.5">
         <div><span className="text-[#d8442e] font-medium">$</span> <span className="text-[#f0a87a]">git</span> clone <span className="text-[#5fbf7a]">https://github.com/ClaudevGuy/MotherShip</span></div>
-        <div className="pl-5 text-white/45 text-[11.5px]">Cloning into 'MotherShip'… ✓ 18,426 lines</div>
-        <div className="mt-2"><span className="text-[#d8442e] font-medium">$</span> cd MotherShip &amp;&amp; <span className="text-[#f0a87a]">npm</span> install</div>
-        <div className="pl-5 text-white/45 text-[11.5px]">added 827 packages in 14s ✓</div>
-        <div className="mt-2"><span className="text-[#d8442e] font-medium">$</span> <span className="text-[#f0a87a]">npm</span> run dev</div>
-        <div className="pl-5 text-white/55 text-[11.5px]"><span className="text-[#5fbf7a]">▲ Next.js 14</span> — ready on <span className="text-[#f0a87a]">http://localhost:3000</span></div>
+        <div><span className="text-[#d8442e] font-medium">$</span> cd MotherShip &amp;&amp; <span className="text-[#f0a87a]">npm</span> install</div>
+        <div className="pl-5 text-white/45 text-[11.5px]">added 827 packages, audited 828 in 14s</div>
+        <div className="mt-1.5"><span className="text-[#d8442e] font-medium">$</span> cp .env.example .env <span className="text-white/35"># fill in DATABASE_URL</span></div>
+        <div><span className="text-[#d8442e] font-medium">$</span> openssl rand -hex 32 <span className="text-white/35"># → ENCRYPTION_KEY</span></div>
+        <div><span className="text-[#d8442e] font-medium">$</span> openssl rand -base64 32 <span className="text-white/35"># → NEXTAUTH_SECRET</span></div>
+        <div className="mt-1.5"><span className="text-[#d8442e] font-medium">$</span> <span className="text-[#f0a87a]">npx</span> prisma db push</div>
+        <div className="pl-5 text-white/45 text-[11.5px]">✔ Your database is now in sync with your schema.</div>
+        <div className="mt-1.5"><span className="text-[#d8442e] font-medium">$</span> <span className="text-[#f0a87a]">npm</span> run dev</div>
+        <div className="pl-5 text-white/55 text-[11.5px]"><span className="text-[#5fbf7a]">▲ Next.js 14.2.35</span></div>
+        <div className="pl-5 text-white/55 text-[11.5px]"> - Local: <span className="text-[#f0a87a]">http://localhost:3000</span></div>
+        <div className="pl-5 text-white/45 text-[11.5px]"> ✓ Ready in 2.8s</div>
       </div>
     </div>
   );
@@ -269,16 +278,22 @@ const STEPS: TutorialStep[] = [
     id: "install",
     n: 1,
     icon: Terminal,
-    title: "Install Mothership on your machine",
-    subtitle: "Three commands. Roughly ninety seconds from clone to dashboard.",
-    readTime: "2 min",
+    title: "Install & configure Mothership",
+    subtitle: "Clone, paste two secrets, push the schema. The console comes up on localhost:3000.",
+    readTime: "4 min",
     ctaLabel: "Open the repository",
     ctaHref: "https://github.com/ClaudevGuy/MotherShip",
     body: (
       <>
-        <p>Mothership is self-hosted by design — no signup, no hosted tier, no email wall. You get the repo, the schema, and the SDK. Your keys stay on your machine.</p>
-        <p>The only requirements are Node 20 and a Postgres database — a local instance, Neon, or Supabase all work. After <code>npm run dev</code>, the console is live on <code>localhost:3000</code>.</p>
-        <p className="text-[11.5px] text-muted-foreground italic">You're already here — which means this step is done. Mark it complete and continue.</p>
+        <p>Mothership is self-hosted by design — no signup, no hosted tier, no email wall. You clone the repo, paste two secrets into <code>.env</code>, push the schema, register yourself, and the console is live. Your keys stay on your machine.</p>
+        <p className="font-mono text-[10px] tracking-[0.22em] uppercase text-muted-foreground/70 !mt-6 !mb-2">Setup checklist</p>
+        <ul className="space-y-1.5 text-[13.5px] text-foreground/85 list-none pl-0 !mt-2">
+          <li className="flex gap-2"><span className="text-brand shrink-0">▸</span><span>Node 20+ and a Postgres URL — local, Neon, or Supabase all work</span></li>
+          <li className="flex gap-2"><span className="text-brand shrink-0">▸</span><span>Generate <code>ENCRYPTION_KEY</code> and <code>NEXTAUTH_SECRET</code> with <code>openssl</code></span></li>
+          <li className="flex gap-2"><span className="text-brand shrink-0">▸</span><span>Push the schema with <code>npx prisma db push</code></span></li>
+          <li className="flex gap-2"><span className="text-brand shrink-0">▸</span><span>Register the first admin, then set <code>ALLOW_REGISTRATION=false</code></span></li>
+        </ul>
+        <p className="text-[12.5px] text-muted-foreground !mt-5">Back up your <code>ENCRYPTION_KEY</code> somewhere safe — if you lose it, stored provider credentials can't be recovered. Full commands and a threat-model section live in the repo README.</p>
       </>
     ),
     plate: <PlateTerminal />,
@@ -294,9 +309,9 @@ const STEPS: TutorialStep[] = [
     ctaHref: "/agents",
     body: (
       <>
+        <p>First, connect a provider at <Link href="/integrations" className="text-brand underline decoration-dotted underline-offset-2 hover:text-brand/80">Integrations</Link> — Anthropic or OpenAI is enough to get started. Keys are stored encrypted (AES-256-GCM) in your local database; they never leave your machine.</p>
         <p>The quick-create takes two things: a name and a system prompt. That's it. Auto-routing will profile the first few runs and select the cheapest tier that still passes your eval threshold — so you don't have to pick between Opus and Haiku yourself.</p>
-        <p>Templates are available if you want to start from a known pattern (code reviewer, support classifier, document triager). You can always switch the prompt or the model policy after the first run.</p>
-        <p>Cost cap is optional but recommended on first setup — cap per-run tokens or daily spend so a runaway agent can't drain your budget.</p>
+        <p>Templates are available if you want to start from a known pattern (code reviewer, support classifier, document triager). Cost cap is optional but recommended on first setup — cap per-run tokens or daily spend so a runaway agent can't drain your budget.</p>
       </>
     ),
     plate: <PlateQuickCreate />,
@@ -320,26 +335,8 @@ const STEPS: TutorialStep[] = [
     plate: <PlateLiveRun />,
   },
   {
-    id: "savings",
-    n: 4,
-    icon: TrendingDown,
-    title: "See what auto-routing saved you",
-    subtitle: "The cost dashboard shows baseline vs actual, rolled up per agent, per team, per month.",
-    readTime: "2 min",
-    ctaLabel: "Open Costs",
-    ctaHref: "/costs",
-    body: (
-      <>
-        <p>Auto-routing is the flagship feature — every task is profiled on the way in (complexity, expected output size, production-touching) and routed to the lowest tier that still passes your evals. Opus for the work that matters. Haiku for the classification most teams quietly overpay for.</p>
-        <p>The dashboard shows two numbers: <strong>baseline</strong> (what a pinned-Opus policy would have cost) and <strong>actual</strong> (what Mothership's routing delivered). The delta is the <em>recovered</em> spend.</p>
-        <p>Finance stops asking. Engineering stops defending.</p>
-      </>
-    ),
-    plate: <PlateCostChart />,
-  },
-  {
     id: "prompt-studio",
-    n: 5,
+    n: 4,
     icon: FileCode,
     title: "Version your prompt like code",
     subtitle: "Save, diff, activate. Each version is immutable and searchable. Roll back in one click.",
@@ -357,7 +354,7 @@ const STEPS: TutorialStep[] = [
   },
   {
     id: "evals",
-    n: 6,
+    n: 5,
     icon: FlaskConical,
     title: "Write your first eval",
     subtitle: "Two scorers, no theatre — deterministic rules plus Claude-as-judge.",
@@ -374,6 +371,24 @@ const STEPS: TutorialStep[] = [
     plate: <PlateEval />,
   },
   {
+    id: "savings",
+    n: 6,
+    icon: TrendingDown,
+    title: "See what auto-routing saved you",
+    subtitle: "The cost dashboard shows baseline vs actual, rolled up per agent, per team, per month.",
+    readTime: "2 min",
+    ctaLabel: "Open Costs",
+    ctaHref: "/costs",
+    body: (
+      <>
+        <p>Auto-routing is the flagship feature — every task is profiled on the way in (complexity, expected output size, production-touching) and routed to the lowest tier that still passes your evals. Opus for the work that matters. Haiku for the classification most teams quietly overpay for.</p>
+        <p>The dashboard shows two numbers: <strong>baseline</strong> (what a pinned-Opus policy would have cost) and <strong>actual</strong> (what Mothership's routing delivered). The delta is the <em>recovered</em> spend — the cumulative payoff of every iteration you made in the previous two steps.</p>
+        <p>Finance stops asking. Engineering stops defending.</p>
+      </>
+    ),
+    plate: <PlateCostChart />,
+  },
+  {
     id: "safeguards",
     n: 7,
     icon: Shield,
@@ -386,7 +401,7 @@ const STEPS: TutorialStep[] = [
       <>
         <p>Two settings you should turn on before your first real run. <strong>Audit log</strong> is already on — every create, update, delete is recorded with who, when, and what. Search it in Settings → Audit.</p>
         <p>The <strong>kill switch</strong> is for the moment an agent decides to recurse forever at 3 a.m. or a prompt change drops a zero off a pricing field. One admin-scoped button stops every running agent in under a second. Confirmed. Logged. Quiet.</p>
-        <p>That's the tutorial. You've created an agent, watched it stream, seen it save money, versioned its prompt, written an eval, and turned on the safeguards. Open the overview and get to work.</p>
+        <p>That's the tutorial. You've installed, connected a provider, run an agent, versioned its prompt, written an eval, seen the savings add up, and turned on the safeguards. Open the overview and get to work.</p>
       </>
     ),
     plate: <PlateSafeguards />,
