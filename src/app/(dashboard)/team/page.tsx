@@ -275,11 +275,15 @@ export default function TeamPage() {
 
         return (
           <div className="space-y-4">
-            <div className="flex justify-end">
-              <Button size="default" onClick={() => setApiKeyOpen(true)}>
-                <Key className="size-4 mr-2" /> Create API Key
-              </Button>
-            </div>
+            {/* Header CTA shows only when there are keys — empty state has its
+                own centered CTA so the user has a single clear path. */}
+            {API_KEYS_DISPLAY.length > 0 && (
+              <div className="flex justify-end">
+                <Button size="default" onClick={() => setApiKeyOpen(true)}>
+                  <Key className="size-4 mr-2" /> Create API Key
+                </Button>
+              </div>
+            )}
 
             {API_KEYS_DISPLAY.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-16 text-center rounded-xl border border-border bg-card/50">
