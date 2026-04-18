@@ -462,3 +462,8 @@
 .react-flow__pane {
   background: transparent !important;
 }
+
+/* ── Switch — green when enabled ── */
+[data-slot="switch"][data-checked] {
+  background-color: #00d992 !important;
+}
