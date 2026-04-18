@@ -268,7 +268,7 @@ await mc.trackRun({
             </div>
 
             <div className="rounded-lg border border-brand/20 bg-brand/[0.04] px-3.5 py-3 text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">Next step:</span> Generate an API key in Settings, then drop the snippet above into your agent code.
+              <span className="font-medium text-foreground">Next step:</span> Generate an API key under Team &rsaquo; API Keys, then drop the snippet above into your agent code.
             </div>
           </div>
 
@@ -276,7 +276,7 @@ await mc.trackRun({
             <Button variant="outline" size="sm" onClick={() => setSdkOpen(false)}>
               Close
             </Button>
-            <Link href="/settings" onClick={() => setSdkOpen(false)}>
+            <Link href="/team?tab=keys" onClick={() => setSdkOpen(false)}>
               <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground">
                 Get API key
               </Button>

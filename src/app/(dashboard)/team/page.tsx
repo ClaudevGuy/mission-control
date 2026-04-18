@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTeamStore } from "@/stores/team-store";
 import { PageHeader, GlassPanel, ConfirmDialog } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,12 @@ function formatTime(ts: string) {
 }
 
 export default function TeamPage() {
-  const [tab, setTab] = useState<"members" | "roles" | "audit" | "keys">("members");
+  const searchParams = useSearchParams();
+  const initialTab = ((): "members" | "roles" | "audit" | "keys" => {
+    const t = searchParams?.get("tab");
+    return t === "roles" || t === "audit" || t === "keys" ? t : "members";
+  })();
+  const [tab, setTab] = useState<"members" | "roles" | "audit" | "keys">(initialTab);
   const { members, auditLog, apiKeys, fetch: fetchTeam } = useTeamStore();
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
   const [editRoleTarget, setEditRoleTarget] = useState<{ id: string; name: string; role: string } | null>(null);
