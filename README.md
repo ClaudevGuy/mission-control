@@ -34,18 +34,19 @@ Core capabilities:
 - **Prompt Studio** — Git-like versioning with side-by-side diffs. Activate a version and the next run uses it — no deployment
 - **Evals** — Two-engine scoring: deterministic string matching for facts, Claude-as-judge for tone and nuance
 - **Workflows** — Visual pipeline builder (React Flow) for chaining agents, with step-level replay
-- **Costs & Billing** — Per-agent tracking, auto-selection savings shown inline on every run, trailing-7-day forecast, cost-anomaly auto-pause
+- **Costs & Billing** — Per-agent tracking, auto-selection savings shown inline on every run, trailing-7-day forecast, cost-anomaly auto-pause. Full monthly budget config with live spend (from real LLM calls, not stored counters), per-category limits, alert thresholds, and end-of-month projection
+- **Auto-Downshift** — Silent shadow testing on a % of production runs. When a cheaper model matches quality over a statistically meaningful sample, MotherShip surfaces a proposal on `/costs` — you approve, it swaps. 30-day cooldown on rejected triples. LLM-as-judge scoring (Haiku, calibrated 3-dimension rubric). Fully non-blocking; never affects production latency
 - **Run Detail** — Every run gets its own page: full input/output, model selection reasoning, tier badge, savings vs Tier 1
 - **Agent Runs Stream** — Unified live feed of every run across every agent (/logs → "Agent Runs" tab)
 - **Deployments** — Service deployment tracking across dev/staging/production
 - **Integrations** — First-class sidebar destination (`g i`) for connecting any service you already use. Add an integration by name + API key — MotherShip auto-detects known brands (OpenAI, Anthropic, GitHub, Slack, Stripe, Notion, Discord, Linear, Datadog, PagerDuty, Jira, Sentry, PostHog, Vercel, AWS…) and falls back to a first-letter badge for anything else. Services with a server-side adapter that does more than store a key (`github`, `slack`, `anthropic`, `openai`) earn a **Native** badge so the UI stays honest about depth of integration. All credentials encrypted at rest (AES-256). Outbound webhook subscriptions (HTTPS + HMAC-SHA256 signing secret) for 11 event types including `agent.run.completed`, `workflow.failed`, `deployment.started`, `incident.opened`
-- **Logs & Observability** — Unified log stream, LLM call inspection, distributed traces
+- **Logs & Observability** — Unified log stream, LLM call inspection with range filter (Today / 24h / 7d / 30d / All) and 15-second auto-refresh, server-computed stats that always match the selected window, distributed traces
 - **Audit Log** — Every admin action, agent change, and deletion. Who, when, what. Searchable + filterable
 - **Incidents** — Alert rules, on-call scheduling, incident management
 - **Analytics** — User engagement, growth metrics, agent performance, health drift detection
 - **Notifications** — Real-time alerts on agent failures, workflow completions, cost thresholds, auto-pause events
 - **Team** — Member management, role-based access (admin/developer/agent-manager/viewer), scoped API keys
-- **Settings** — Clean 5-tab layout (General / Appearance / Notifications / Data & Privacy / Security)
+- **Settings** — Grouped nav with icons and descriptions (General / Appearance / Notifications / Auto-Downshift / Data & Privacy / Security / Audit Log). Section header mirrors the active nav item for clear orientation
 - **External Agent SDK** — `@mothership/sdk` ingests run events from CrewAI, LangGraph, Paperclip, AutoGen, or any custom framework
 
 ## Quick Start
@@ -254,6 +255,26 @@ Automatic protection against runaway agents:
 - After every run, the system checks hourly spend for that agent
 - If exceeded: agent is paused, a warning notification is created, and an audit entry logged
 - Paused agents resume manually from the agent detail page
+
+### Auto-Downshift
+
+Autonomous cost reduction that never degrades quality:
+
+1. Enable in **Settings > Auto-Downshift** (per-project). Default sample rate 5%, min sample size 100, parity threshold 95%
+2. A small % of production runs dispatch a **parallel shadow call** on the next-cheaper tier (Opus → Sonnet → Haiku). The dispatcher is fully non-blocking — the production response ships before the shadow begins
+3. Each pair is scored by an **LLM-as-judge** (claude-haiku-4-5) using a calibrated 3-dimension rubric (correctness + helpfulness + completeness). Fail-closed on parse errors so parity analysis only considers cleanly-judged pairs
+4. Once an agent has enough samples and parity crosses the threshold, a proposal appears at the top of `/costs` with agent name, model transition (e.g. `claude-opus-4-6 → claude-sonnet-4-6`), parity %, and estimated monthly savings (projected from the agent's full 30-day production spend, not the tiny shadow sample)
+5. Approve → the agent's strategy is updated, audit-logged, and a success notification fires. Dismiss → 30-day cooldown so the same triple doesn't nag you again
+
+**Budget — Fully Configurable**
+
+On `/costs > Budget`:
+
+- Set a **monthly limit** (optionally multiple per-category budgets like "Models" / "Experimentation")
+- `spent` is computed live from `LlmCall` rows in the current calendar month — never a stale DB column
+- Per-budget **alert threshold** slider (50–100%, default 80%); rows show an **Alert** badge when crossed and **Over** when past 100%
+- **End-of-month projection** panel reuses the trailing-7-day forecast — see if you're on track to overrun before you do
+- Admin-only create/update/delete, every action audit-logged
 
 ### Cross-Agent Run Stream
 
