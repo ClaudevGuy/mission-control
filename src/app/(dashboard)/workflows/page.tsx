@@ -357,6 +357,13 @@ export default function WorkflowsPage() {
               <Plus className="size-4 mr-1.5" />
               Create your first workflow
             </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/workflows/builder")}
+            >
+              <GitBranch className="size-4 mr-1.5" />
+              Visual Builder
+            </Button>
             <button
               type="button"
               onClick={() => setLearnOpen(true)}

@@ -132,11 +132,13 @@ Restart the dev server after adding keys to `.env`.
 
 **Quick Create** (60 seconds)
 
-Click **Create Agent** on the `/agents` page. A modal pops up: name + system prompt + Run button. Defaults: auto model selection, manual trigger, session memory. Good enough for 90% of cases.
+On `/agents`, click **Quick Create** on the empty-state hero (or **Create Agent** in the header once you have agents). A modal pops up: name + system prompt + Run button. Defaults: auto model selection, manual trigger, session memory. Good enough for 90% of cases.
 
 **Full Builder** (7-step wizard)
 
-For production agents that need tools, persistent memory, scheduled triggers, or custom model strategies. Accessible via "Advanced Setup" link on the quick-create modal, or directly at `/agents/builder`.
+For production agents that need tools, persistent memory, scheduled triggers, or custom model strategies. Use the **Advanced Builder** button on the empty state, the "Advanced Setup" link in the quick-create modal, or go directly to `/agents/builder`.
+
+The same empty-state pattern carries across `/workflows`, `/deployments`, and `/evals` — header action buttons hide when the page is empty so the center hero is the only path, and reappear once the user has data. On `/workflows` specifically, the empty state also exposes a **Visual Builder** shortcut to `/workflows/builder` so the React Flow canvas stays reachable without any existing workflows.
 
 ### Agent Templates
 
