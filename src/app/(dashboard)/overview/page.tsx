@@ -305,13 +305,63 @@ export default function OverviewPage() {
     fetchNotifications();
   }, []);
 
+  // ─── Personal greeting — hydrated from /api/profile, timezone-aware ───
+  const [greeting, setGreeting] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+
+    const compute = (name: string, tz: string) => {
+      // Read the hour as the user sees it, not as the server/browser does.
+      // `toLocaleString` + { timeZone } is the reliable way to get wall-clock
+      // hour in an arbitrary IANA zone without pulling in a date library.
+      const hour = Number(
+        new Date().toLocaleString("en-US", {
+          timeZone: tz || "UTC",
+          hour: "numeric",
+          hour12: false,
+        })
+      );
+      const period =
+        hour < 5 ? "evening" :
+        hour < 12 ? "morning" :
+        hour < 17 ? "afternoon" :
+        "evening";
+      // First token only — "Daniel Smith" → "Daniel", "Kat" → "Kat"
+      const first = (name || "").trim().split(/\s+/)[0] || "";
+      return first ? `Good ${period}, ${first}` : `Good ${period}`;
+    };
+
+    const load = async () => {
+      try {
+        const res = await fetch("/api/profile");
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        const user = data.data?.user;
+        if (!user || cancelled) return;
+        const name = user.displayName || user.name || "";
+        const tz = user.timezone || "UTC";
+        setGreeting(compute(name, tz));
+      } catch { /* keep the fallback title */ }
+    };
+
+    load();
+    // Re-compute every 5 minutes so the greeting updates naturally as the
+    // user crosses noon / 5pm without needing a page refresh.
+    const id = setInterval(load, 5 * 60 * 1000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+
   const hasAgents = agents.length > 0;
 
   // Unified layout: QuickActions only appears once there are agents to act on.
   // Before that, the Step 1 card in AgentStatusGrid is the single clear CTA.
   return (
     <div className="space-y-6">
-      <PageHeader title="MOTHERSHIP" description="Real-time operational overview" />
+      <PageHeader
+        title={greeting ?? "MOTHERSHIP"}
+        eyebrow="MOTHERSHIP"
+        description="Real-time operational overview"
+      />
       <SystemHealthBar />
       <LiveStatsRow />
       <SavingsBanner />
