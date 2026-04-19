@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/shared";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ModalShell } from "@/components/ui/modal-shell";
@@ -97,18 +98,22 @@ export default function EvalsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Evals</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Automated test suites for measuring agent quality</p>
-        </div>
+      {/* Header — editorial PageHeader (matches /workflows, /deployments, etc.).
+          New Eval Suite button only shows once there's data — empty state has
+          its own centered hero CTA so users have a single clear path. */}
+      <PageHeader
+        title="Evals"
+        description="Automated test suites for measuring agent quality"
+      >
         {suites.length > 0 && (
-          <Button size="sm" className="bg-brand hover:bg-brand/90 text-primary-foreground gap-1.5" onClick={() => setCreateOpen(true)}>
+          <Button
+            className="bg-brand hover:bg-brand/90 text-primary-foreground gap-1.5"
+            onClick={() => setCreateOpen(true)}
+          >
             <Plus className="size-3.5" /> New Eval Suite
           </Button>
         )}
-      </div>
+      </PageHeader>
 
       {/* Stats bar */}
       {suites.length > 0 && (
